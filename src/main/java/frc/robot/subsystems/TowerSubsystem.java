@@ -24,6 +24,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -37,35 +38,92 @@ public class TowerSubsystem extends SubsystemBase {
     private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
     private static XboxController m_Controller = new XboxController(0);
     private static Joystick m_Joystick = new Joystick(1);
+    private RelativeEncoder m_encoderTower;
+    private RelativeEncoder m_encoderElbow;
     
-    public void tower(){
+    private double mTowerSpeed = 0;
+    private double mElbowSpeed = 0;
 
-        
+    private void goToPosition(double Tvalue, double Evalue) {
+        m_encoderTower = mTower.getEncoder();
+        m_encoderElbow = mElbow.getEncoder();
+
+        if (m_encoderTower.getPosition() >= Tvalue + 10) {
+            mTowerSpeed = -0.3;
+        } else if (m_encoderTower.getPosition() <= Tvalue - 10) {
+            mTowerSpeed = 0.3;
+        } else if (m_encoderTower.getPosition() >= Tvalue) {
+            mTowerSpeed = -0.1;
+        } else if (m_encoderTower.getPosition() <= Tvalue) { 
+            mTowerSpeed = 0.1;
+        }
+
+
+
+        if (m_encoderElbow.getPosition() >= Evalue + 10) {
+            mElbowSpeed = -0.3;
+        } else if (m_encoderElbow.getPosition() <= Evalue - 10) {
+            mElbowSpeed = 0.3;
+        } else if (m_encoderElbow.getPosition() >= Evalue) {
+            mElbowSpeed = -0.1;
+        } else if (m_encoderElbow.getPosition() <= Evalue) {
+            mElbowSpeed = 0.1;
+        }
+
+    }
+
+    public void tower(){
+        m_encoderTower = mTower.getEncoder();
+        m_encoderElbow = mElbow.getEncoder();
 
         //For large arm
         if(m_Joystick.getRawButton(7)) {
-            mTower.set(-0.3);
+            mTowerSpeed = -0.3;
         }
         else if(m_Joystick.getRawButton(8)) {
-            mTower.set(0.3);
+            mTowerSpeed = 0.3;
         }
         else {
-            mTower.set(0);
+            mTowerSpeed = 0;
         }
 
         //for elbow arm
         if(m_Joystick.getRawButton(9)) {
-            mElbow.set(-0.3);
+            mElbowSpeed = -0.3;
         }
         else if(m_Joystick.getRawButton(10)) {
-            mElbow.set(0.3);
+            mElbowSpeed = 0.3;
         }
         else {
-            mElbow.set(0);
+            mElbowSpeed = 0;
         }
-        SmartDashboard.getNumber("mTower", mTower.get());
-        SmartDashboard.getNumber("mElbow", mElbow.get());
+
+        if (m_encoderTower.getPosition() <= -57 && mTowerSpeed <= 0) {
+            mTowerSpeed = 0;
+        } else if (m_encoderTower.getPosition() >= 36 && mTowerSpeed >= 0) {
+            mTowerSpeed = 0;
+        } 
+
+        if (m_Joystick.getRawButton(3)) {
+            goToPosition(-55, -12);
+        }
+        if (m_Joystick.getRawButton(4)) {
+            goToPosition(33.5, 27.4);
+        }
+        //SmartDashboard.getNumber("mTower", mTower.get());
+        //SmartDashboard.getNumber("mElbow", mElbow.get());
+        mTower.set(mTowerSpeed);
+        mElbow.set(mElbowSpeed);
+
+
+
+
+        SmartDashboard.putNumber("mTower", m_encoderTower.getPosition());
+        SmartDashboard.putNumber("mElbow", m_encoderElbow.getPosition());
+
     }
+
+    
 }
     
 

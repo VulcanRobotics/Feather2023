@@ -18,7 +18,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 public class IntakeSubsystem extends SubsystemBase {
     //private final TalonSRX m_intakeRollMotor = new TalonSRX(15);
-    private final TalonSRX m_intakeDeployMotor = new TalonSRX(16);  
+    private final TalonSRX m_intakeDeployMotor = new TalonSRX(0);  
     //private final TalonSRX m_tonyRoller = new TalonSRX(17); 
     private final TalonSRX m_intakeProcessMotors = new TalonSRX(17);
 

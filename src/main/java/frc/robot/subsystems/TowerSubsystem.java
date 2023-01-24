@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.PWMTalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,7 +25,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
@@ -36,13 +39,16 @@ public class TowerSubsystem extends SubsystemBase {
     
     private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
     private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
+    private static TalonSRX m_Wrist = new TalonSRX(16);
     private static XboxController m_Controller = new XboxController(0);
     private static Joystick m_Joystick = new Joystick(1);
     private RelativeEncoder m_encoderTower;
     private RelativeEncoder m_encoderElbow;
+    private RelativeEncoder m_encoderWrist;
     
     private double mTowerSpeed = 0;
     private double mElbowSpeed = 0;
+    private double mWristSpeed = 0.0;
 
     private void goToPosition(double Tvalue, double Evalue) {
         m_encoderTower = mTower.getEncoder();
@@ -75,7 +81,7 @@ public class TowerSubsystem extends SubsystemBase {
     public void tower(){
         m_encoderTower = mTower.getEncoder();
         m_encoderElbow = mElbow.getEncoder();
-
+        
         //For large arm
         if(m_Joystick.getRawButton(7)) {
             mTowerSpeed = -0.3;
@@ -110,17 +116,24 @@ public class TowerSubsystem extends SubsystemBase {
         if (m_Joystick.getRawButton(4)) {
             goToPosition(33.5, 27.4);
         }
+
+        if (m_Joystick.getRawButton(5)){
+            mWristSpeed = 0.4;
+        } else if (m_Joystick.getRawButton(6)){
+            mWristSpeed = -0.4;
+        } else{
+            mWristSpeed = 0;
+        }
         //SmartDashboard.getNumber("mTower", mTower.get());
         //SmartDashboard.getNumber("mElbow", mElbow.get());
         mTower.set(mTowerSpeed);
         mElbow.set(mElbowSpeed);
-
+        m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
 
 
 
         SmartDashboard.putNumber("mTower", m_encoderTower.getPosition());
         SmartDashboard.putNumber("mElbow", m_encoderElbow.getPosition());
-
     }
 
     

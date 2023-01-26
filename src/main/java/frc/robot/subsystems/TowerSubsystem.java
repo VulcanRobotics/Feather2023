@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Joystick;
-
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -12,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Inputs;
-
 //import frc.robot.LinearServo;
 import frc.robot.RampPower;
 
@@ -50,10 +48,7 @@ public class TowerSubsystem extends SubsystemBase {
     
     private double mTowerSpeed = 0;
     private double mElbowSpeed = 0;
-    private double mWristSpeed = .4;
-
-    private boolean armModeToggle = false;
-    
+    private double mWristSpeed = 0.0;
 
     private void goToPosition(double Tvalue, double Evalue) {
         m_encoderTower = mTower.getEncoder();
@@ -87,12 +82,7 @@ public class TowerSubsystem extends SubsystemBase {
         m_encoderTower = mTower.getEncoder();
         m_encoderElbow = mElbow.getEncoder();
         
-        if (m_Joystick.getRawButtonPressed(2)){
-            armModeToggle = !armModeToggle;
-        }
-
         //For large arm
-
         if(m_Joystick.getRawButton(7)) {
             mTowerSpeed = -0.3;
         }
@@ -114,14 +104,6 @@ public class TowerSubsystem extends SubsystemBase {
             mElbowSpeed = 0;
         }
 
-        if (armModeToggle){
-            mTowerSpeed = 0.0;
-            mElbowSpeed = m_Joystick.getY() * 0.5;
-        }else{
-            mElbowSpeed = 0.0;
-            mTowerSpeed = m_Joystick.getY() * 0.5;
-        }
-
         if (m_encoderTower.getPosition() <= -57 && mTowerSpeed <= 0) {
             mTowerSpeed = 0;
         } else if (m_encoderTower.getPosition() >= 36 && mTowerSpeed >= 0) {
@@ -135,9 +117,11 @@ public class TowerSubsystem extends SubsystemBase {
             goToPosition(33.5, 27.4);
         }
 
-        if (Inputs.xAxisJoystick <= -0.1 || Inputs.xAxisJoystick >= 0.1){
-            mWristSpeed = mWristSpeed*Inputs.xAxisJoystick;
-        } else {
+        if (m_Joystick.getRawButton(5)){
+            mWristSpeed = 0.4;
+        } else if (m_Joystick.getRawButton(6)){
+            mWristSpeed = -0.4;
+        } else{
             mWristSpeed = 0;
         }
         //SmartDashboard.getNumber("mTower", mTower.get());
@@ -145,14 +129,11 @@ public class TowerSubsystem extends SubsystemBase {
         mTower.set(mTowerSpeed);
         mElbow.set(mElbowSpeed);
         m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
-        mWristSpeed = .4;
+
 
 
         SmartDashboard.putNumber("mTower", m_encoderTower.getPosition());
         SmartDashboard.putNumber("mElbow", m_encoderElbow.getPosition());
-
-        SmartDashboard.putNumber("x-axis controller", Inputs.xAxisJoystick); //Between -1 and 1
-
     }
 
     

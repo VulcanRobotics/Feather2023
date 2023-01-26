@@ -14,7 +14,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.StringArrayEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -41,9 +40,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorTimeBase;
-
-import org.ejml.equation.ManagerFunctions.Input1;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 //import frc.robot.SwerveMath.AngleMath;
@@ -77,8 +73,6 @@ public class SwerveModule {
   private final CANCoder m_turningEncoder;
   private int m_driveDirection = 1;
   private double talonOffsetOnBoot; 
-
-  private boolean strafeMode = false;
 
   
 
@@ -314,13 +308,10 @@ public class SwerveModule {
     }
 
     
-      
-      m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
+
+    m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
     //m_driveMotor.set(ControlMode.PercentOutput, driveOutput);
     m_turningMotor.set(ControlMode.Position, (getClosestZero(desiredState)));
-    
-
-    
 
 
     
@@ -357,10 +348,6 @@ public class SwerveModule {
     //SmartDashboard.putNumber("Optimized Turn" + Integer.toString(turnMotorPortGlobal), getOptimizedTurn(desiredState));
     SmartDashboard.putNumber("Brake Mode", brakeMode);
     SmartDashboard.putNumber("Current Ticks" + Integer.toString(turnMotorPortGlobal), getCurrentTicks() ); 
-
-    SmartDashboard.putNumber("m_driveDirection", m_driveDirection); 
-
-
   } 
 
   

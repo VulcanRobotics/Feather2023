@@ -12,7 +12,6 @@ import frc.robot.Constants;
 import frc.robot.Inputs;
 import frc.robot.LinearServo;
 
-import java.util.Calendar;
 import java.util.Map;
 
 import javax.lang.model.util.ElementScanner6;
@@ -36,18 +35,13 @@ public class PneumaticSubsystem extends SubsystemBase {
 
   //Solenoid m_solenoid = m_ph.makeSolenoid(0);
 
-  private boolean clawClosed = false;
 
   public void Pneumatics() {
         m_compressor.enableDigital();
 
-        if (m_Joystick.getRawButtonPressed(1)){
-          clawClosed = !clawClosed;
-        }
-
-        if (clawClosed){
+        if (m_Joystick.getRawButton(12)){
           m_solenoid.set(true);
-        } else {
+        } else if (m_Joystick.getRawButton(11)) {
           m_solenoid.set(false);
         }
     }

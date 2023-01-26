@@ -41,8 +41,6 @@ public class Inputs {
     public static double hoodAdjust = 0.0;
     public static double turretAdjust = 0.0;
 
-    public static double xAxisJoystick = 0.0;
-
     public static double overrideTurretAngle = 0.0;
     public static boolean overrideTurret = false;
     
@@ -132,8 +130,6 @@ public class Inputs {
 
     public static boolean driverStickIsHeld = false;
 
-    private static boolean strafeMode = false;
-
 
     public static double drivePowerOffset = 0.0;
     public static double lastDPAD = -1.0;
@@ -207,7 +203,6 @@ public class Inputs {
             if (m_driverXbox.getBackButtonReleased()) { 
                 fieldCentric = !fieldCentric;
             }
-  
 
             driveResetGyro  = m_driverXbox.getStartButton();            // used in Drive subsystem to rest the gyro direction
             driveDesiredHeading = 0.0;                                  // turn robot to a specific gyro heading, changed in auton code
@@ -302,9 +297,6 @@ public class Inputs {
 
         hoodAdjust      = applyDeadBand(m_operatorControl.getY(), Constants.OIConstants.kHoodStickDeadBand); 
         hoodAdjust      *= Constants.ShooterConstants.kHoodMaxPower;
-
-        xAxisJoystick = m_operatorControl.getX();
-
 
 
         shooterManualPower = convertToLinearPower(m_operatorControl.getThrottle()); // what does CBU want

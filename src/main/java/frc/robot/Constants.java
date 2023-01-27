@@ -406,7 +406,7 @@ public final class Constants {
 
   public static final class ClimberConstants {
     
-    public static int    kLift1RRBannerDigitalPort = config.getInt("CLIMB_kLift1RRBannerDigitalPort", 2); //0.4) ;
+    public static int    kLift1RRBannerDigitalPort = config.getInt("CLIMB_kLift1RRBannerDigitalPort", 6); //0.4) ; // was 2 changed cuz problems
     // not final so these can change, yes we call the constants, get over it. 
     public static double kLiftNormalSpeed  =  config.getDouble("CLIMB_kLiftNormalSpeed", 1.0); //0.8) ;
     public static double kDartNormalSpeed  =  config.getDouble("CLIMB_kDartNormalSpeed", 1.0); //0.8) ;

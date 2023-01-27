@@ -41,6 +41,10 @@ public class Inputs {
     public static double hoodAdjust = 0.0;
     public static double turretAdjust = 0.0;
 
+    public static double xAxisJoystick = 0.0;
+    public static double yAxisJoystick = 0.0;
+    public static double zAxisJoystick = 0.0;
+
     public static double overrideTurretAngle = 0.0;
     public static boolean overrideTurret = false;
     
@@ -298,6 +302,9 @@ public class Inputs {
         hoodAdjust      = applyDeadBand(m_operatorControl.getY(), Constants.OIConstants.kHoodStickDeadBand); 
         hoodAdjust      *= Constants.ShooterConstants.kHoodMaxPower;
 
+        xAxisJoystick = m_operatorControl.getX();
+        yAxisJoystick = m_operatorControl.getY();
+        zAxisJoystick = m_operatorControl.getZ();
 
         shooterManualPower = convertToLinearPower(m_operatorControl.getThrottle()); // what does CBU want
 

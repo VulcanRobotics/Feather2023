@@ -46,7 +46,7 @@ public class ClimbSubsystem extends SubsystemBase {
 
     private static RelativeEncoder mLift1Encoder = mLift1.getEncoder(); // part of NEO motor
 
-    private static AnalogPotentiometer mLift2Potentiometer = new AnalogPotentiometer(new AnalogInput(2));
+    private static AnalogPotentiometer mLift2Potentiometer = new AnalogPotentiometer(new AnalogInput(6)); //was 2, changed cuz problem
     
     private static double lastHandPotentiomenterValue = 0.0;
     private static int loopsOfHoldingHandPotentiometerValue = 0;

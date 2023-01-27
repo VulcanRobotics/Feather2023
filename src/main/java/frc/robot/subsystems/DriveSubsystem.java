@@ -190,6 +190,7 @@ public class DriveSubsystem extends SubsystemBase {
    /****************************************************/
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
+    SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));
     SmartDashboard.putBoolean("Cool Auton Mode", autonMode);
     SmartDashboard.putNumber("currentX", currentX);
     SmartDashboard.putNumber("currentY", currentY);

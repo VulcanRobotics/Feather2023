@@ -137,6 +137,8 @@ public class TowerSubsystem extends SubsystemBase {
         mTower.set(mTowerSpeed);
         mElbow.set(mElbowSpeed);
 
+
+
         m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
          
         SmartDashboard.putNumber("mElbow", m_encoderElbow.getPosition());

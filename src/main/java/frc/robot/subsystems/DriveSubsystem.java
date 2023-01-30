@@ -136,6 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
         SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
         SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
+        SmartDashboard.putNumber("POV", m_driveController.getPOV());
   }
 
   /**
@@ -192,8 +193,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
     SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));
     SmartDashboard.putBoolean("Cool Auton Mode", autonMode);
-    SmartDashboard.putNumber("currentX", currentX);
-    SmartDashboard.putNumber("currentY", currentY);
+    SmartDashboard.putNumber("currentX", currentPose.getX());
+    SmartDashboard.putNumber("currentY", currentPose.getY());
     SmartDashboard.putBoolean("Robot Mode", fieldRelative);
 
    /* if (autonMode == true) {
@@ -259,6 +260,9 @@ public class DriveSubsystem extends SubsystemBase {
         destinationPointX = startingPointX + 5000;
         destinationPointY = startingPointY + 5000;
       }
+
+      
+
       
       /*Trajectory exampleTrajectory =
           TrajectoryGenerator.generateTrajectory(

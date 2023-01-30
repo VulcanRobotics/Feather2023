@@ -337,6 +337,8 @@ public class SwerveModule {
 
   // we want to go to the degree based on the cancoder
 
+    SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
+
 
     SmartDashboard.putNumber("Desired Position for Wheel" +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
     SmartDashboard.putNumber("TALON OFFSET ON BOOT" + Integer.toString(turnMotorPortGlobal) , talonOffsetOnBoot);

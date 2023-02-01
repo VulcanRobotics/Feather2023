@@ -189,6 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
     double currentY = currentPose.getY();
 
    /****************************************************/
+   //SmartDashboard.putNumber(Inputs., currentY)
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
     SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));
@@ -231,6 +232,7 @@ public class DriveSubsystem extends SubsystemBase {
                 : new ChassisSpeeds(-xSpeed, ySpeed, rot)); //xspeed was positive
     //SwerveDriveKinematics.desaturateWheelSpeeds(
         //swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    SmartDashboard.putNumber("Rotation?", rot );
     m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
     m_frontRight.setDesiredState(swerveModuleStates[0]); 
     m_rearLeft.setDesiredState(swerveModuleStates[3]);

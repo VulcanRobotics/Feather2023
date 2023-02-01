@@ -22,7 +22,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocationManager;
-import frc.robot.subsystems.ClimbSubsystem;
+//import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ShootSubsystem;
 import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
@@ -45,7 +45,7 @@ public class RobotContainer {
 
 
   private final IntakeSubsystem m_robotIntake = new IntakeSubsystem();
-  private final ClimbSubsystem m_robotClimb = new ClimbSubsystem();
+  //private final ClimbSubsystem m_robotClimb = new ClimbSubsystem();
   private final ShootSubsystem m_robotShoot = new ShootSubsystem();
   private final TowerSubsystem m_robotTower = new TowerSubsystem();
   private final PneumaticSubsystem m_robotPneumatics = new PneumaticSubsystem();
@@ -93,12 +93,12 @@ public class RobotContainer {
                     ),
         m_robotIntake));
 
-    m_robotClimb.setDefaultCommand(
+    /*m_robotClimb.setDefaultCommand(
         new RunCommand(
             () -> 
                 m_robotClimb.climb(
                     ),
-        m_robotClimb));
+        m_robotClimb));*/
     
         m_robotTower.setDefaultCommand(
             new RunCommand(

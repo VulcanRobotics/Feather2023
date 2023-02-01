@@ -52,7 +52,7 @@ public class ClimbSubsystem extends SubsystemBase {
     private static int loopsOfHoldingHandPotentiometerValue = 0;
     private static boolean holdingHandPotentiometerValue = false;
 
-    private static AnalogPotentiometer mDartPotentiometer = new AnalogPotentiometer(new AnalogInput(1));
+    private static AnalogPotentiometer mDartPotentiometer = new AnalogPotentiometer(new AnalogInput(13));
 
     private static double lastDartPotentiomenterValue = 0.0;
     private static int loopsOfHoldingDartPotentiometerValue = 0;

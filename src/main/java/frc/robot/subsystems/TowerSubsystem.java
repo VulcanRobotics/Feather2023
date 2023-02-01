@@ -45,7 +45,8 @@ public class TowerSubsystem extends SubsystemBase {
     DigitalInput m_towerUpProximity = new DigitalInput(2);
     DigitalInput m_towerDownProximity = new DigitalInput(3);
 
-    private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0)); //not working 💀
+    private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
+    private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
 
     private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
     private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
@@ -82,6 +83,17 @@ public class TowerSubsystem extends SubsystemBase {
             mElbowSpeed = 0.1;
         }
 
+    }
+
+    private void tuckArm(){
+        if (m_towerDownProximity.get() == true){
+            mTowerSpeed = 1;
+        }
+        if (m_stringPotentiometerElbow.get() > 0.61){
+            mElbowSpeed = -0.2;
+        } else if(m_stringPotentiometerElbow.get() < 0.59){
+            mElbowSpeed = 0.2;
+        }
     }
 
     public void tower(){
@@ -121,7 +133,8 @@ public class TowerSubsystem extends SubsystemBase {
 
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
         if (m_Joystick.getRawButton(3)) {
-            goToPosition(-55, -12);
+            //goToPosition(-55, -12);
+            tuckArm();
         }
         if (m_Joystick.getRawButton(4)) {
             goToPosition(33.5, 27.4);
@@ -134,6 +147,12 @@ public class TowerSubsystem extends SubsystemBase {
             mTowerSpeed = 0;
         }
         
+       /*  if (m_stringPotentiometerTower.get() >= 0.48 && m_stringPotentiometerTower.get() <= 0.53){
+            if (m_stringPotentiometerElbow.get() >= 0.53){
+                mElbowSpeed = -0.1;
+            }
+        }*/
+
         mTower.set(mTowerSpeed);
         mElbow.set(mElbowSpeed);
 
@@ -149,6 +168,7 @@ public class TowerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("z-axis controller", Inputs.zAxisJoystick); 
 
         SmartDashboard.putNumber("String Potentiometer Tower", m_stringPotentiometerTower.get());
+        SmartDashboard.putNumber("String Potentiometer Elbow", m_stringPotentiometerElbow.get());
     }
 
     

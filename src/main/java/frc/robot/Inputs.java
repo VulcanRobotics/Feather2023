@@ -175,10 +175,13 @@ public class Inputs {
             driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
             //driverStrafe = getCubePower(driverStrafe);
 
-            driverTurn = applyDeadBand( m_driverXbox.getRightX(), /*Constants.DriveConstants.kJoystickDeadband*/ 0.0); 
+            //driverTurn = applyDeadBand( m_driverXbox.getRightX(), /*Constants.DriveConstants.kJoystickDeadband*/ 0.0); 
+            driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
             driverTurn *= Constants.OIConstants.kDriverTurnPCT;
             //driverTurn = getCubePower(driverTurn);
             
+            SmartDashboard.putNumber("LOOK AT ME", m_driverXbox.getRightX());
+            SmartDashboard.putNumber("NOTICE ME", m_driverXbox.getLeftX());
 
             double DPAD = m_driverXbox.getPOV(0);
             if (DPAD != lastDPAD && DPAD != -1){

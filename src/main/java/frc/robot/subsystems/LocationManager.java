@@ -366,7 +366,6 @@ public class LocationManager extends SubsystemBase{
         SmartDashboard.putNumber("POSTMAN: front motor power", Inputs.overrideFrontShooterMotorPower);
         SmartDashboard.putNumber("POSTMAN: back motor power", Inputs.overrideBackShooterMotorPower);
         SmartDashboard.putBoolean("POSTMAN: override shooter power", Inputs.overrideShooterMotors);
-        //SmartDashboard.putBoolean("POSTMAN: override safety", Inputs.masterClimbAutoEnabled);
     }
 
     public void setHoodAngleToTarget(double robotX, double robotY) {

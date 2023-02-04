@@ -142,15 +142,7 @@ public class Auton extends MyStateMachine {
 
                 Inputs.operatorTrigger = true;
 
-                if( IntakeSubsystem.ball1IsReady() ||          // if there is a ball in the shooter
-                    IntakeSubsystem.ball2IsReady() )
-                    timShootingLimit.reset();						// reset this timer
-    
-                if( IntakeSubsystem.ball1IsReady() == false &&          // no ball in shooter
-                    IntakeSubsystem.ball2IsReady() == false &&
-                    timShootingLimit.get() > Constants.Auton2BallRightConstants.kShoot_Time  )   // 			// we waited long enough
-                    iStep++;                                            // next step, 
-    
+                
                 Constants.telemetry.saveString("Auton Step Desc", status );           
                 break;
             
@@ -427,11 +419,7 @@ public class Auton extends MyStateMachine {
                       IntakeSubsystem.ball2IsReady() )
 					  timShootingLimit.reset();	*/					// reset this timer
 
-                if( IntakeSubsystem.ball1IsReady() == false &&          // no ball in shooter
-                      IntakeSubsystem.ball2IsReady() == false &&
-                        timShootingLimit.get() > Constants.Auton3BallRightConstants.kShoot_Time )   // 			// we waited long enough
-                    iStep++;                                            // next step, 
-                                                                        
+                                                                   
                 Constants.telemetry.saveString("Auton Step Desc", status );           
 
                 break;
@@ -553,13 +541,7 @@ public class Auton extends MyStateMachine {
                 Inputs.operatorTrigger = true;
                 Inputs.operatorThumbSafety = true;
 
-                if( IntakeSubsystem.ball1IsReady() ||          // ball in shooter
-                      IntakeSubsystem.ball2IsReady() )
-					  timShootingLimit.reset();						// reset this timer
-
-                if( IntakeSubsystem.ball1IsReady() == false &&          // no ball in shooters
-                      IntakeSubsystem.ball2IsReady() == false &&
-                        timShootingLimit.get() > Constants.Auton4BallConstants.kInitial_ShootTime )   // 			// we waited long enough
+                // we waited long enough
                     iStep++;                                          // next step, 
                                                                         
                 Constants.telemetry.saveString("Auton Step Desc", status );           

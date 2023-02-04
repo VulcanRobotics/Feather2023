@@ -28,8 +28,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     DigitalInput m_intakeLimitSwitch = new DigitalInput(4);
 
-    private static final DigitalInput photogateShooter = new DigitalInput(9);
-    private static final DigitalInput photogateIntake = new DigitalInput(8);
 
     //private Timer intakeCurrentTimer = new Timer();
     private MyTimedPower intakeDeployPowerManager;
@@ -68,41 +66,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
 
-    public static boolean ball1IsReady(){
 
-        if (photogateShooter.get()){
-            return false;
-        } else{
-            return true;
-        }
 
-    }
 
-    public static boolean ball2IsReady(){
 
-        if (photogateIntake.get()){
-            return false;
-        } else{
-            return true;
-        }
 
-    }
-
-    public boolean intakeNeedsBalls(){
-        if (photogateShooter.get()){
-            Inputs.shootPhotogateSeesBall = false;
-        } else{
-            Inputs.shootPhotogateSeesBall = true;
-        }
-        Constants.telemetry.putTrueBoolean("INTAKE Ball 1 Ready", !photogateShooter.get());
-        Constants.telemetry.putTrueBoolean("INTAKE Ball 2 Ready", !photogateIntake.get());
-
-        if (photogateIntake.get() || photogateShooter.get()){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
 
     //up position = ~15
@@ -132,9 +100,7 @@ public class IntakeSubsystem extends SubsystemBase {
         /********************************************************
          * service the intake device, false is up, true is down
          *********************************************************/
-        if( Inputs.intakeDeploy == true && intakeNeedsBalls() == false  )  // if down and have enough falls
-            Inputs.intakeDeploy = false;                                   
-
+        
         if( Inputs.intakeDeploy == false &&                 // want to retract, switch says we are down. 
                     m_intakeLimitSwitch.get() == true )     // digital switch set to Normally Closed. True is Deployed. 
             intakeDeployPowerManager.resetTimer();          // will cause the power to start the retract process again
@@ -180,8 +146,6 @@ public class IntakeSubsystem extends SubsystemBase {
             tonyRollerPower = Constants.ShooterConstants.kTonyRollerPower;
         } else if( Inputs.intakeDeploy == false && intakeDeployPowerManager.getTime() > 4.0  ){
                 tonyRollerPower = 0.0;
-        }else if (intakeNeedsBalls() == true) {                               // intake sees 1 ball in hopper, if it sees 2 it will turn false
-            tonyRollerPower = Constants.ShooterConstants.kTonyRollerPower;
         } else {
             tonyRollerPower = 0.0;
         }

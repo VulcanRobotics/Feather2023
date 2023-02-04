@@ -3,6 +3,7 @@ package frc.robot;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShootSubsystem;
 
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
@@ -134,9 +135,12 @@ public class Inputs {
 
     public static boolean driverStickIsHeld = false;
 
+    public static double initialYAW = 0.0;
 
     public static double drivePowerOffset = 0.0;
     public static double lastDPAD = -1.0;
+
+
 
     public static boolean hardMovementStop = false;
     public static boolean hardMovementBreak = false;
@@ -162,7 +166,8 @@ public class Inputs {
         climberLift1PowerOverride = 0.0;        
         climberLift2PowerOverride = 0.0;
         climberDartPowerOverride = 0.0;
-    
+
+
         /////////////////////////////////////////////////////////////////
         // Driver controls  - showing all the steps to the new kids.
         /////////////////////////////////////////////////////////////////
@@ -180,16 +185,63 @@ public class Inputs {
             driverTurn *= Constants.OIConstants.kDriverTurnPCT;
             //driverTurn = getCubePower(driverTurn);
             
-            SmartDashboard.putNumber("LOOK AT ME", m_driverXbox.getRightX());
-            SmartDashboard.putNumber("NOTICE ME", m_driverXbox.getLeftX());
+        
+
 
             double DPAD = m_driverXbox.getPOV(0);
-            if (DPAD != lastDPAD && DPAD != -1){
+
+            if (DPAD == 90 || DPAD == 270) {
+                if (initialYAW < DriveSubsystem.m_gyro.getYaw() - 1.5) {
+                    driverTurn = applyDeadBand(-0.1, Constants.DriveConstants.kJoystickDeadband); 
+                    driverTurn *= Constants.OIConstants.kDriverTurnPCT;
+                } else if (initialYAW > DriveSubsystem.m_gyro.getYaw() + 1.5) {
+                    driverTurn = applyDeadBand(0.1, Constants.DriveConstants.kJoystickDeadband); 
+                    driverTurn *= Constants.OIConstants.kDriverTurnPCT;
+                }
+            }
+
+            if (m_driverXbox.getRightTriggerAxis() == 1){
+                drivePowerOffset += 0.05;
+            } else if (m_driverXbox.getLeftTriggerAxis() == 1) {
+                drivePowerOffset -= 0.05;
+            }
+
+
+
+            if (masterAutoEnabled == true) {
+                if (DriveSubsystem.m_gyro.getRoll() > 0) {
+                    driverPower = applyDeadBand(-0.2, Constants.DriveConstants.kJoystickDeadband); 
+                    driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
+                } else if (DriveSubsystem.m_gyro.getRoll() < 0) {
+                    driverPower = applyDeadBand(0.2, Constants.DriveConstants.kJoystickDeadband); 
+                    driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
+                }
+
+            }
+
+
+            /*if (DPAD != lastDPAD && DPAD != -1){
                 if (DPAD == 0){
                     drivePowerOffset += 0.05;
                 } else if (DPAD == 180){
                     drivePowerOffset -= 0.05;
                 }
+            } else*/ if (DPAD == 90) {
+                driverStrafe = applyDeadBand(-(0.5), Constants.DriveConstants.kJoystickDeadband); 
+                driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
+            } else if (DPAD == 270) {
+                driverStrafe = applyDeadBand(-(-0.5), Constants.DriveConstants.kJoystickDeadband); 
+                driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
+            } else {
+                initialYAW = DriveSubsystem.m_gyro.getYaw();
+            }
+
+            if (DPAD == 0){
+                driverPower = applyDeadBand(0.2, Constants.DriveConstants.kJoystickDeadband); 
+                driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
+            } else if (DPAD == 180){
+                driverPower = applyDeadBand(-0.2, Constants.DriveConstants.kJoystickDeadband); 
+                driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
             }
 
             lastDPAD = DPAD;
@@ -200,7 +252,7 @@ public class Inputs {
             String drivePowerDisplay = Integer.toString(drivePowerInt) + "% Power";
 
             SmartDashboard.putNumber("Drive Power Offset", drivePowerOffset);
-            SmartDashboard.putString("Drive Power Maximum:   ", drivePowerDisplay);
+            SmartDashboard.putString("Drive Power Maximum:", drivePowerDisplay);
             //SmartDashboard.putNumber("dpad angle", m_driverXbox.getPOV(0));
 
 

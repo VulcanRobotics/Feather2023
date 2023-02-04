@@ -78,22 +78,22 @@ public class TowerSubsystem extends SubsystemBase {
     private void goToPosition(double Tvalue, double Evalue) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
-        if (m_stringTower >= Tvalue + .1) {
+        if (m_stringTower >= Tvalue + .01) {
+            mTowerSpeed = 0.9;
+        } else if (m_stringTower <= Tvalue - .01) {
+            mTowerSpeed = -0.9;
+        } else if (m_stringTower >= Tvalue + 0.001) {
             mTowerSpeed = 0.3;
-        } else if (m_stringTower <= Tvalue - .1) {
+        } else if (m_stringTower <= Tvalue - 0.001) { 
             mTowerSpeed = -0.3;
-        } else if (m_stringTower >= Tvalue) {
-            mTowerSpeed = 0.1;
-        } else if (m_stringTower <= Tvalue) { 
-            mTowerSpeed = -0.1;
         }
-        if (m_stringElbow >= Evalue + .1) {
+        if (m_stringElbow >= Evalue + .01) {
             mElbowSpeed = -0.3;
-        } else if (m_stringElbow <= Evalue - .1) {
+        } else if (m_stringElbow <= Evalue - .01) {
             mElbowSpeed = 0.3;
-        } else if (m_stringElbow >= Evalue) {
+        } else if (m_stringElbow >= Evalue + 0.001) {
             mElbowSpeed = -0.1;
-        } else if (m_stringElbow <= Evalue) {
+        } else if (m_stringElbow <= Evalue - 0.001) {
             mElbowSpeed = 0.1;
         }
 
@@ -145,7 +145,7 @@ public class TowerSubsystem extends SubsystemBase {
                 mTowerSpeed = 0.0;
             }
         } //else
-        {
+        
             if (Math.abs(Inputs.xAxisJoystick) >= 0.1) { // Dead stick zone
                 targetX += m_Joystick.getX() * 0.1; // Very small changes, for now
                 if (targetX < 0.1) { // Hard limit for now to keep things forward (positive X)
@@ -170,25 +170,32 @@ public class TowerSubsystem extends SubsystemBase {
             double b = -2*m*f;
             double c = m*m - (h*h*k);
 
-            double x2p = (-b + Math.sqrt(b*b - 4*a*c)) / 2*a;      
-            double x2n = (-b - Math.sqrt(b*b - 4*a*c)) / 2*a;
+            double x2p = (-b + Math.sqrt(b*b - 4*a*c)) / (2*a);      
+            double x2n = (-b - Math.sqrt(b*b - 4*a*c)) / (2*a);
 
             double x2 = x2n;
-
             double x1 = targetX - x2;
 
             double y2 = Math.sqrt(z2*z2 - x2*x2);
             double y1 = targetY - y2 - y0;
 
-            SmartDashboard.putNumber("x2", x2);
+
+            SmartDashboard.putNumber("a", a);
+            SmartDashboard.putNumber("b", b);            
+            SmartDashboard.putNumber("c", c);
+            SmartDashboard.putNumber("x1", x1);
+            SmartDashboard.putNumber("x2", x2);            
+            SmartDashboard.putNumber("x2n", x2n);
+            SmartDashboard.putNumber("x2p", x2p);
+            SmartDashboard.putNumber("y1", y1);
             SmartDashboard.putNumber("y2", y2);
-            
+
             theta1 = ( Math.atan(y1/x1) );
             theta2 = ( Math.atan(y2/x2) );
-//            theta1 = Math.toDegrees( Math.atan(y1/x1) );
-//            theta2 = Math.toDegrees( Math.atan(y2/x2) );
+        
+            //theta1 = Math.toDegrees( Math.atan(y1/x1) );
+            //theta2 = Math.toDegrees( Math.atan(y2/x2) );
 
-        }
 
         //For wrist movement, rotate joystick
         if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){

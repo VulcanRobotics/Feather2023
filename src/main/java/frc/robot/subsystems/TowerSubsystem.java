@@ -69,8 +69,8 @@ public class TowerSubsystem extends SubsystemBase {
 
     private boolean IKMode = false;
 
-    private double targetX = 0.6;
-    private double targetY = 0.74;
+    private double targetX = 0.85;
+    private double targetY = 0.69;
 
     private double theta1 = 0.0;
     private double theta2 = 0.0;
@@ -144,7 +144,8 @@ public class TowerSubsystem extends SubsystemBase {
             } else {
                 mTowerSpeed = 0.0;
             }
-        } //else
+        }
+        //else {
         
             if (Math.abs(Inputs.xAxisJoystick) >= 0.1) { // Dead stick zone
                 targetX += m_Joystick.getX() * 0.1; // Very small changes, for now
@@ -154,48 +155,131 @@ public class TowerSubsystem extends SubsystemBase {
             }
             if (Math.abs(Inputs.yAxisJoystick) >= 0.1) { // Dead stick zone
                 targetY += m_Joystick.getY() * 0.1; // Very small changes, for now
+                if (targetY > 1.0) {
+                    targetY = 1.0;
+                }
             }
-
 
             double z1 = 0.4826; //meters
             double z2 = 0.3683; //meters
             double y0 = 0.69; // tower height in meters
+            double x0 = 0.0;
+            double PI = 3.1415926535;
 
-            double f = 2*targetX;
-            double h = 2*targetY;
-            double k = z2*z2;
-            double m = targetX*targetX + targetY*targetY + k - z1*z1;
+            double tower_rad = PI*(m_stringPotentiometerTower.get() - 0.099595)/0.11;
+            double elbow_rad = -PI*(m_stringPotentiometerElbow.get() - 0.63)/0.131;
+            double tow_y = Math.sin(tower_rad) * z1;
+            double tow_x = Math.cos(tower_rad) * z1;
+            double elb_y = Math.sin(elbow_rad) * z2;
+            double elb_x = Math.cos(elbow_rad) * z2;
 
-            double a = f*f + h*h;
-            double b = -2*m*f;
-            double c = m*m - (h*h*k);
+            SmartDashboard.putNumber("Tower X", tow_x);
+            SmartDashboard.putNumber("Tower Y", tow_y);   
+            SmartDashboard.putNumber("Tower angle", 180*(tower_rad)/PI );          
+            SmartDashboard.putNumber("Elbow X", elb_x);
+            SmartDashboard.putNumber("Elbow Y", elb_y);
+            SmartDashboard.putNumber("Elbow angle", 180*(elbow_rad)/PI );            
 
-            double x2p = (-b + Math.sqrt(b*b - 4*a*c)) / (2*a);      
-            double x2n = (-b - Math.sqrt(b*b - 4*a*c)) / (2*a);
 
-            double x2 = x2n;
-            double x1 = targetX - x2;
+            double k = (targetX-x0)*(targetX-x0) + (targetY-y0)*(targetY-y0) + z1*z1 - z2*z2;
 
-            double y2 = Math.sqrt(z2*z2 - x2*x2);
-            double y1 = targetY - y2 - y0;
+            double a = 4*((targetX-x0)*(targetX-x0) + (targetY-y0)*(targetY-y0));
+            double b = -4*(targetY-y0)*k;
+            double c = k*k - 4*(targetX-x0)*(targetX-x0) * z1*z1;
 
+            double y1pp = (-b + Math.sqrt(b*b - 4*a*c)) / (2*a);      
+            double y1pn = (-b + Math.sqrt(b*b - 4*a*c)) / (2*a);      
+            double y1np = (-b - Math.sqrt(b*b - 4*a*c)) / (2*a);
+            double y1nn = (-b - Math.sqrt(b*b - 4*a*c)) / (2*a);
+
+            double x1pp = Math.sqrt(z1*z1 - y1pp*y1pp);
+            double x1pn = -Math.sqrt(z1*z1 - y1pn*y1pn);
+            double x1np = Math.sqrt(z1*z1 - y1np*y1np);
+            double x1nn = -Math.sqrt(z1*z1 - y1nn*y1nn);
+
+            double x2pp = targetX - x1pp - x0;
+            double x2pn = targetX - x1pn - x0;
+            double x2np = targetX - x1np - x0;
+            double x2nn = targetX - x1nn - x0;
+
+            double y2pp = targetY - y1pp - y0;
+            double y2pn = targetY - y1pn - y0;
+            double y2np = targetY - y1np - y0;
+            double y2nn = targetY - y1nn - y0;
+
+            double z1pp = Math.sqrt(x1pp*x1pp + y1pp*y1pp);
+            double z1pn = Math.sqrt(x1pn*x1pn + y1pn*y1pn);
+            double z1np = Math.sqrt(x1np*x1np + y1np*y1np);
+            double z1nn = Math.sqrt(x1nn*x1nn + y1nn*y1nn);
+            
+            double z2pp = Math.sqrt(x2pp*x2pp + y2pp*y2pp);
+            double z2pn = Math.sqrt(x2pn*x2pn + y2pn*y2pn);
+            double z2np = Math.sqrt(x2np*x2np + y2np*y2np);
+            double z2nn = Math.sqrt(x2nn*x2nn + y2nn*y2nn);
+
+            double x1fa = 0.0, x1fb = 0.0, x1f=0.0;
+            double y1fa = 0.0, y1fb = 0.0, y1f=0.0;
+            double x2fa = 0.0, x2fb = 0.0, x2f=0.0;
+            double y2fa = 0.0, y2fb = 0.0, y2f=0.0;
+
+            if (Math.abs(z1pp - z1) < 0.01 && Math.abs(z2pp - z2) < 0.01) {
+                x1fa = x1pp; y1fa = y1pp;
+                x2fa = x2pp; y2fa = y2pp;
+            }
+            else {
+                x1fa = x1pn; y1fa = y1pn;
+                x2fa = x2pn; y2fa = y2pn;
+            }
+
+            if (Math.abs(z1pn - z1) < 0.01 && Math.abs(z2pn - z2) < 0.01) {
+                x1fb = x1pn; y1fb = y1pn;
+                x2fb = x2pn; y2fb = y2pn;
+            }
+            else {
+                x1fb = x1nn; y1fb = y1nn;
+                x2fb = x2nn; y2fb = y2nn;
+            }
+
+            //theta1 = Math.atan2(y1fa,x1fa);
+            //theta2 = Math.atan2(y2fa,x2fa);
+
+            double theta1a = Math.atan2(y1fa,x1fa);
+            double theta2a = Math.atan2(y2fa,x2fa);
+            double theta1b = Math.atan2(y1fb,x1fb);
+            double theta2b = Math.atan2(y2fb,x2fb);
+        
+            if ((Math.abs(theta1a-tower_rad) + Math.abs(theta2a-elbow_rad)) < (Math.abs(theta1b-tower_rad) + Math.abs(theta2b-elbow_rad))) {
+                theta1 = theta1a; theta2 = theta2a;
+            }
+            else {
+                theta1 = theta1b; theta2 = theta2b;
+            }
 
             SmartDashboard.putNumber("a", a);
             SmartDashboard.putNumber("b", b);            
             SmartDashboard.putNumber("c", c);
-            SmartDashboard.putNumber("x1", x1);
-            SmartDashboard.putNumber("x2", x2);            
-            SmartDashboard.putNumber("x2n", x2n);
-            SmartDashboard.putNumber("x2p", x2p);
-            SmartDashboard.putNumber("y1", y1);
-            SmartDashboard.putNumber("y2", y2);
+            SmartDashboard.putNumber("x1", x1f);
+            SmartDashboard.putNumber("x2", x2f);            
+            SmartDashboard.putNumber("y1", y1f);
+            SmartDashboard.putNumber("y2", y2f);
 
-            theta1 = ( Math.atan(y1/x1) );
-            theta2 = ( Math.atan(y2/x2) );
-        
+            SmartDashboard.putNumber("theta1a", 180*theta1a/PI);
+            SmartDashboard.putNumber("theta1b", 180*theta1b/PI);            
+            SmartDashboard.putNumber("theta2a", 180*theta2a/PI);
+            SmartDashboard.putNumber("theta2b", 180*theta2b/PI);
+
+            SmartDashboard.putNumber("z1pp", z1pp);
+            SmartDashboard.putNumber("z1pn", z1pn);            
+            SmartDashboard.putNumber("z1np", z1np);
+            SmartDashboard.putNumber("z1nn", z1nn); 
+
+            SmartDashboard.putNumber("z2pp", z2pp);
+            SmartDashboard.putNumber("z2pn", z2pn);            
+            SmartDashboard.putNumber("z2np", z2np);
+            SmartDashboard.putNumber("z2nn", z2nn); 
+
             //theta1 = Math.toDegrees( Math.atan(y1/x1) );
             //theta2 = Math.toDegrees( Math.atan(y2/x2) );
-
 
         //For wrist movement, rotate joystick
         if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){
@@ -255,8 +339,8 @@ public class TowerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Tower Encoder", encoderTower);
         SmartDashboard.putNumber("Elbow Encoder", encoderElbow);
         
-        SmartDashboard.putNumber("Tower IK Angle", theta1);
-        SmartDashboard.putNumber("Elbow IK Angle", theta2);
+        SmartDashboard.putNumber("Tower IK Angle", 180*theta1/PI);
+        SmartDashboard.putNumber("Elbow IK Angle", 180*theta2/PI);
 
         SmartDashboard.putNumber("Target X", targetX);
         SmartDashboard.putNumber("Target Y", targetY);

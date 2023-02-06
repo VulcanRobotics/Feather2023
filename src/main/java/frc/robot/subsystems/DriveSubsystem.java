@@ -108,6 +108,9 @@ public class DriveSubsystem extends SubsystemBase {
   double destinationPointX = 0;
   double destinationPointY = 0;
   boolean autonMode = false;
+  double lastX = 0;
+  double lastY = 0;
+  double lastZ = 0;
 
   @Override
   public void periodic() {
@@ -187,6 +190,19 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d currentPose = m_odometry.getPoseMeters();
     double currentX = currentPose.getX();
     double currentY = currentPose.getY();
+
+    //Shaun 2/6/23 - Wheels remain in last position without moving.
+    if (xSpeed + ySpeed + rot > 0.05) {
+      lastX = xSpeed;
+      lastY = ySpeed;
+      lastZ = rot;
+    }
+
+    if (Math.abs(xSpeed + ySpeed + rot) <= 0.01) { 
+      xSpeed = lastX * 0.001;
+      ySpeed = lastY * 0.001;
+      rot = lastZ * 0.001;
+    }
 
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)

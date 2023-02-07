@@ -115,7 +115,7 @@ public class TowerSubsystem extends SubsystemBase {
         boolean isArmOnTop = !m_towerUpProximity.get();
         boolean isArmOnBottom = !m_towerDownProximity.get();
         
-        boolean isElbowOnTop = m_ElbowUpProximity.get();
+        boolean isElbowOnTop = !m_ElbowUpProximity.get();
         boolean isElbowOnBottom = !m_ElbowDownProximity.get();
         
         //Built in encoder values 

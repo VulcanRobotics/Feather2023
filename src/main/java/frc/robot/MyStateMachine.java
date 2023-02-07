@@ -251,7 +251,7 @@ class MyStateMachine {
         System.out.println("*** StateMachine.Setting bIsDone to true.***");
         bIsDone = true;
 
-    }
+    } 
 
     public  void auton4(){						// this will be over written in instance.
 

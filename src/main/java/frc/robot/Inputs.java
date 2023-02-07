@@ -8,6 +8,7 @@ import frc.robot.subsystems.ShootSubsystem;
 
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
 
+import edu.wpi.first.util.EventVector;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -188,14 +189,13 @@ public class Inputs {
         
 
 
-            double DPAD = m_driverXbox.getPOV(0);
-
+            double DPAD = m_driverXbox.getPOV(0); //💀
             if (DPAD == 90 || DPAD == 270) {
                 if (initialYAW < DriveSubsystem.m_gyro.getYaw() - 1.5) {
-                    driverTurn = applyDeadBand(-0.1, Constants.DriveConstants.kJoystickDeadband); 
+                    driverTurn = applyDeadBand(0.1, Constants.DriveConstants.kJoystickDeadband); 
                     driverTurn *= Constants.OIConstants.kDriverTurnPCT;
                 } else if (initialYAW > DriveSubsystem.m_gyro.getYaw() + 1.5) {
-                    driverTurn = applyDeadBand(0.1, Constants.DriveConstants.kJoystickDeadband); 
+                    driverTurn = applyDeadBand(-0.1, Constants.DriveConstants.kJoystickDeadband); 
                     driverTurn *= Constants.OIConstants.kDriverTurnPCT;
                 }
             }

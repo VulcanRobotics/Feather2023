@@ -185,6 +185,11 @@ public class TowerSubsystem extends SubsystemBase {
                 mTowerSpeed = 0.0;
             } */
    
+            /*****************************************************/
+            /* IK is still not working, but we're very close!    */
+            /* We'll finish it on Saturday (Feb. 11)!  - Dr. Kim */
+            /*****************************************************/
+
             double z1 = 0.4826; //meters
             double z2 = 0.3683; //meters
             double y0 = 0.69; // tower height in meters
@@ -409,6 +414,7 @@ public class TowerSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("String Potentiometer Tower", m_stringPotentiometerTower.get());
         SmartDashboard.putNumber("String Potentiometer Elbow", m_stringPotentiometerElbow.get());
+        SmartDashboard.putNumber("Potentiometer Wrist", m_PotentiometerWrist.get());
 
         SmartDashboard.putNumber("Tower Encoder", encoderTower);
         SmartDashboard.putNumber("Elbow Encoder", encoderElbow);

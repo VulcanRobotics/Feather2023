@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          158); //214.1
+          24.455 - 355.484 - 45); //214.1, 158
           //getRobotSpecificOffset(0));
           
 
@@ -59,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderPorts,
           DriveConstants.kRearLeftDriveEncoderReversed,
           DriveConstants.kRearLeftTurningEncoderReversed,
-          16.5); //-113
+          330.117 - 279.316 + 45 + 3); //-113, 16.5
           //getRobotSpecificOffset(1));
 
   private final SwerveModule m_frontRight =
@@ -69,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderPorts,
           DriveConstants.kFrontRightDriveEncoderReversed,
           DriveConstants.kFrontRightTurningEncoderReversed,
-          250.0); //18.5
+          79.013 - 0.615 - 45);//-153); //18.5, 250
           //getRobotSpecificOffset(2));
 
   private final SwerveModule m_rearRight =
@@ -79,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          30.0);//-17.5
+          298.564 - 359.297 - 45);//-17.5, 30
           //getRobotSpecificOffset(3));
 
   // The gyro sensor
@@ -193,6 +193,7 @@ public class DriveSubsystem extends SubsystemBase {
     double currentY = currentPose.getY();
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
+    /* 
     if (xSpeed + ySpeed + rot > 0.05) {
       lastX = xSpeed;
       lastY = ySpeed;
@@ -204,7 +205,7 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeed = lastY * 0.001;
       rot = lastZ * 0.001;
     }
-
+*/
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
@@ -252,7 +253,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Rotation?", rot );
     m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
     m_frontRight.setDesiredState(swerveModuleStates[0]); 
-    m_rearLeft.setDesiredState(swerveModuleStates[3]);
+    m_rearLeft.setDesiredState(swerveModuleStates[3]); //3
     m_rearRight.setDesiredState(swerveModuleStates[2]);
 
     

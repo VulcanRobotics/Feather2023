@@ -63,10 +63,10 @@ public final class Constants {
     public static final int kFrontRightTurningEncoderPorts = config.getInt("SWRV_DRV_kFrontRightTurningEncoderPorts", 36);
     public static final int kRearRightTurningEncoderPorts = config.getInt("SWRV_DRV_kRearRightTurningEncoderPorts", 38);
 
-    public static final boolean kFrontLeftTurningEncoderReversed = false;           // nailed up, no config
-    public static final boolean kRearLeftTurningEncoderReversed = false;
-    public static final boolean kFrontRightTurningEncoderReversed = false;
-    public static final boolean kRearRightTurningEncoderReversed = false;
+    public static final boolean kFrontLeftTurningEncoderReversed = !false;           // nailed up, no config
+    public static final boolean kRearLeftTurningEncoderReversed = !false;
+    public static final boolean kFrontRightTurningEncoderReversed = !false;
+    public static final boolean kRearRightTurningEncoderReversed = !false;
 
     public static final int kFrontLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kFrontLeftDriveMotorPort",21);
     public static final int kRearLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kRearLeftDriveMotorPort", 23);
@@ -75,8 +75,8 @@ public final class Constants {
 
     public static final boolean kFrontLeftDriveEncoderReversed = false;//false  // no config, nailed //true 1/14
     public static final boolean kRearLeftDriveEncoderReversed = true;
-    public static final boolean kFrontRightDriveEncoderReversed = false;
-    public static final boolean kRearRightDriveEncoderReversed = true; //true //fale 1/14
+    public static final boolean kFrontRightDriveEncoderReversed = !false;
+    public static final boolean kRearRightDriveEncoderReversed = !true; //true //fale 1/14
 
     public static final double kFrontLeftTurnEncoderOffsetDeg = 214.1; //config.getDouble("SWRV_DRV_kFrontLeftTurnEncoderOffsetDeg", 212); //180- Math.toDegrees(-0.278); //More Positive  
     public static final double kFrontRightTurnEncoderOffsetDeg = 18.5;//config.getDouble("SWRV_DRV_kFrontRightTurnEncoderOffsetDeg", 23); //360-Math.toDegrees(1.315);

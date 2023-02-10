@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import frc.robot.Constants;
@@ -51,12 +52,12 @@ public class TowerSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
 
-    private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
+    private static TalonFX mTower = new TalonFX(13);//do i need canbus name
     private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
     private static TalonSRX m_Wrist = new TalonSRX(16);
     private static XboxController m_Controller = new XboxController(0);
     private static Joystick m_Joystick = new Joystick(1);
-    private RelativeEncoder m_encoderTower;
+    //private RelativeEncoder m_encoderTower;
     private RelativeEncoder m_encoderElbow;
     private RelativeEncoder m_encoderWrist;
 
@@ -120,10 +121,10 @@ public class TowerSubsystem extends SubsystemBase {
         
         //Built in encoder values 
         m_encoderElbow = mElbow.getEncoder();
-        m_encoderTower = mTower.getEncoder();
+        //m_encoderTower = mTower.getEncoder();
 
         double encoderElbow = m_encoderElbow.getPosition();
-        double encoderTower = m_encoderTower.getPosition();
+        double encoderTower = mTower.getSelectedSensorPosition();
 
         if (m_Joystick.getRawButtonPressed(4)){
             IKMode = !IKMode;
@@ -232,13 +233,14 @@ public class TowerSubsystem extends SubsystemBase {
             }
         }*/
 
-        mTower.set(mTowerSpeed);
+        mTower.set(ControlMode.PercentOutput, mTowerSpeed);
         mElbow.set(mElbowSpeed);
 
 
 
         m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
-         
+        
+        SmartDashboard.putNumber("TOWER SELECTED SENSOR POS", encoderTower);
         SmartDashboard.putNumber("mElbow", m_stringPotentiometerElbow.get());
         SmartDashboard.putBoolean("upperProximity", isElbowOnTop);
         SmartDashboard.putBoolean("lowerProximity", isElbowOnBottom);

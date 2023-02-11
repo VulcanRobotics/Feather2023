@@ -47,7 +47,6 @@ public class TowerSubsystem extends SubsystemBase {
     DigitalInput m_ElbowDownProximity = new DigitalInput(8);
     DigitalInput m_ElbowUpProximity = new DigitalInput(7);
 
-
     private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
@@ -61,7 +60,11 @@ public class TowerSubsystem extends SubsystemBase {
     private RelativeEncoder m_encoderTower = mTower.getEncoder();
     private RelativeEncoder m_encoderElbow = mElbow.getEncoder();
     private RelativeEncoder m_encoderWrist;
-
+    private double m_EncoderTowerZero = 0;
+    private double m_EncoderTowerMax = 0;
+    private double m_EncoderElbowZero = 0;
+    private double m_EncoderElbowMax = 0;
+    
     private double m_stringTower = 0.0;
     private double m_stringElbow = 0.0;
 
@@ -122,7 +125,9 @@ public class TowerSubsystem extends SubsystemBase {
         
         boolean isElbowOnTop = !m_ElbowUpProximity.get();
         boolean isElbowOnBottom = !m_ElbowDownProximity.get();
-        
+        SmartDashboard.putBoolean("isElbowOnTop", isElbowOnTop);
+        SmartDashboard.putBoolean("isElbowOnBottom", isElbowOnBottom);      
+
         //Built in encoder values 
         // m_encoderElbow = mElbow.getEncoder();
         // m_encoderTower = mTower.getEncoder();
@@ -197,7 +202,11 @@ public class TowerSubsystem extends SubsystemBase {
             double PI = 3.1415926535;
 
             double tower_rad = PI*(m_stringPotentiometerTower.get() - 0.099595)/0.11;   // These are from new readings 2023-02-06
+            //double tower_rad = PI*(m_encoderTower.getPosition() - m_EncoderTowerZero)/towerEncoderMagicConstant;   // These are from new readings 2023-02-06
+            
             double elbow_rad = PI*(m_stringPotentiometerElbow.get() - 0.695)/0.137 + tower_rad;
+            //double elbow_rad = PI*(m_encoderElbow.getPosition() - m_EncoderElbowZero)/elbowEncoderMagicConstant;   // These are from new readings 2023-02-06
+            
             double tow_y = Math.sin(tower_rad) * z1;
             double tow_x = Math.cos(tower_rad) * z1;
             double elb_y = Math.sin(elbow_rad) * z2;
@@ -324,8 +333,10 @@ public class TowerSubsystem extends SubsystemBase {
             theta2_diff = theta2 - estTheta2;
             
             encoderTowerTarget = encoderTower - (400 * theta1_diff / PI);
+            //encoderTowerTarget = encoderTower - (encoderTower180Ticks * theta1_diff / PI);
             encoderElbowTarget = encoderElbow + (48 * theta2_diff / PI);
-            
+            //encoderTowerTarget = encoderTower - (encoderElbow180Ticks * theta2_diff / PI);
+
             SmartDashboard.putNumber("Tower angle diff", theta1_diff);
             SmartDashboard.putNumber("Elbow angle diff", theta2_diff);            
           
@@ -371,15 +382,17 @@ public class TowerSubsystem extends SubsystemBase {
         //Limit Switches to make any last changes to the speed before setting it, must go last!
         if (isArmOnTop && mTowerSpeed > 0) {
             mTowerSpeed = 0;
+            m_EncoderTowerZero = m_encoderTower.getPosition();
         } else if (isArmOnBottom && mTowerSpeed < 0) {
             mTowerSpeed = 0;
+            m_EncoderTowerMax = m_encoderTower.getPosition();
         }
         if (isElbowOnTop && mElbowSpeed > 0) { 
             mElbowSpeed = 0;
-
+            m_EncoderElbowZero = m_encoderElbow.getPosition();
         } else if (isElbowOnBottom && mElbowSpeed < 0) { 
             mElbowSpeed = 0;
-
+            m_EncoderElbowMax = m_encoderElbow.getPosition();
         }
         
         if (m_PotentiometerWrist.get() < -5 && mWristSpeed < 0){

@@ -308,10 +308,10 @@ public class SwerveModule {
     }
 
     
-
-    m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
-    //m_driveMotor.set(ControlMode.PercentOutput, driveOutput);
-    m_turningMotor.set(ControlMode.Position, (getClosestZero(desiredState)));
+    // telling the motors what to do
+    //m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
+    //m_turningMotor.set(ControlMode.Position, (getClosestZero(desiredState)));
+    
 
 
     
@@ -333,7 +333,7 @@ public class SwerveModule {
     
     
 
-  // 1 degree on CANCoder = 68.267 ticks on TalonFX
+  // 1 degree on CANCoder = 68.267 ticks on TalonFX THIS WILL CHANGE DEPENDING ON THE GEAR RATIO
 
   // we want to go to the degree based on the cancoder
 

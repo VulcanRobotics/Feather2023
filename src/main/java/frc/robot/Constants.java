@@ -88,10 +88,10 @@ public final class Constants {
     public static final double kPerseveranceRearLeftTurnEncoderOffsetDeg = -76.4; //-113; //config.getDouble("SWRV_DRV_kRearLeftTurnEncoderOffsetDeg", -111); //180-Math.toDegrees(-0.629);
     public static final double kPerseveranceRearRightTurnEncoderOffsetDeg = -305.5;//-17.5; //config.getDouble("SWRV_DRV_kRearRightTurnEncoderOffsetDeg", 5.0); // fwl - update 3/4/22 //360-Math.toDegrees(-1.459);
 
-    public static final double kHeatherFrontLeftTurnEncoderOffsetDeg = 214.1;
-    public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 18.5;
-    public static final double kHeatherRearLeftTurnEncoderOffsetDeg = -113.0;
-    public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
+    public static final double kHeatherFrontLeftTurnEncoderOffsetDeg = 158.0;
+    public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 16.5;
+    public static final double kHeatherRearLeftTurnEncoderOffsetDeg = 250.0;
+    public static final double kHeatherRearRightTurnEncoderOffsetDeg = 30.0;
     //sensor coefficent = .0015339775
 
     public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09

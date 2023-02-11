@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          158); //214.1
+          47); //158
           //getRobotSpecificOffset(0));
 
   private final SwerveModule m_rearLeft =
@@ -58,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderPorts,
           DriveConstants.kRearLeftDriveEncoderReversed,
           DriveConstants.kRearLeftTurningEncoderReversed,
-          16.5); //-113
+          39); //16.5
           //getRobotSpecificOffset(1));
 
   private final SwerveModule m_frontRight =
@@ -68,7 +68,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderPorts,
           DriveConstants.kFrontRightDriveEncoderReversed,
           DriveConstants.kFrontRightTurningEncoderReversed,
-          250.0); //18.5
+          37); //250
           //getRobotSpecificOffset(2));
 
   private final SwerveModule m_rearRight =
@@ -78,7 +78,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          30.0);//-17.5
+          230);//30.0
           //getRobotSpecificOffset(3));
 
   // The gyro sensor
@@ -203,7 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeed = lastY * 0.001;
       rot = lastZ * 0.001;
     }
-
+*/
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));

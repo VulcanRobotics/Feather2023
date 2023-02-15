@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
-      new SwerveModulePosition[] {
+      new SwerveModulePosition[] { //do we need position
         m_frontLeft.getPosition(),
         m_frontRight.getPosition(),
         m_rearLeft.getPosition(),
@@ -141,6 +141,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
         SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
         SmartDashboard.putNumber("POV", m_driveController.getPOV());
+        SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
   }
 
   /**

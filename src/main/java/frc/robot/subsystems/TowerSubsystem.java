@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
@@ -51,13 +53,18 @@ public class TowerSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
 
-
     private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
     private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
     private static TalonSRX m_Wrist = new TalonSRX(16);
+
+//    private static TalonFX mTower = new TalonFX(13);
+//    private static TalonFX mElbow = new TalonFX(12);
+    //private static CANSparkMax m_Wrist = new CANSparkMax(11, MotorType.kBrushless);
     private static XboxController m_Controller = new XboxController(0);
     private static Joystick m_Joystick = new Joystick(1);
     private static Joystick m_BoxController = new Joystick(3);
+    //private RelativeEncoder m_towerEncoder;// = mTower.getEncoder();
+    //private RelativeEncoder m_elbowEncoder;// = mElbow.getEncoder();
     private RelativeEncoder m_towerEncoder = mTower.getEncoder();
     private RelativeEncoder m_elbowEncoder = mElbow.getEncoder();
     private RelativeEncoder m_encoderWrist;
@@ -190,7 +197,7 @@ public class TowerSubsystem extends SubsystemBase {
             // Tower: 0.203
             
             // Check encoders if we've reached destination, if so, stop.
-            /* if ( Math.abs(elbowEncoder - elbowEncoderTarget) < 1.0 ) {
+            /*if ( Math.abs(elbowEncoder - elbowEncoderTarget) < 1.0 ) {
                 mElbowSpeed = 0.0;
             }
 
@@ -239,8 +246,6 @@ public class TowerSubsystem extends SubsystemBase {
             double tower_rad_horizontal = tower_rad + to_horizontal;
             double elbow_rad_horizontal = elbow_rad + to_arm + tower_rad_horizontal;
 
-
-
             double tow_y = Math.sin(tower_rad + to_horizontal) * z1;
             double tow_x = Math.cos(tower_rad + to_horizontal) * z1;
             double elb_y = Math.sin(elbow_rad + to_arm + to_horizontal) * z2;
@@ -248,31 +253,31 @@ public class TowerSubsystem extends SubsystemBase {
             estX = tow_x + elb_x + x0;
             estY = tow_y + elb_y + y0;
 
-            double estTheta1 = Math.atan2(tow_y, tow_x) ;
-            double estTheta2 = Math.atan2(elb_y, elb_x);
+            //double estTheta1 = Math.atan2(tow_y, tow_x) ;
+            //double estTheta2 = Math.atan2(elb_y, elb_x);
 
             //targetX = estX;
             //targetY = estY;
                     
             if (m_BoxController.getRawButton(7) == true)  { 
                 targetX -= 0.1;
-                mTowerSpeed = 0.05; // Very slow speeds for safety
-                mElbowSpeed = 0.05;
+                // mTowerSpeed = 0.05; // Very slow speeds for safety
+                // mElbowSpeed = 0.05;
             }
             if (m_BoxController.getRawButton(8) == true)  { 
                 targetX += 0.1;
-                mTowerSpeed = 0.05; // Very slow speeds for safety
-                mElbowSpeed = 0.05;
+                // mTowerSpeed = 0.05; // Very slow speeds for safety
+                // mElbowSpeed = 0.05;
             }
             if (m_BoxController.getRawButton(9) == true) {
                 targetY -= 0.1;
-                mTowerSpeed = 0.05;
-                mElbowSpeed = 0.05;
+                // mTowerSpeed = 0.05;
+                // mElbowSpeed = 0.05;
             }
             if (m_BoxController.getRawButton(10) == true) {
                 targetY += 0.1;
-                mTowerSpeed = 0.05;
-                mElbowSpeed = 0.05;
+                // mTowerSpeed = 0.05;
+                // mElbowSpeed = 0.05;
             }
 
             SmartDashboard.putNumber("Tower X", tow_x);
@@ -363,6 +368,7 @@ public class TowerSubsystem extends SubsystemBase {
             // targetX = x1 + x2 + x0;
             // targetY = y1 + y2 + y0;
 
+            // Target angles (in reference to X-Y horizontal-vertical)
             theta1 = Math.atan2(y1, x1); 
             theta2 = Math.atan2(y2, x2);
 
@@ -370,18 +376,19 @@ public class TowerSubsystem extends SubsystemBase {
             if (theta2 < 0) { theta2 += 2*Math.PI; }
 
             theta1 += to_horizontal;
-            theta2 += to_horizontal;
+            theta2 += to_arm - theta1; // theta1 has already been converted
 
             double theta1_diff = 0;
             double theta2_diff = 0;
 
+            // Compare angles in "natural" rotation (zero at one limit)
             theta1_diff = theta1 - tower_rad; // estTheta1;
             theta2_diff = theta2 - elbow_rad; // estTheta2;
             
             //towerEncoderTarget = towerEncoder - (400 * theta1_diff / PI);
             towerEncoderTarget = towerEncoder + (towerEncoder180Ticks * theta1_diff / PI);
             //elbowEncoderTarget = elbowEncoder + (48 * theta2_diff / PI);
-            elbowEncoderTarget = elbowEncoder - (elbowEncoder180Ticks * theta2_diff / PI);
+            elbowEncoderTarget = elbowEncoder - (elbowEncoder180Ticks * theta2_diff / PI); // Is elbow going backwards?
 
             SmartDashboard.putNumber("Tower angle diff", theta1_diff);
             SmartDashboard.putNumber("Elbow angle diff", theta2_diff);            
@@ -468,10 +475,11 @@ public class TowerSubsystem extends SubsystemBase {
 
         mTower.set(mTowerSpeed);
         mElbow.set(mElbowSpeed);
-
-
+        //mTower.set(ControlMode.PercentOutput, mTowerSpeed);
+        //mElbow.set(ControlMode.PercentOutput, mElbowSpeed);
 
         m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
+    //  m_Wrist.set(mWristSpeed);
          
         SmartDashboard.putNumber("mElbow", m_stringPotentiometerElbow.get());
         SmartDashboard.putBoolean("upperProximity", isElbowOnTop);

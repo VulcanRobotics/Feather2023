@@ -204,20 +204,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-    Inputs.periodic();
-
-
-    auton.executeAuton(Inputs.autonToRun);  
     
-    
-          // what auton do we run. 
-    LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
-
-    Inputs.saveTelem();  // put this here after any Automation and Auton
-                         // this way we can see changes made by them
-
-    // system will next call Robot Periodic
-    // then all subsystems will be serviced in order
 
   }
 

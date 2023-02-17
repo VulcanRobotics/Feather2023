@@ -29,7 +29,9 @@ import edu.wpi.first.wpilibj.Joystick;
 public class PneumaticSubsystem extends SubsystemBase {
 
   private static Joystick m_Joystick = new Joystick(1);
-  private static Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
+  private static Solenoid m_clawSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
+  private static Solenoid m_intakePullUpSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 2);
+  private static Solenoid m_intakePinchSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 3);
 
   private static Compressor m_compressor = new Compressor(1, PneumaticsModuleType.REVPH); 
 
@@ -37,6 +39,14 @@ public class PneumaticSubsystem extends SubsystemBase {
 
 
   private boolean clawClosed = false;
+
+  public static void toggleIntake(boolean toggle){
+      m_intakePullUpSolenoid.set(toggle);
+  }
+
+  public static void togglePinch(boolean toggle){
+    m_intakePinchSolenoid.set(toggle);
+}
 
   public void Pneumatics() {
         m_compressor.enableDigital();
@@ -46,9 +56,9 @@ public class PneumaticSubsystem extends SubsystemBase {
         }
 
         if (clawClosed){
-          m_solenoid.set(true);
+          m_clawSolenoid.set(true);
         } else {
-          m_solenoid.set(false);
+          m_clawSolenoid.set(false);
         }
     }
 }

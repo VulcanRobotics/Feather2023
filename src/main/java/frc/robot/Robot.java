@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
                         "Port 23" 
                     };
 
-  public Auton auton = new Auton();
+  //public Auton auton = new Auton();
   public ClimberAutomation climberAutomation = new ClimberAutomation();
   
   //public static PlayBack pbSquare = new PlayBack( "/c/1218Data/playback", "playback_square.csv" );
@@ -187,9 +187,9 @@ public class Robot extends TimedRobot {
      *  these button presses are only processed during the disabled peroidic time. 
      *  this is called in the dead time before anything is run
      **************************************************************************************/ 
-    Inputs.setAuton();                          // call to read specific buttons being pressed
-    auton.iAutonId = Inputs.autonToRun;         
-    auton.setDelayStartTime(Inputs.autonDelay);
+    //Inputs.setAuton();                          // call to read specific buttons being pressed
+    //auton.iAutonId = Inputs.autonToRun;         
+    //auton.setDelayStartTime(Inputs.autonDelay);
 
   }
 
@@ -198,13 +198,36 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+        m_autonomousCommand.schedule();
+    }
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
+
     
+    /*Inputs.periodic();   ***FLAG***
+
+    
+    auton.executeAuton(Inputs.autonToRun);  
+    
+    
+          // what auton do we run. 
+    LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
+
+    Inputs.saveTelem();  // put this here after any Automation and Auton
+                         // this way we can see changes made by them
+
+    // system will next call Robot Periodic
+    // then all subsystems will be serviced in order */
 
   }
 

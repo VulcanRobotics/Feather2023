@@ -2,163 +2,78 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.subsystems.PneumaticSubsystem;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.Inputs;
 import frc.robot.MyTimedPower;
+
+import java.time.Clock;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 public class IntakeSubsystem extends SubsystemBase {
-    //private final TalonSRX m_intakeRollMotor = new TalonSRX(15);
-    private final TalonSRX m_intakeDeployMotor = new TalonSRX(0);  
-    //private final TalonSRX m_tonyRoller = new TalonSRX(17); 
-    private final TalonSRX m_intakeProcessMotors = new TalonSRX(17);
+    private static XboxController m_driverXbox  = new XboxController(Constants.OIConstants.kDriverControllerPort);
 
-    //private final Joystick m_driverJoystick = new Joystick(OIConstants.kDriverControllerPort);
-    //private final Joystick m_operatorJoystick = new Joystick(OIConstants.kOperatorControllerPort);
-    //private final Joystick m_climbButtonBox = new Joystick(OIConstants.kClimbButtonBoxPort);
+    private CANSparkMax m_rightPincerMotor = new CANSparkMax(18, MotorType.kBrushless);
+    private CANSparkMax m_leftPincerMotor = new CANSparkMax(17, MotorType.kBrushless);
 
-    DigitalInput m_intakeLimitSwitch = new DigitalInput(4);
+    private double rightPincerSpeed = 0.0;
+    private double leftPincerSpeed = 0.0;
 
+    private double startTime = System.currentTimeMillis();
+    private double elapsedtime = 0.0;
+    private boolean startClock = true;
 
-    //private Timer intakeCurrentTimer = new Timer();
-    private MyTimedPower intakeDeployPowerManager;
-
-    private double intakeStartingPosition = 0;
-    //private double intakeTargetPosition = 0;
-
-    //private double intakeDeployedPosition = 0;
-    //private boolean foundIntakeDeployedPosition = false;
-    //private boolean foundIntakeRetractedPosition = false;
+    public void intake(){
 
 
 
-    public IntakeSubsystem() {
-        ///intakeStartingPosition = m_intakeDeployMotor.getSelectedSensorPosition();
-        //intakeTargetPosition = intakeStartingPosition + 2474;
+        if (m_driverXbox.getLeftTriggerAxis() > 0.1){
+            PneumaticSubsystem.toggleIntake(true);
+            rightPincerSpeed = -4.0;
+            leftPincerSpeed = 4.0;
+        } else{
+            PneumaticSubsystem.toggleIntake(false);
+            rightPincerSpeed = 0.0;
+            leftPincerSpeed = 0.0;
+        }
+        if (m_driverXbox.getRightTriggerAxis() > 0.1 && m_driverXbox.getLeftTriggerAxis() > 0.1){
+            PneumaticSubsystem.togglePinch(true);
+            if (startClock == true){
+                startTime = System.currentTimeMillis();
+                startClock = false;
+            }
 
-        //before Worlds QM4 had 0.75 power down and -0.4 power up
-        intakeDeployPowerManager = new MyTimedPower( 2.0, /*.3*/ 0.6, -.6 ); // time, deploy power, retract power
-        m_intakeDeployMotor.setNeutralMode(NeutralMode.Brake);
+            if (elapsedtime < 500) {
+                elapsedtime = System.currentTimeMillis() - startTime;
+                rightPincerSpeed = -4.0;
+                leftPincerSpeed = 4.0;
+            } else {
+                startClock = true;
+                rightPincerSpeed = 0.0;
+                leftPincerSpeed = 0.0;
+            }
 
-        //m_tonyRoller.setInverted(true);
-        m_intakeProcessMotors.setInverted(true);
-
-        /*m_intakeProcessMotors.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(true,     // enabled      
-                                              10,         // limit
-                                              30,         // trigger amp threshold
-                                              0.1));      // trigger threshold time seconds*/
-
-                    
-        m_intakeProcessMotors.configPeakCurrentLimit(30);
-        m_intakeProcessMotors.configPeakCurrentDuration(100);
-        m_intakeProcessMotors.configContinuousCurrentLimit(10);
-        m_intakeProcessMotors.enableCurrentLimit(true);
-
-    }
-
-
-
-
-
-
-
-
-    //up position = ~15
-    //down position = ~2489
-
-    //delta = ~2474
-
-    public void intake(ShootSubsystem m_robotShoot){
-        SmartDashboard.putBoolean("intake limit switch", m_intakeLimitSwitch.get());
-
-
-        double tonyRollerPower = 0.0;
-
-        //double intakePosition = m_intakeDeployMotor.getSelectedSensorPosition();
-
-        double intakeDeployRetractPower = 0.0;
-
-        if (Inputs.masterEndgameArm){ // managed in inputs, extraControl.getRawButton(1) == true
-            //runTonyRoller( 0.0);                                                    //make sure set these correctly
-            intakeDeployRetractPower = intakeDeployPowerManager.getPower( false ); // force a retract
-            m_intakeDeployMotor.set(ControlMode.PercentOutput,intakeDeployRetractPower);
-            //m_intakeRollMotor.set(ControlMode.PercentOutput, 0);
-            m_intakeProcessMotors.set(ControlMode.PercentOutput, 0);
-            return;                                                                 // we are in endgame, get out of these
+        } else{
+            PneumaticSubsystem.togglePinch(false);
         }
 
-        /********************************************************
-         * service the intake device, false is up, true is down
-         *********************************************************/
-        
-        if( Inputs.intakeDeploy == false &&                 // want to retract, switch says we are down. 
-                    m_intakeLimitSwitch.get() == true )     // digital switch set to Normally Closed. True is Deployed. 
-            intakeDeployPowerManager.resetTimer();          // will cause the power to start the retract process again
+        m_rightPincerMotor.set(rightPincerSpeed);
+        m_leftPincerMotor.set(leftPincerSpeed);
 
-        intakeDeployRetractPower = intakeDeployPowerManager.getPower( Inputs.intakeDeploy ); // driver will hold intake deploy button when needed
-        
-        
-        
+        SmartDashboard.putNumber("rightPincerSpeed", rightPincerSpeed);
+        SmartDashboard.putNumber("leftPincerSpeed", leftPincerSpeed);
 
-        // service the intake rollers
-        double intakeRollerPower = 0.0;
-
-        if (Inputs.intakeDeploy == true) {
-            m_intakeDeployMotor.setNeutralMode(NeutralMode.Coast);
-            intakeRollerPower = 1.0;
-        } else {                                // pulled up the intake. 
-            m_intakeDeployMotor.setNeutralMode(NeutralMode.Brake);
-            intakeRollerPower = 0.0;
-        }
-
-        if (m_intakeLimitSwitch.get() && intakeDeployRetractPower > 0.0) {
-            intakeDeployRetractPower = 0.0;
-        }
-        
-        m_intakeDeployMotor.set(ControlMode.PercentOutput,intakeDeployRetractPower);
-
-        Constants.telemetry.putNumber("INTAKE Roller Power", intakeRollerPower, false);
-        //m_intakeRollMotor.set(ControlMode.PercentOutput, intakeRollerPower);
-        //m_intakeProcessMotors.set(ControlMode.PercentOutput, intakeRollerPower);
-
-        /********************************************************
-         * service the ball movement system
-         *********************************************************/
-
-
-        if( Inputs.intakeDeploy == false && intakeDeployPowerManager.wasThisEverStarted() == false){ // never deployed 
-            tonyRollerPower = 0.0;
-        } else if(Inputs.shooterReverseGibRoller){ // driver tryin to fix shooter, back up gib and back up tony roller
-            tonyRollerPower = -Constants.ShooterConstants.kTonyRollerPower;
-        } else if (Inputs.driverTrigger || Inputs.operatorTrigger) {                                 // driver wants to fire shooter
-            tonyRollerPower = Constants.ShooterConstants.kTonyRollerPower;
-        } else if (Inputs.shooterWeakShot) {
-            tonyRollerPower = Constants.ShooterConstants.kTonyRollerPower;
-        } else if( Inputs.intakeDeploy == false && intakeDeployPowerManager.getTime() > 4.0  ){
-                tonyRollerPower = 0.0;
-        } else {
-            tonyRollerPower = 0.0;
-        }
-
-        m_intakeProcessMotors.set(ControlMode.PercentOutput, tonyRollerPower);
-
-        //runTonyRoller( tonyRollerPower);
-
-        Constants.telemetry.putNumber("INTAKE Tony Roller Power", tonyRollerPower, false);
-
-    }
-
-    public void runTonyRoller(double power){
-        //m_tonyRoller.set(ControlMode.PercentOutput, power);
     }
 }

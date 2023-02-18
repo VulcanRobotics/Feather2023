@@ -63,10 +63,10 @@ public final class Constants {
     public static final int kFrontRightTurningEncoderPorts = config.getInt("SWRV_DRV_kFrontRightTurningEncoderPorts", 36);
     public static final int kRearRightTurningEncoderPorts = config.getInt("SWRV_DRV_kRearRightTurningEncoderPorts", 38);
 
-    public static final boolean kFrontLeftTurningEncoderReversed = false;           // nailed up, no config
-    public static final boolean kRearLeftTurningEncoderReversed = false;
-    public static final boolean kFrontRightTurningEncoderReversed = false;
-    public static final boolean kRearRightTurningEncoderReversed = false;
+    public static final boolean kFrontLeftTurningEncoderReversed = !false;           // nailed up, no config
+    public static final boolean kRearLeftTurningEncoderReversed = !false;
+    public static final boolean kFrontRightTurningEncoderReversed = !false;
+    public static final boolean kRearRightTurningEncoderReversed = !false;
 
     public static final int kFrontLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kFrontLeftDriveMotorPort",21);
     public static final int kRearLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kRearLeftDriveMotorPort", 23);
@@ -75,8 +75,8 @@ public final class Constants {
 
     public static final boolean kFrontLeftDriveEncoderReversed = false;//false  // no config, nailed //true 1/14
     public static final boolean kRearLeftDriveEncoderReversed = true;
-    public static final boolean kFrontRightDriveEncoderReversed = false;
-    public static final boolean kRearRightDriveEncoderReversed = true; //true //fale 1/14
+    public static final boolean kFrontRightDriveEncoderReversed = !false;
+    public static final boolean kRearRightDriveEncoderReversed = !true; //true //fale 1/14
 
     public static final double kFrontLeftTurnEncoderOffsetDeg = 214.1; //config.getDouble("SWRV_DRV_kFrontLeftTurnEncoderOffsetDeg", 212); //180- Math.toDegrees(-0.278); //More Positive  
     public static final double kFrontRightTurnEncoderOffsetDeg = 18.5;//config.getDouble("SWRV_DRV_kFrontRightTurnEncoderOffsetDeg", 23); //360-Math.toDegrees(1.315);
@@ -88,17 +88,17 @@ public final class Constants {
     public static final double kPerseveranceRearLeftTurnEncoderOffsetDeg = -76.4; //-113; //config.getDouble("SWRV_DRV_kRearLeftTurnEncoderOffsetDeg", -111); //180-Math.toDegrees(-0.629);
     public static final double kPerseveranceRearRightTurnEncoderOffsetDeg = -305.5;//-17.5; //config.getDouble("SWRV_DRV_kRearRightTurnEncoderOffsetDeg", 5.0); // fwl - update 3/4/22 //360-Math.toDegrees(-1.459);
 
-    public static final double kHeatherFrontLeftTurnEncoderOffsetDeg = 158.0;
-    public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 16.5;
-    public static final double kHeatherRearLeftTurnEncoderOffsetDeg = 250.0;
-    public static final double kHeatherRearRightTurnEncoderOffsetDeg = 30.0;
+    public static final double kHeatherFrontLeftTurnEncoderOffsetDeg = 214.1;
+    public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 18.5;
+    public static final double kHeatherRearLeftTurnEncoderOffsetDeg = -113.0;
+    public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
     //sensor coefficent = .0015339775
 
     public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09
 
     public static final double kTrackWidth = 0.565;  // PGR 30" square perimeter  // no config as this is nailed up
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.565;                                // no config as this is nailed up
+    public static final double kWheelBase = 0.565;         //cange                       // no config as this is nailed up
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(

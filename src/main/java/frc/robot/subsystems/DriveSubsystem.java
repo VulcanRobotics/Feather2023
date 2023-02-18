@@ -48,8 +48,9 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          47); //158
+          24.455 - 355.484 - 45); //214.1, 158
           //getRobotSpecificOffset(0));
+          
 
   private final SwerveModule m_rearLeft =
       new SwerveModule(
@@ -58,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderPorts,
           DriveConstants.kRearLeftDriveEncoderReversed,
           DriveConstants.kRearLeftTurningEncoderReversed,
-          39); //16.5
+          330.117 - 279.316 + 45 + 3); //-113, 16.5
           //getRobotSpecificOffset(1));
 
   private final SwerveModule m_frontRight =
@@ -68,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderPorts,
           DriveConstants.kFrontRightDriveEncoderReversed,
           DriveConstants.kFrontRightTurningEncoderReversed,
-          37); //250
+          79.013 - 0.615 - 45);//-153); //18.5, 250
           //getRobotSpecificOffset(2));
 
   private final SwerveModule m_rearRight =
@@ -78,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          230);//30.0
+          298.564 - 359.297 - 45);//-17.5, 30
           //getRobotSpecificOffset(3));
 
   // The gyro sensor
@@ -90,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
-      new SwerveModulePosition[] {
+      new SwerveModulePosition[] { //do we need position
         m_frontLeft.getPosition(),
         m_frontRight.getPosition(),
         m_rearLeft.getPosition(),
@@ -140,6 +141,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
         SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
         SmartDashboard.putNumber("POV", m_driveController.getPOV());
+        SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
   }
 
   /**
@@ -192,6 +194,7 @@ public class DriveSubsystem extends SubsystemBase {
     double currentY = currentPose.getY();
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
+    /* 
     if (xSpeed + ySpeed + rot > 0.05) {
       lastX = xSpeed;
       lastY = ySpeed;
@@ -251,7 +254,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Rotation?", rot );
     m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
     m_frontRight.setDesiredState(swerveModuleStates[0]); 
-    m_rearLeft.setDesiredState(swerveModuleStates[3]);
+    m_rearLeft.setDesiredState(swerveModuleStates[3]); //3
     m_rearRight.setDesiredState(swerveModuleStates[2]);
 
     

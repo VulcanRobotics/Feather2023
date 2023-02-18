@@ -372,17 +372,18 @@ public class Inputs {
             shooterWallShot = true; //shortshot is initiated and manual overide is active
         }
        
-        /* 
-        if( !masterEndgameArm ){
+         
+        //if( !masterEndgameArm )
+        {
             
             recordingStatus = "";
             //runAuto  = m_extraControl.getRawButton(2);  // run the currently selected auton
 
             if(m_extraControl.getRawButton(3)){          // switch on extra control
                 recordingStatus = "record";
-            } */
+            }
 
-            /*
+            
             if( Constants.AutonTestConstants.kTestingGyroNavigate == true){ // set in config file
                 //used to test the gyro drive stuff uncomment for testing
 
@@ -407,9 +408,10 @@ public class Inputs {
                         driveDesiredHeading = Constants.AutonTestConstants.kGyroHeading3;
 
                 }
-            }*/
+            }
 
-/*        } else if( masterEndgameArm ){
+
+        } /* else if( masterEndgameArm ){
             masterClimbAutoEnabled  = m_extraControl.getRawButton(2);
 
             //turretTestAdjustLeft = m_operatorControl.getRawButton(7);
@@ -570,7 +572,7 @@ public class Inputs {
         Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, false);
 
         Constants.telemetry.putTrueBoolean("INPUT Driver Trigger", driverTrigger, false);
-        //Constants.telemetry.putTrueBoolean("INPUT Driver Field Centric", fieldCentric, true);
+        Constants.telemetry.putTrueBoolean("INPUT Driver Field Centric", fieldCentric, true);
         Constants.telemetry.putTrueBoolean("INPUT Driver Reset Gyro", driveResetGyro);
 
         Constants.telemetry.putTrueBoolean("INPUT Shooter Auto On", shooterFullAutoModeOn);

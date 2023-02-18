@@ -60,7 +60,8 @@ public class SwerveModule {
   private double turningEncoderOffsetGlobal;
   private double realTurn;
   private double degreesToTicks;
-  private double Talon360 = 31604.76;
+
+  private double Talon360 = 31597.3632; // This is the true value, based on TalonFX data sheet. Was 31604.76;
   final double Talon180 = Talon360/2;
   final double Talon90 = Talon360/4;
   final double Talon270 = Talon90*3;
@@ -75,7 +76,6 @@ public class SwerveModule {
   private int m_driveDirection = 1;
   private double talonOffsetOnBoot; 
 
-  
 
   private final XboxController m_driveController = new XboxController(0);
 

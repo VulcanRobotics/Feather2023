@@ -490,13 +490,13 @@ public class TowerSubsystem extends SubsystemBase {
             }
         }
 
-        if (isElbowOnTop && mElbowSpeed < 0) { 
+        if (isElbowOnTop && mElbowSpeed > 0) { 
             mElbowSpeed = 0;
             if (m_useElbowEncoder == false) {
                 m_useElbowEncoder = true;
                 m_elbowEncoderZero = mElbow.getSelectedSensorPosition();
             }
-        } else if (isElbowOnBottom && mElbowSpeed > 0) { 
+        } else if (isElbowOnBottom && mElbowSpeed < 0) { 
             mElbowSpeed = 0;
             if (m_useElbowEncoder == false) {
                 m_useElbowEncoder = true;

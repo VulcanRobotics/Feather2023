@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          24.455 - 355.484 - 45); //214.1, 158
+          24.455 - 355.484 - 50); //214.1, 158
           //getRobotSpecificOffset(0));
           
 
@@ -69,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderPorts,
           DriveConstants.kFrontRightDriveEncoderReversed,
           DriveConstants.kFrontRightTurningEncoderReversed,
-          79.013 - 0.615 - 45);//-153); //18.5, 250
+          79.013 - 0.615 - 135);//-153); //18.5, 250
           //getRobotSpecificOffset(2));
 
   private final SwerveModule m_rearRight =
@@ -79,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          298.564 - 359.297 - 45);//-17.5, 30
+          298.564 - 359.297 - 145);//-17.5, 30
           //getRobotSpecificOffset(3));
 
   // The gyro sensor

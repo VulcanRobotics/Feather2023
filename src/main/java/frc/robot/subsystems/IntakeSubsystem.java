@@ -25,8 +25,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 public class IntakeSubsystem extends SubsystemBase {
     private static XboxController m_driverXbox  = new XboxController(Constants.OIConstants.kDriverControllerPort);
 
-    private CANSparkMax m_rightPincerMotor = new CANSparkMax(18, MotorType.kBrushless);
-    private CANSparkMax m_leftPincerMotor = new CANSparkMax(17, MotorType.kBrushless);
+    private CANSparkMax m_rightPincerMotor = new CANSparkMax(17, MotorType.kBrushless);
+    private CANSparkMax m_leftPincerMotor = new CANSparkMax(18, MotorType.kBrushless);
 
     private double rightPincerSpeed = 0.0;
     private double leftPincerSpeed = 0.0;
@@ -41,39 +41,55 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.toggleIntake(true);
-            rightPincerSpeed = -4.0;
-            leftPincerSpeed = 4.0;
-        } else{
-            PneumaticSubsystem.toggleIntake(false);
-            rightPincerSpeed = 0.0;
-            leftPincerSpeed = 0.0;
-        }
-        if (m_driverXbox.getRightTriggerAxis() > 0.1 && m_driverXbox.getLeftTriggerAxis() > 0.1){
-            PneumaticSubsystem.togglePinch(true);
-            if (startClock == true){
-                startTime = System.currentTimeMillis();
-                startClock = false;
-            }
+            rightPincerSpeed = 0.5;
+            leftPincerSpeed = -0.5;
 
-            if (elapsedtime < 500) {
-                elapsedtime = System.currentTimeMillis() - startTime;
-                rightPincerSpeed = -4.0;
-                leftPincerSpeed = 4.0;
-            } else {
+            if (m_driverXbox.getRightTriggerAxis() > 0.1){
+                PneumaticSubsystem.togglePinch(true);
+                if (startClock == true){
+                    startTime = System.currentTimeMillis();
+                    startClock = false;
+                    elapsedtime = 0.0;
+                }
+                else {
+                    elapsedtime = System.currentTimeMillis() - startTime;
+                }
+    
+                if (elapsedtime < 500) {
+    //                elapsedtime = System.currentTimeMillis() - startTime;
+                    rightPincerSpeed = 0.5;
+                    leftPincerSpeed = -0.5;
+                } else {
+                    //startClock = true;
+                    rightPincerSpeed = 0.0;
+                    leftPincerSpeed = 0.0;
+                }
+    
+                
+            }else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
                 startClock = true;
                 rightPincerSpeed = 0.0;
                 leftPincerSpeed = 0.0;
+                PneumaticSubsystem.togglePinch(false);
+                
+            } else{
+                
             }
-
         } else{
+            PneumaticSubsystem.toggleIntake(false);
             PneumaticSubsystem.togglePinch(false);
+            rightPincerSpeed = 0.0;
+            leftPincerSpeed = 0.0;
         }
+        
 
         m_rightPincerMotor.set(rightPincerSpeed);
         m_leftPincerMotor.set(leftPincerSpeed);
 
         SmartDashboard.putNumber("rightPincerSpeed", rightPincerSpeed);
         SmartDashboard.putNumber("leftPincerSpeed", leftPincerSpeed);
+
+        SmartDashboard.putNumber("elapsedTime", elapsedtime);
 
     }
 }

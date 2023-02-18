@@ -311,8 +311,8 @@ public class Auton extends MyStateMachine {
         String sAuton = "Auton5 - Play Auton 3 ball";
         Constants.telemetry.putString("Auton ", sAuton );
 
-        if(Robot.pbAuton3ball.bMomentsLoaded==true && Robot.pbAuton3ball.isPlaybackDone()==false)
-            Robot.pbAuton3ball.playNextMoment();
+        //if(Robot.pbAuton3ball.bMomentsLoaded==true && Robot.pbAuton3ball.isPlaybackDone()==false)
+         //   Robot.pbAuton3ball.playNextMoment();
 
     }
 

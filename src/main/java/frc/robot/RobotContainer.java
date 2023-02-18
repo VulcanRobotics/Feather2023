@@ -21,9 +21,9 @@ import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LocationManager;
+//import frc.robot.subsystems.LocationManager;
 //import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.ShootSubsystem;
+//import frc.robot.subsystems.ShootSubsystem;
 import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +46,7 @@ public class RobotContainer {
 
   private final IntakeSubsystem m_robotIntake = new IntakeSubsystem();
   //private final ClimbSubsystem m_robotClimb = new ClimbSubsystem();
-  private final ShootSubsystem m_robotShoot = new ShootSubsystem();
+  //private final ShootSubsystem m_robotShoot = new ShootSubsystem();
   private final TowerSubsystem m_robotTower = new TowerSubsystem();
   private final PneumaticSubsystem m_robotPneumatics = new PneumaticSubsystem();
 
@@ -55,7 +55,7 @@ public class RobotContainer {
   //private final CombinedDriveSubsystem m_robotDrive = new CombinedDriveSubsystem(m_robotShoot);
   // The driver's controller
 
-  private final LocationManager m_locationManager = new LocationManager(m_robotShoot);
+  // private final LocationManager m_locationManager = new LocationManager(m_robotShoot);
 
   //XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   //Joystick m_driverJoystick = new Joystick(OIConstants.kDriverControllerPort);
@@ -113,12 +113,12 @@ public class RobotContainer {
                          ),
             m_robotPneumatics));
 
-    m_robotShoot.setDefaultCommand(
+/*     m_robotShoot.setDefaultCommand(
         new RunCommand(
             () -> 
                 m_robotShoot.shoot(
                     ),
-        m_robotShoot));
+        m_robotShoot)); */
 
     /*m_robotShoot.setDefaultCommand(
         new RunCommand( () -> m_robotShoot.shootFunction(), //m_robotShoot.manageTurret()

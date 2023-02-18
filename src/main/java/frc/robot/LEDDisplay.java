@@ -26,7 +26,7 @@ public final class LEDDisplay {
 
     double displayPWMValue = kLEDDefault;
 
-
+    /* 
       if( !Inputs.masterEndgameArm ){       // normal operation
 
         if(Inputs.shooterTargettingAuto)
@@ -81,7 +81,7 @@ public final class LEDDisplay {
         }    
       }
 
-    }
+    } */
 
     m_ledDisplay.set(displayPWMValue);  // write the value to the display
 

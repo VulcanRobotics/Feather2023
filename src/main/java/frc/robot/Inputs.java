@@ -4,7 +4,7 @@ package frc.robot;
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ShootSubsystem;
+//import frc.robot.subsystems.ShootSubsystem;
 
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
 
@@ -63,8 +63,8 @@ public class Inputs {
     public static boolean overrideHood = false;
     
 
-    public static boolean masterEndgameArm = false;                             // tell shooter subsystem that control are active for it
-    public static boolean masterClimbAutoEnabled = false;                             // tell shooter subsystem that control are active for it
+    //public static boolean masterEndgameArm = false;                             // tell shooter subsystem that control are active for it
+    //public static boolean masterClimbAutoEnabled = false;                             // tell shooter subsystem that control are active for it
     public static boolean m1Override = false;                             // tell shooter subsystem that control are active for it
     public static boolean masterAutoEnabled    = false;                             // tell shooter subsystem that control are active for it
 
@@ -78,7 +78,7 @@ public class Inputs {
     public static boolean shooterWeakShot = false;
     public static boolean shooterWallShot = false;
 
-
+/*
     public static double  climberLift1PowerOverride = 0.0;
     public static double  climberLift2PowerOverride = 0.0;
     public static double  climberDartPowerOverride = 0.0;
@@ -92,7 +92,7 @@ public class Inputs {
     public static boolean climberDartUp = false;
     public static boolean climberDartDown = false;
     public static boolean climberDart110Angle = false;
-    public static boolean climberDart50Angle = false;
+    public static boolean climberDart50Angle = false; */
 
     public static boolean driveResetGyro        = false;        // used in Drive subsystem to rest the gyro direction
     public static double  driveDesiredHeading   = 0.0;          // turn robot to a specific gyro heading
@@ -156,17 +156,17 @@ public class Inputs {
         /////////////////////////////////////////////////////////////////
         // Extra Box control
         /////////////////////////////////////////////////////////////////
-        masterEndgameArm        = m_extraControl.getRawButton(1);
-        masterClimbAutoEnabled  = m_extraControl.getRawButton(2);
+        //masterEndgameArm        = m_extraControl.getRawButton(1);
+        //masterClimbAutoEnabled  = m_extraControl.getRawButton(2);
         masterAutoEnabled       = /*false; */m_extraControl.getRawButton(3);
         
 
         /////////////////////////////////////////////////////////////////
         // used by auto climb to adjust from normal power
         /////////////////////////////////////////////////////////////////
-        climberLift1PowerOverride = 0.0;        
-        climberLift2PowerOverride = 0.0;
-        climberDartPowerOverride = 0.0;
+        //climberLift1PowerOverride = 0.0;        
+        //climberLift2PowerOverride = 0.0;
+        //climberDartPowerOverride = 0.0;
 
 
         /////////////////////////////////////////////////////////////////
@@ -185,9 +185,6 @@ public class Inputs {
             driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
             driverTurn *= Constants.OIConstants.kDriverTurnPCT;
             //driverTurn = getCubePower(driverTurn);
-            
-        
-
 
             double DPAD = m_driverXbox.getPOV(0); //💀
             if (DPAD == 90 || DPAD == 270) {
@@ -205,7 +202,6 @@ public class Inputs {
             } else if (m_driverXbox.getLeftTriggerAxis() == 1) {
                 drivePowerOffset -= 0.05;
             }
-
 
 
             if (masterAutoEnabled == true) {
@@ -329,18 +325,18 @@ public class Inputs {
 
         }*/
 
-
+/*
         if( masterEndgameArm ){                 // are we in the endgame? 
             robotOperatingModeEndGame = true;
             robotOperatingModeNormal = false;
         } else {
             robotOperatingModeEndGame = false;
             robotOperatingModeNormal = true;
-        }   
+        }    */
 
         Constants.telemetry.putTrueBoolean("Robot Mode End Game", robotOperatingModeEndGame, true); // saved and forced display
         Constants.telemetry.putTrueBoolean("Robot Mode Normal", robotOperatingModeNormal, true);    // saved and forced display
-        Constants.telemetry.putTrueBoolean("INPUT Master Endgame Arm", masterEndgameArm, false); // saved and forced display
+        //Constants.telemetry.putTrueBoolean("INPUT Master Endgame Arm", masterEndgameArm, false); // saved and forced display
 
 
         /////////////////////////////////////////////////////////////////
@@ -376,6 +372,7 @@ public class Inputs {
             shooterWallShot = true; //shortshot is initiated and manual overide is active
         }
        
+        /* 
         if( !masterEndgameArm ){
             
             recordingStatus = "";
@@ -383,7 +380,7 @@ public class Inputs {
 
             if(m_extraControl.getRawButton(3)){          // switch on extra control
                 recordingStatus = "record";
-            }
+            } */
 
             /*
             if( Constants.AutonTestConstants.kTestingGyroNavigate == true){ // set in config file
@@ -412,7 +409,7 @@ public class Inputs {
                 }
             }*/
 
-        } else if( masterEndgameArm ){
+/*        } else if( masterEndgameArm ){
             masterClimbAutoEnabled  = m_extraControl.getRawButton(2);
 
             //turretTestAdjustLeft = m_operatorControl.getRawButton(7);
@@ -426,7 +423,7 @@ public class Inputs {
             climberLift2Up      = m_extraControl.getRawButton(12);
             climberLift2Down    = m_extraControl.getRawButton(11);
             m1Override = m_extraControl.getRawButton(4);
-        }
+        } */
 
         hardMovementStop = m_driverXbox.getAButton() && m_driverXbox.getBButton();
         Constants.telemetry.putTrueBoolean("HARD MOVEMENT STOP", hardMovementStop, true);
@@ -464,8 +461,8 @@ public class Inputs {
         shootPhotogateSeesBall = false;
         
 
-        masterEndgameArm = false;            // extra box 1                     // extra box controls used in several places
-        masterClimbAutoEnabled = false;      // extra box 2                     // tell shooter subsystem that control are active for it
+        //masterEndgameArm = false;            // extra box 1                     // extra box controls used in several places
+        //masterClimbAutoEnabled = false;      // extra box 2                     // tell shooter subsystem that control are active for it
         masterAutoEnabled    = false;        // extra box 3                     // tell shooter subsystem that control are active for it
         m1Override  = false;        // extra box 4                     // tell shooter subsystem that control are active for it
         runAuto              = false;
@@ -505,6 +502,7 @@ public class Inputs {
         shooterWheelManual = false;
         shooterWheelAuto   = false;
 
+        /*
         climberRequestedPower = 0.0;
         climberDart110Angle = false;
         climberDart50Angle = false;
@@ -514,7 +512,7 @@ public class Inputs {
         climberLift2Up = false;
         climberLift2Down = false;
         climberDartUp = false;
-        climberDartDown = false;
+        climberDartDown = false; */
 
         hardMovementStop = false;
         hardMovementBreak = false;
@@ -558,12 +556,14 @@ public class Inputs {
 
         Constants.telemetry.saveString("*RECORD", recordingStatus );
         
+        /*
         Constants.telemetry.saveTrueBoolean("INPUT Lift1 Button Up", Inputs.climberLift1Up );
         Constants.telemetry.saveTrueBoolean("INPUT Lift1 Button Down", Inputs.climberLift1Down );
         Constants.telemetry.saveTrueBoolean("INPUT Lift2 Button Up", Inputs.climberLift2Up );
         Constants.telemetry.saveTrueBoolean("INPUT Lift2 Button Down", Inputs.climberLift2Down );
         Constants.telemetry.saveTrueBoolean("INPUT Dart Button Up", Inputs.climberDartUp );
         Constants.telemetry.saveTrueBoolean("INPUT Dart Button Down", Inputs.climberDartDown );
+        */
 
         Constants.telemetry.putNumber("INPUT Driver Power", driverPower, false);
         Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, false);

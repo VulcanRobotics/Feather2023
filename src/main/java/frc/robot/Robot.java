@@ -77,10 +77,10 @@ public class Robot extends TimedRobot {
                     };
 
   //public Auton auton = new Auton();
-  public ClimberAutomation climberAutomation = new ClimberAutomation();
+ // public ClimberAutomation climberAutomation = new ClimberAutomation();
   
   //public static PlayBack pbSquare = new PlayBack( "/c/1218Data/playback", "playback_square.csv" );
-  public static PlayBack pbAuton3ball = new PlayBack( "/c/1218Data/playback", "auton_3_ball_playback.csv" );
+  //public static PlayBack pbAuton3ball = new PlayBack( "/c/1218Data/playback", "auton_3_ball_playback.csv" );
   //public static PlayBack pbAutonTest = new PlayBack( "/c/1218Data/playback", "autontest_playback.csv" );
 
   private static boolean stickyPowerAlarmsReset = false;
@@ -253,13 +253,13 @@ public class Robot extends TimedRobot {
     Inputs.periodic();                            // read the inputs from the CBUs.
 
                                                   // only executed in end game mode
-    if( Inputs.masterEndgameArm &&                // masterEndgame switch up
+   /*  if( Inputs.masterEndgameArm &&                // masterEndgame switch up
                 Inputs.masterClimbAutoEnabled ){  // extraBox DeadMan button held down
       climberAutomation.switchSteps();            // execute the climber automation
                                                   // like Auton this manipulates Inputs to do our bidding
-    }
+    } */
       
-    LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
+    // LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
 
     if( Inputs.runAuto == true)
       //auton.executeAuton(Inputs.autonToRun);  

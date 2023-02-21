@@ -197,12 +197,15 @@ public class Inputs {
                 }
             }
 
-            if (m_driverXbox.getRightTriggerAxis() == 1){
+            if (m_driverXbox.getLeftBumperReleased()){
                 drivePowerOffset += 0.05;
-            } else if (m_driverXbox.getLeftTriggerAxis() == 1) {
+            } else if (m_driverXbox.getRightBumperReleased()) {
                 drivePowerOffset -= 0.05;
             }
 
+            if (drivePowerOffset < 0){
+                drivePowerOffset = 0;
+            }
 
             if (masterAutoEnabled == true) {
                 if (DriveSubsystem.m_gyro.getRoll() > 0) {

@@ -3,35 +3,19 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Joystick;
 
 
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.motorcontrol.PWMTalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Inputs;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 //import frc.robot.LinearServo;
-import frc.robot.RampPower;
-
-import edu.wpi.first.wpilibj.Joystick;
-
-import java.util.Map;
-
-import javax.lang.model.util.ElementScanner6;
+import frc.robot.subsystems.PneumaticSubsystem;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.hal.MatchInfoData;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -65,9 +49,9 @@ public class TowerSubsystem extends SubsystemBase {
     private static TalonFX mElbow = new TalonFX(12, "roborio");
     
     private static CANSparkMax m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    private static XboxController m_Controller = new XboxController(0);
-    private static Joystick m_Joystick = new Joystick(1);
-    private static Joystick m_BoxController = new Joystick(3);
+    //private static XboxController m_Controller = new XboxController(0);
+    //private static Joystick m_Joystick = new Joystick(1);
+    //private static Joystick m_BoxController = new Joystick(3);
     //private RelativeEncoder m_towerEncoder;// = mTower.getEncoder();
     //private RelativeEncoder m_elbowEncoder;// = mElbow.getEncoder();
     //private RelativeEncoder m_towerEncoder = mTower.getEncoder();
@@ -155,7 +139,7 @@ public class TowerSubsystem extends SubsystemBase {
         }
     }
 
-    public void tower(){
+    public void periodic(){
 
         boolean isArmOnTop = m_towerUpProximity.get();
         boolean isArmOnBottom = m_towerDownProximity.get();
@@ -173,27 +157,34 @@ public class TowerSubsystem extends SubsystemBase {
         double elbowEncoder = mElbow.getSelectedSensorPosition();
         double towerEncoder = mTower.getSelectedSensorPosition();
 
-        if (m_Joystick.getRawButtonPressed(4)){
+        if (Inputs.m_operatorControl.getTriggerPressed()){
+            PneumaticSubsystem.toggleClawState();
+        }
+
+        if (Inputs.m_operatorControl.getRawButtonPressed(4)){
             IKMode = !IKMode;
         }
         //Moving elbow
 
         //if (false) {
         if (IKMode == false){
-            if (Inputs.xAxisJoystick <= -0.1 || Inputs.xAxisJoystick >= 0.1){
-                mElbowSpeed = m_Joystick.getX() * -0.8;
-            } else {
-                mElbowSpeed = 0;
-            }
-    
+
+            mElbowSpeed = Inputs.applyDeadBand(Inputs.towerElbowPower,.1) * Constants.Tower.kElbowPCTPower;
+            //if (Inputs.xAxisJoystick <= -0.1 || Inputs.xAxisJoystick >= 0.1){
+            //    mElbowSpeed = m_Joystick.getX() * -0.8;
+            //} else {
+            //    mElbowSpeed = 0;
+            //}
+            
+            mTowerSpeed = -Inputs.applyDeadBand(Inputs.towerShoulderPower, .1) * Constants.Tower.kShoulderPCTPower ;
             //Moving shoulder
             //shaun - changed 1/25/23 - inverted y and added bottom potentiometer limit. The variable tower bottom is at the top of file.
-            if (Math.abs(Inputs.yAxisJoystick) >= 0.1) { //Checking if the arm is above stringpot limit, also applying deadband
-                mTowerSpeed = m_Joystick.getY() * -1; //Inverted y-axis controls, was -2
+            //if (Math.abs(Inputs.yAxisJoystick) >= 0.1) { //Checking if the arm is above stringpot limit, also applying deadband
+            //    mTowerSpeed = m_Joystick.getY() * -1; //Inverted y-axis controls, was -2
                 
-            } else {
-                mTowerSpeed = 0.0;
-            }
+            //} else {
+            //    mTowerSpeed = 0.0;
+            //}
         }
          else // for later, when this actually works
         {
@@ -283,22 +274,22 @@ public class TowerSubsystem extends SubsystemBase {
             //targetX = estX;
             //targetY = estY;
                     
-            if (m_BoxController.getRawButton(7) == true)  { 
+            if (Inputs.m_operatorControl.getRawButton(7) == true)  { 
                 targetX -= 0.1;
                 // mTowerSpeed = 0.05; // Very slow speeds for safety
                 // mElbowSpeed = 0.05;
             }
-            if (m_BoxController.getRawButton(8) == true)  { 
+            if (Inputs.m_operatorControl.getRawButton(8) == true)  { 
                 targetX += 0.1;
                 // mTowerSpeed = 0.05; // Very slow speeds for safety
                 // mElbowSpeed = 0.05;
             }
-            if (m_BoxController.getRawButton(9) == true) {
+            if (Inputs.m_operatorControl.getRawButton(9) == true) {
                 targetY -= 0.1;
                 // mTowerSpeed = 0.05;
                 // mElbowSpeed = 0.05;
             }
-            if (m_BoxController.getRawButton(10) == true) {
+            if (Inputs.m_operatorControl.getRawButton(10) == true) {
                 targetY += 0.1;
                 // mTowerSpeed = 0.05;
                 // mElbowSpeed = 0.05;
@@ -439,13 +430,21 @@ public class TowerSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("z2nn", z2nn); 
         }
 
+
         //For wrist movement, rotate joystick
-        if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){
-            mWristSpeed = 0.2;
-            mWristSpeed = mWristSpeed*Inputs.zAxisJoystick;
-        } else {
-            mWristSpeed = 0;
-        } 
+        mWristSpeed = 0.0;
+        if( Math.abs(Inputs.towerWristSpeed) > .4){
+            if( Inputs.towerWristSpeed > 0.0)
+                mWristSpeed = Constants.Tower.kWristMaxPower;
+            else if( Inputs.towerWristSpeed < 0.0)
+                mWristSpeed = -Constants.Tower.kWristMaxPower;
+        }
+
+        //if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){
+        //    mWristSpeed = 0.2;
+        //} else {
+        //    mWristSpeed = 0.0;
+        //} 
 
         /*if (m_Joystick.getRawButtonPressed(2)) {
             wristFlipped = !wristFlipped;
@@ -466,11 +465,11 @@ public class TowerSubsystem extends SubsystemBase {
         }*/
 
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
-        if (m_Joystick.getRawButton(3)) {
+        if (Inputs.m_operatorControl.getRawButton(3)) {
             //goToPosition(-55, -12);
             tuckArm();
         }
-        if (m_Joystick.getRawButton(5)) {
+        if (Inputs.m_operatorControl.getRawButton(5)) {
             goToPosition(0.185, 0.519);
         }
         
@@ -480,7 +479,7 @@ public class TowerSubsystem extends SubsystemBase {
             mTowerSpeed = 0;
             if (m_useTowerEncoder == false) {
                 m_useTowerEncoder = true;
-                m_towerEncoderZero = mTower.getSelectedSensorPosition();;
+                m_towerEncoderZero = mTower.getSelectedSensorPosition();
             }
         } else if (isArmOnBottom && mTowerSpeed < 0) {
             mTowerSpeed = 0;
@@ -538,9 +537,6 @@ public class TowerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("mWristSpeed", mWristSpeed);
        
         SmartDashboard.putNumber("initial wrist encoder", initialWristEncoder);
-
-        SmartDashboard.putNumber("x-axis controller", Inputs.xAxisJoystick); //Between -1 and 1
-        SmartDashboard.putNumber("z-axis controller", Inputs.zAxisJoystick); 
 
         SmartDashboard.putNumber("String Potentiometer Tower", m_stringPotentiometerTower.get());
         SmartDashboard.putNumber("String Potentiometer Elbow", m_stringPotentiometerElbow.get());

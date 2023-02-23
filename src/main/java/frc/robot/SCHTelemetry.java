@@ -77,7 +77,7 @@ public class SCHTelemetry {
     private String s_FieldDelimiter = ",";  // was "\t";
     private Boolean supressSmartDashbaordDisplay = true;
 
-    private Boolean sawRecordMarker = false;
+    //private Boolean sawRecordMarker = false;
 
 
 	/** Class Contructor initialize you variables here. 
@@ -167,7 +167,7 @@ public class SCHTelemetry {
         i_TotalRows = 0;
         listRows = new String[ ki_MaxRows + 2 ];
         s_TelemType = "new";
-        sawRecordMarker = false;
+        //sawRecordMarker = false;
     }
 
     /**
@@ -333,10 +333,10 @@ public class SCHTelemetry {
         dictColumnData.put(columnName,"\"" + value + "\"");								// no formatting needed
         saveColumnName(columnName);
 
-        if( columnName.charAt(0) == '*'){
-            if( columnName.startsWith("*REC") )
-                sawRecordMarker = true;
-        }
+        //if( columnName.charAt(0) == '*'){
+        //    if( columnName.startsWith("*REC") )
+        //        sawRecordMarker = true;
+        //}
     }
 
     public void putString( String columnName, String value, boolean forceDisplay){
@@ -600,8 +600,8 @@ public class SCHTelemetry {
 
   	    s_FullFileName += "_" + this.s_TelemType;
        
-        if( sawRecordMarker )                       // telem came in with a recording marker
-            s_FullFileName += "_recording"; 	
+        //if( sawRecordMarker )                       // telem came in with a recording marker
+        //    s_FullFileName += "_recording"; 	
 
         s_FullFileName += s_FileFormat; 	
 

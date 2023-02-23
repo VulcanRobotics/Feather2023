@@ -19,6 +19,7 @@ public class Auton extends MyStateMachine {
     // We are passing references for these classes.
 
     String status = "";
+    String stepDesc = "";
 
 	private Timer timShootingLimit = new Timer();	// used to decide if we should keep shooting
 	
@@ -27,38 +28,40 @@ public class Auton extends MyStateMachine {
     public  Auton() {               // constructor
         reset();
         timStepTimer.start();       // required as MyStateMachine cannot do this.
-        timShootingLimit.start();   // locally declared one
 
         // create a Timed Ramp Power for the drive. Will redefine later as needed 
         trpDrivePower = new TimedRampPower( 2.5,   // totaltime
                                             .70,    // max power
                                             .10,    // min power
-                                            .10,    // ramp up percent
+                                            .20,    // ramp up percent
                                             .10     // ramp down percent
                                          );
     }
 
     public void auton1() { // This overrides the auton2 method defined in the state machine class.
-        DriveSubsystem.m_gyro.zeroYaw();
-        String sAuton = "Auton1 - 2 Ball Right ";
-        Constants.telemetry.putString("Auton ", sAuton );
+        //DriveSubsystem.m_gyro.zeroYaw();
+        //String sAuton = "Auton1 -  ";
+        //Constants.telemetry.putString("Auton ", sAuton );
 
-        Constants.telemetry.saveDouble("Auton Step Timer", timStepTimer.get() );  // capture timer on ever step
+        //Constants.telemetry.saveDouble("Auton Step Timer", timStepTimer.get() );  // capture timer on ever step
+
+        Constants.telemetry.putNumber("Auton  ID", 1, false);
+        Constants.telemetry.putNumber("Auton  Step", iStep, false);
+        Constants.telemetry.putString("Auton  Desc", "Plan to score 1 and ramp.", false);
 
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
 
-        Inputs.fieldCentric = false;        // do this in call cases
+        Inputs.fieldCentric = true;        // do this in call cases
 
         switch (iStep) {                            // switch statement.
             // it will look at iStep and find the case where it should run code.
             // if iStep not found, it will go to default section at bottom.
 
             case 0:                                    // case 0 is where we can set up a bunch of stuff for the state machine.    
-                /*if (bStepFirstPass) {
+                if (bStepFirstPass) {
+                    Constants.telemetry.saveString("Auton Step Desc", "Delay Test");
                 }
-
-                iStep++;*/
 
                 if (Inputs.autonDelay == 0) {
                     iStep += 1;
@@ -68,117 +71,50 @@ public class Auton extends MyStateMachine {
 
                 break;
 
+            
             case 1: // drive back to wall with intake down
-                if (bStepFirstPass) {
-
-                    Constants.telemetry.saveString("Auton Step Desc", status );           
-                    trpDrivePower.reconfigure(Constants.Auton2BallRightConstants.kInitial_Time, 
-                                              -Constants.Auton2BallRightConstants.kInitial_Power, 
-                                              -.1,  // min drive power
-                                              .10,  // ramp up percent, .20 as we have to reset gyro here
-                                              .20);
-
-                }
-                status = "Step " + String.valueOf(iStep) + ": ";
-                status += "Started, rolling back to ball, intake delpoyed.";
+            if (bStepFirstPass) {
+                Constants.telemetry.saveString("Auton Step Desc", "Attack Ramp");
+            }
 
                 //Inputs.driveDesiredHeading = 0.0;       
                 //Inputs.driveGyroCorrected = true;         // force robot to turn an maintain this heading
 
-                Inputs.intakeDeploy = true;                 // drop the intake
-                Inputs.shooterFullAutoModeOn = true;       // turn on targetting
+                Inputs.driverPower = .8;
 
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
-                
-                if( trpDrivePower.isDone())             // we are far enought
-                    iStep = 3; //++;
+                Constants.telemetry.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
 
-                Constants.telemetry.saveString("Auton Step Desc", status );           
+                if( DriveSubsystem.m_gyro.getRoll() < -10 )
+                    iStep++; //++;
+
                 break;
 
             case 2: // drive back forward to get a good shot.
                 if (bStepFirstPass) {
-                    status = "Step " + String.valueOf(iStep) + ": First Pass...";
-                    Constants.telemetry.saveString("Auton Step Desc", status );           
-                    trpDrivePower.reconfigure(Constants.Auton2BallRightConstants.kToShoot_Time, 
-                                            Constants.Auton2BallRightConstants.kToShoot_Power, 
-                                             .1,  // min drive power
-                                            .10,  // ramp up percent, .20 as we have to reset gyro here
-                                            .20);
-
-                    break;
+                    Constants.telemetry.saveString("Auton Step Desc", "Balance On Ramp");
                 }
-                status = "Step " + String.valueOf(iStep) + ": ";
-                status += "Started, rolling back to start Pos, intake retracted.";
 
-                //Inputs.driveDesiredHeading = Constants.Auton2BallConstants.kToShoot_Heading;       
-                //Inputs.driveGyroCorrected = true;       // force robot to turn an maintain this heading
+                Inputs.driverPower = .2;       
+                Constants.telemetry.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
 
-                Inputs.intakeDeploy = false;            //pick up the intake
-                Inputs.shooterFullAutoModeOn = true;    // turn on targetting
+                if( DriveSubsystem.m_gyro.getRoll() >= -5 )
+                    iStep++; //++;
 
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
-                
-                if( trpDrivePower.isDone())             // the 
-                    iStep++;
-
-                Constants.telemetry.saveString("Auton Step Desc", status );           
-                break;
-
-
-            case 3: // Stop and shoot
+            case 3: // drive back forward to get a good shot.
                 if (bStepFirstPass) {
-                    timShootingLimit.reset();						// reset this timer
+                    Constants.telemetry.saveString("Auton Step Desc", "Balance On Ramp");
                 }
 
-                status = "Step " + String.valueOf(iStep) + ": ";
-                status += "Shooting";
+                Inputs.driverPower = 0;
 
-            //Inputs.driveDesiredHeading = 0.0;       
-                //Inputs.driveGyroCorrected = false;              // tuen this off in case we are thrashing
-
-                Inputs.intakeDeploy = false;                    // drop the intake
-                Inputs.shooterFullAutoModeOn = true;            // turn on targetting
-
-                Inputs.operatorTrigger = true;
-
-                
-                Constants.telemetry.saveString("Auton Step Desc", status );           
-                break;
-            
-            case 4: // drive back out of tarmac area
-                if (bStepFirstPass) {
-
-                    Constants.telemetry.saveString("Auton Step Desc", status );           
-                    trpDrivePower.reconfigure(2.5, 
-                                              Constants.Auton2BallRightConstants.kBackOut_Power, 
-                                              -.1,  // min drive power
-                                              .10,  // ramp up percent, .20 as we have to reset gyro here
-                                              .20);
-
+                if (timStepTimer.get() < 0.25){
+                    Inputs.driverTurn = 0.1;
                 }
-                status = "Step " + String.valueOf(iStep) + ": ";
-                status += "Started, rolling back to ball, intake delpoyed.";
-
-                Inputs.driveDesiredHeading = Constants.Auton2BallRightConstants.kBackOut_Heading;       
-                Inputs.driveGyroCorrected = true;       // force robot to turn an maintain this heading
-
-                Inputs.intakeDeploy = false;             // drop the intake
-                Inputs.shooterFullAutoModeOff = true;    // turn on targetting
-
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
-                
-                if( trpDrivePower.isDone())             // the 
-                    iStep++;
-
-                Constants.telemetry.saveString("Auton Step Desc", status );           
-                break;
-
-
             default:
                 bIsDone = true;
-                Inputs.shooterFullAutoModeOff = true;            // turn on targetting
-                Constants.telemetry.saveString("Auton Step Desc", "Done, shooter off!" );           
+                Inputs.driverPower = 0.0;            // turn on targetting
+                Constants.telemetry.saveString("Auton Step Desc", "Done" );           
+                Constants.telemetry.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
 
 
         }  // end of switch statement                                                        
@@ -215,8 +151,8 @@ public class Auton extends MyStateMachine {
                 }
 
                 break;
-
-            case 1: // drive back to a certain spot for 4.0 seconds
+            
+            /* case 1: // drive back to a certain spot for 4.0 seconds
                 if (bStepFirstPass) {
 
                     Constants.telemetry.saveString("Auton Step Desc", status );           
@@ -297,10 +233,10 @@ public class Auton extends MyStateMachine {
 
                 Constants.telemetry.saveString("Auton Step Desc", status );           
                 break;
-            
+            */
             default:
                 bIsDone = true;
-                Inputs.shooterFullAutoModeOff = true;            // turn on targetting
+                //Inputs.shooterFullAutoModeOff = true;            // turn on targetting
                 Constants.telemetry.saveString("Auton Step Desc", "Done, shooter off!" );           
 
 
@@ -335,7 +271,7 @@ public class Auton extends MyStateMachine {
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
 
-        Inputs.fieldCentric = false;        // do this in call cases
+        //Inputs.fieldCentric = false;        // do this in call cases
 
         switch (iStep) {                            // switch statement.
             // it will look at iStep and find the case where it should run code.
@@ -348,6 +284,7 @@ public class Auton extends MyStateMachine {
                 iStep++;
                 break;
 
+            /* 
             case 1: // drive back to wall where ball is
                 if (bStepFirstPass) {
                     trpDrivePower.reconfigure(Constants.Auton3BallRightConstants.kInitial_Time, 
@@ -417,13 +354,12 @@ public class Auton extends MyStateMachine {
 
                 /*if( IntakeSubsystem.ball1IsReady() ||          // if there is a ball in the shooter
                       IntakeSubsystem.ball2IsReady() )
-					  timShootingLimit.reset();	*/					// reset this timer
+					  timShootingLimit.reset();						// reset this timer
 
                                                                    
                 Constants.telemetry.saveString("Auton Step Desc", status );           
 
                 break;
-
 
             case 4:                                         // drive to a the terminal at 20 degrees
                 if (bStepFirstPass) {
@@ -466,10 +402,11 @@ public class Auton extends MyStateMachine {
 
                 Constants.telemetry.saveString("Auton Step Desc", status );           
                 break;
-                
+            */
+
             default: 
                 Inputs.driverPower = 0.0;
-                Inputs.shooterFullAutoModeOff = true;    // turn on targetting
+                //Inputs.shooterFullAutoModeOff = true;    // turn on targetting
 
             }   // end of switch/case statement
         
@@ -485,7 +422,7 @@ public class Auton extends MyStateMachine {
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
 
-        Inputs.fieldCentric = false;        // do this in call cases
+        //Inputs.fieldCentric = false;        // do this in call cases
 
         switch (iStep) {                            // switch statement.
             // it will look at iStep and find the case where it should run code.
@@ -498,7 +435,7 @@ public class Auton extends MyStateMachine {
                 iStep++;
                 break;
 
-            case 1: // drive back to a certain spot for 4.0 seconds
+         /*/   case 1: // drive back to a certain spot for 4.0 seconds
                 if (bStepFirstPass) {
                     trpDrivePower.reconfigure(Constants.Auton4BallConstants.kInitial_Time, 
                                               Constants.Auton4BallConstants.kInitial_Power, 
@@ -548,7 +485,7 @@ public class Auton extends MyStateMachine {
 
                 break;
 
-            /* case 3:   // back up after the shot
+             case 3:   // back up after the shot
                 if (bStepFirstPass) {
 
                     trpDrivePower.reconfigure(Constants.Auton4BallConstants.kAfterShot1_Time, 
@@ -572,7 +509,7 @@ public class Auton extends MyStateMachine {
 
                 Constants.telemetry.saveString("Auton Step Desc", status );           
                 break; 
-            */ 
+             
 
             case 3:   // Traverse to Terminal and third ball                                     
                 if (bStepFirstPass) {
@@ -705,6 +642,8 @@ public class Auton extends MyStateMachine {
                 // no need to move to a new step as shootingn is the last thing we do in auton
                 break; 
                 
+            */
+
             default: 
                 status = "Step " + String.valueOf(iStep) + ": ";
                 status += "Done";

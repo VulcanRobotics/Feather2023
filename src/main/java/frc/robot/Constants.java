@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -92,7 +93,6 @@ public final class Constants {
     public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 18.5;
     public static final double kHeatherRearLeftTurnEncoderOffsetDeg = -113.0;
     public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
-    //sensor coefficent = .0015339775
 
     public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09
 
@@ -190,6 +190,18 @@ public final class Constants {
     
   }
 
+  public static final class Tower{
+
+    public static final double kIntakePinchPower = config.getDouble("TOWER_Intake_Pinch_Power", .5);
+    public static final double kWristMaxPower    = config.getDouble("TOWER_Wrist_Max_Power", .2);
+    public static final double kElbowPCTPower    = config.getDouble("TOWER_Elbow_PCT_Power", 1.0);
+    public static final double kShoulderPCTPower = config.getDouble("TOWER_Shoulder_PCT_Power", .85);
+    public static final double kIntakeDeployMills = config.getDouble("INTAKE_Deploy_Mills", 1000);
+
+
+  }
+
+
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = config.getDouble("AUTON_kMaxSpeedMetersPerSecond", 3.0);
     public static final double kMaxAccelerationMetersPerSecondSquared = config.getDouble("AUTON_kMaxAccelerationMetersPerSecondSquared", 3);
@@ -237,6 +249,21 @@ public final class Constants {
         new TrapezoidProfile.Constraints(
             kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
+
+  public static class MatchSetttings{
+    public static int      kAllianceColor         = 0;       // these will be set on robot class in init
+    public static String   kAllianceColorName     = "unk";  // these will be set on robot class in init
+    public static int      kBlueAlliance          = 1;  // these will be set on robot class in init
+    public static int      kRedAlliance          = 2;  // these will be set on robot class in init
+
+  }
+
+  public static final class AutonStartSettings {  // these are specific to 2003 code
+    public static int     kStartPosition_123     = config.getInt("AUTON_START_StartPosition", 2);
+    public static int     kDropPosition_123      = config.getInt("AUTON_START_DropPosition", 2);
+    public static boolean kScoreOnRamp           = config.getBoolean("AUTON_START_Score_On_Ramp", true);
+  }
+
 
   public static final class AutonTestConstants {
     public static boolean kTestingGyroNavigate  = config.getBoolean("kTestingGyroNavigate",false); 
@@ -323,7 +350,7 @@ public final class Constants {
     public static double kAtTerm_RampDownProp   = config.getDouble("AUTON_4BALL_kAtTerm_RampDownProp", .40);
 
     public static double kAtTerm_IntakeUpTime   = config.getDouble("AUTON_4BALL_kAtTerm_IntakeUpTime", 1.0);
-    public static double kAtTerm_IntakeDownTime = config.getDouble("AUTON_4BALL_kAtTerm_DownTime", .30);
+    public static double kAtTerm_IntakeDownTime = config.getDouble("AUTON_4BALL_kAtTerm_DownTime", 500);
 
     //public static double kFromTerm_Heading      = config.getDouble("AUTON_4BALL_kFromTerm_Heading", -40.0);
     //public static double kFromTerm_Power        = config.getDouble("AUTON_4BALL_kFromTerm_Power", 0.20);

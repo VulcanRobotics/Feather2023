@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants;
+import frc.robot.Inputs;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -26,20 +27,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveSubsystem extends SubsystemBase {
 
+  
+  /******************************************************** 
+    Compiler complaining this is dead code. 
   private double getRobotSpecificOffset(int wheel){
     double[] heatherOffsets = new double[]
-    {DriveConstants.kHeatherFrontLeftTurnEncoderOffsetDeg, DriveConstants.kHeatherRearLeftTurnEncoderOffsetDeg,
-     DriveConstants.kHeatherFrontRightTurnEncoderOffsetDeg, DriveConstants.kHeatherRearRightTurnEncoderOffsetDeg};
+    { 
+      DriveConstants.kHeatherFrontLeftTurnEncoderOffsetDeg, DriveConstants.kHeatherRearLeftTurnEncoderOffsetDeg,
+      DriveConstants.kHeatherFrontRightTurnEncoderOffsetDeg, DriveConstants.kHeatherRearRightTurnEncoderOffsetDeg
+    };
+    
     double[] perseveranceOffsets = new double[]
-    {DriveConstants.kPerseveranceFrontLeftTurnEncoderOffsetDeg, DriveConstants.kPerseveranceRearLeftTurnEncoderOffsetDeg,
-     DriveConstants.kPerseveranceFrontRightTurnEncoderOffsetDeg, DriveConstants.kPerseveranceRearRightTurnEncoderOffsetDeg};
-    if (Constants.whichRobot == "Heather") {
+    {
+      DriveConstants.kPerseveranceFrontLeftTurnEncoderOffsetDeg, DriveConstants.kPerseveranceRearLeftTurnEncoderOffsetDeg,
+      DriveConstants.kPerseveranceFrontRightTurnEncoderOffsetDeg, DriveConstants.kPerseveranceRearRightTurnEncoderOffsetDeg
+    };
+    
+    if (Constants.whichRobot == "Heather") 
       return heatherOffsets[wheel];
-    }
-    else {
+    else 
       return perseveranceOffsets[wheel];
-    }
+
   }
+  ****************************************************/
+
   // Robot swerve modules
   private final SwerveModule m_frontLeft =
       new SwerveModule(
@@ -116,12 +127,6 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    /* m_odometry.update(
-        m_gyro.getRotation2d(),
-        m_frontLeft.getState(),
-        m_rearLeft.getState(),
-        m_frontRight.getState(),
-        m_rearRight.getState()); */
 
       m_odometry.update(
         m_gyro.getRotation2d(),
@@ -132,16 +137,17 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
-/*        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_rearLeft.getState(),
-        m_rearRight.getState() ); */
+      drive(Inputs.driverPower,
+          Inputs.driverStrafe,
+          Inputs.driverTurn,
+          Inputs.fieldCentric);
+          
         
-        SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
-        SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
-        SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
-        SmartDashboard.putNumber("POV", m_driveController.getPOV());
-        SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+      SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
+      SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
+      SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
+      SmartDashboard.putNumber("POV", m_driveController.getPOV());
+      SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
   }
 
   /**

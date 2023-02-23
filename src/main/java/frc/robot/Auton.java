@@ -72,7 +72,7 @@ public class Auton extends MyStateMachine {
                 break;
 
             
-            case 1: // drive back to wall with intake down
+            case 1: // drive to the see saw and keep going until gyro < -10
             if (bStepFirstPass) {
                 Constants.telemetry.saveString("Auton Step Desc", "Attack Ramp");
             }
@@ -89,7 +89,7 @@ public class Auton extends MyStateMachine {
 
                 break;
 
-            case 2: // drive back forward to get a good shot.
+            case 2: // Slow down and keep going until robot is close to balanced
                 if (bStepFirstPass) {
                     Constants.telemetry.saveString("Auton Step Desc", "Balance On Ramp");
                 }
@@ -100,7 +100,7 @@ public class Auton extends MyStateMachine {
                 if( DriveSubsystem.m_gyro.getRoll() >= -5 )
                     iStep++; //++;
 
-            case 3: // drive back forward to get a good shot.
+            case 3: // Stops and locks itself to prevent gravity
                 if (bStepFirstPass) {
                     Constants.telemetry.saveString("Auton Step Desc", "Balance On Ramp");
                 }

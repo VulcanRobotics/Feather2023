@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import java.util.Map;
 
 import javax.lang.model.util.ElementScanner6;
+import javax.swing.text.StyledEditorKit.BoldAction;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -95,6 +96,7 @@ public class TowerSubsystem extends SubsystemBase {
 
     private boolean IKMode = false;
     private boolean wristFlipped = true;
+    private boolean wristLock = true;
 
     private double estX = 0.0;
     private double estY = 0.0;
@@ -108,38 +110,84 @@ public class TowerSubsystem extends SubsystemBase {
     private double initialWristEncoder = m_encoderWrist.getPosition();
     private final double wristEncoder180 = 47.642;
      
-    private void goToPosition(double Tvalue, double Evalue) {
+    private void goToPosition(double Tvalue, double Evalue, boolean towerPriority) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
-        if (m_stringTower >= Tvalue + .01) {
-            mTowerSpeed = 0.9;
-        } else if (m_stringTower <= Tvalue - .01) {
-            mTowerSpeed = -0.9;
-        } else if (m_stringTower >= Tvalue + 0.001) {
-            mTowerSpeed = 0.3;
-        } else if (m_stringTower <= Tvalue - 0.001) { 
-            mTowerSpeed = -0.3;
-        }
-        if (m_stringElbow >= Evalue + .01) {
-            mElbowSpeed = -0.3;
-        } else if (m_stringElbow <= Evalue - .01) {
-            mElbowSpeed = 0.3;
-        } else if (m_stringElbow >= Evalue + 0.001) {
-            mElbowSpeed = -0.1;
-        } else if (m_stringElbow <= Evalue - 0.001) {
-            mElbowSpeed = 0.1;
+
+        if (towerPriority){
+            if (m_stringTower < Tvalue + 0.001 && m_stringTower > Tvalue - 0.001){
+                if (m_stringElbow >= Evalue + .01) {
+                    mElbowSpeed = -0.3;
+                } else if (m_stringElbow <= Evalue - .01) {
+                    mElbowSpeed = 0.3;
+                } else if (m_stringElbow >= Evalue + 0.001) {
+                    mElbowSpeed = -0.1;
+                } else if (m_stringElbow <= Evalue - 0.001) {
+                    mElbowSpeed = 0.1;
+                }
+            } else{
+                if (m_stringTower >= Tvalue + .01) {
+                    mTowerSpeed = 0.9;
+                } else if (m_stringTower <= Tvalue - .01) {
+                    mTowerSpeed = -0.9;
+                } else if (m_stringTower >= Tvalue + 0.001) {
+                    mTowerSpeed = 0.3;
+                } else if (m_stringTower <= Tvalue - 0.001) { 
+                    mTowerSpeed = -0.3;
+                }
+            }
+        } else{
+            if (m_stringTower >= Tvalue + .01) {
+                mTowerSpeed = 0.9;
+            } else if (m_stringTower <= Tvalue - .01) {
+                mTowerSpeed = -0.9;
+            } else if (m_stringTower >= Tvalue + 0.001) {
+                mTowerSpeed = 0.3;
+            } else if (m_stringTower <= Tvalue - 0.001) { 
+                mTowerSpeed = -0.3;
+            }
+    
+            if (m_stringElbow >= Evalue + .01) {
+                mElbowSpeed = -0.3;
+            } else if (m_stringElbow <= Evalue - .01) {
+                mElbowSpeed = 0.3;
+            } else if (m_stringElbow >= Evalue + 0.001) {
+                mElbowSpeed = -0.1;
+            } else if (m_stringElbow <= Evalue - 0.001) {
+                mElbowSpeed = 0.1;
+            }
         }
 
     }
 
+    private void flipWrist() { //DOES NOT WORK
+        if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) {
+            m_Wrist.set(0.1);
+        } else {
+            m_Wrist.set(-0.1);
+        }
+    }
+
+    private void highPlace(){
+        goToPosition(.511, .796, true);
+    }
+    private void midPlace(){
+        goToPosition(.336, .792 , false);
+    }
+    private void humanPlayerGrab(){
+        goToPosition(.390, .713, false);
+    }
+
+    private void grabFromIntake() {
+        goToPosition(0, 0, true);
+    }
+
     private void tuckArm(){
-        if (m_towerDownProximity.get() == true){
+        if (!m_towerUpProximity.get() == true){
             mTowerSpeed = 0.75;
         }
-        if (m_stringPotentiometerElbow.get() > 0.58){
-            mElbowSpeed = -0.15;
-        } else if(m_stringPotentiometerElbow.get() < 0.565){
-            mElbowSpeed = 0.15;
+        if (m_ElbowUpProximity.get()){
+            mElbowSpeed = 0.5;
         }
     }
 
@@ -173,14 +221,14 @@ public class TowerSubsystem extends SubsystemBase {
         double elbowEncoder = mElbow.getSelectedSensorPosition();
         double towerEncoder = mTower.getSelectedSensorPosition();
 
-        if (m_Joystick.getRawButtonPressed(4)){
+        if (false){ //used to be button 4, but it clashed with other functions.
             IKMode = !IKMode;
         }
         //Moving elbow
 
         //if (false) {
         if (IKMode == false){
-            if (Inputs.xAxisJoystick <= -0.1 || Inputs.xAxisJoystick >= 0.1){
+            if (Inputs.xAxisJoystick <= -0.2 || Inputs.xAxisJoystick >= 0.2){
                 mElbowSpeed = m_Joystick.getX() * -0.8;
             } else {
                 mElbowSpeed = 0;
@@ -451,11 +499,14 @@ public class TowerSubsystem extends SubsystemBase {
             wristFlipped = !wristFlipped;
         }*/
         
-        if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
-            mWristSpeed = 0;
-        }else if (m_encoderWrist.getPosition() > initialWristEncoder && mWristSpeed > 0){
-            mWristSpeed = 0;
+        if (wristLock == true){
+            if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
+                mWristSpeed = 0;
+            }else if (m_encoderWrist.getPosition() > initialWristEncoder && mWristSpeed > 0){
+                mWristSpeed = 0;
+            }
         }
+        
 
         /*if (Math.abs(Inputs.zAxisJoystick) < 0.4) {
             if(wristFlipped){
@@ -466,12 +517,30 @@ public class TowerSubsystem extends SubsystemBase {
         }*/
 
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
-        if (m_Joystick.getRawButton(3)) {
+        if (m_Joystick.getRawButton(2)) {
             //goToPosition(-55, -12);
             tuckArm();
         }
-        if (m_Joystick.getRawButton(5)) {
-            goToPosition(0.185, 0.519);
+
+        if (m_Joystick.getRawButton(3)) {
+            humanPlayerGrab();
+        }
+
+        if (m_Joystick.getRawButton(4)) {
+            midPlace();
+        }
+
+        if (m_Joystick.getRawButton(6)) {
+            highPlace();
+        }
+
+        if (m_Joystick.getRawButton(8)) {
+            wristLock = false;
+        }
+
+        if (m_Joystick.getRawButtonReleased(8)){
+            wristLock = true;
+            initialWristEncoder = m_wristEncoder;
         }
         
 

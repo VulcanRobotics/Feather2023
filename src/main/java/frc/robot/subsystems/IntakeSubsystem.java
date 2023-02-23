@@ -68,12 +68,21 @@ public class IntakeSubsystem extends SubsystemBase {
                 
             }else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
                 startClock = true;
+                PneumaticSubsystem.togglePinch(false);
+            }
+
+            if (m_driverXbox.getLeftBumper()){
+                rightPincerSpeed = -0.5;
+                leftPincerSpeed = 0.5;
+            }
+            if (m_driverXbox.getRightBumper()){
+                rightPincerSpeed = 0.5;
+                leftPincerSpeed = -0.5;
+            }
+
+            if (!m_driverXbox.getLeftBumper() && !m_driverXbox.getRightBumper() && m_driverXbox.getRightTriggerAxis() < 0.1){
                 rightPincerSpeed = 0.0;
                 leftPincerSpeed = 0.0;
-                PneumaticSubsystem.togglePinch(false);
-                
-            } else{
-                
             }
         } else{
             PneumaticSubsystem.toggleIntake(false);

@@ -119,7 +119,7 @@ public class Inputs {
 
     // these must are not reset by zeroValues
     // these are changed by Inputs.setAuton while in display.periodic.
-    public static int     autonToRun        = 0;
+    public static int     autonToRun        = 1;
     public static int     autonToRunHighest = Constants.AutoConstants.kTotalAutons;
     public static double  autonDelay        = 0.0;
     public static boolean runAuto = false;                  // not clear out
@@ -197,12 +197,15 @@ public class Inputs {
                 }
             }
 
-            if (m_driverXbox.getRightTriggerAxis() == 1){
+            if (DPAD == 0){
                 drivePowerOffset += 0.05;
-            } else if (m_driverXbox.getLeftTriggerAxis() == 1) {
+            } else if (DPAD == 180){
                 drivePowerOffset -= 0.05;
             }
 
+            if (drivePowerOffset < 0){
+                drivePowerOffset = 0;
+            }
 
             if (masterAutoEnabled == true) {
                 if (DriveSubsystem.m_gyro.getRoll() > 0) {
@@ -232,23 +235,13 @@ public class Inputs {
                 initialYAW = DriveSubsystem.m_gyro.getYaw();
             }
 
-            if (DPAD == 0){
-                driverPower = applyDeadBand(0.2, Constants.DriveConstants.kJoystickDeadband); 
-                driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
-            } else if (DPAD == 180){
-                driverPower = applyDeadBand(-0.2, Constants.DriveConstants.kJoystickDeadband); 
-                driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset);
-            }
-
             lastDPAD = DPAD;
-
-            drivePowerOffset = Math.max(Math.min(drivePowerOffset, 0.15), -0.85);
 
             int drivePowerInt = (int) ((0.85 + drivePowerOffset) * 100);
             String drivePowerDisplay = Integer.toString(drivePowerInt) + "% Power";
 
             SmartDashboard.putNumber("Drive Power Offset", drivePowerOffset);
-            SmartDashboard.putString("Drive Power Maximum:", drivePowerDisplay);
+            //SmartDashboard.putString("Drive Power Maximum:", drivePowerDisplay);
             //SmartDashboard.putNumber("dpad angle", m_driverXbox.getPOV(0));
 
 

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import com.kauailabs.navx.frc.AHRS;
@@ -19,10 +20,22 @@ public class Auton extends MyStateMachine {
     // We are passing references for these classes.
 
     String status = "";
-
+    double GyroRoll = 0.0;
 	private Timer timShootingLimit = new Timer();	// used to decide if we should keep shooting
+
+    public static AHRS m_gyro = new AHRS();
 	
     private TimedRampPower trpDrivePower;
+
+
+    public void Balance() {
+        if (GyroRoll < 0){
+            Inputs.driverPower = 0.05;
+        } else if (GyroRoll > 0) {
+            Inputs.driverPower = -0.05;
+        } 
+        
+    }
 
     public  Auton() {               // constructor
         reset();
@@ -41,6 +54,7 @@ public class Auton extends MyStateMachine {
     public void auton1() { // This overrides the auton2 method defined in the state machine class.
         DriveSubsystem.m_gyro.zeroYaw();
         String sAuton = "Auton1 - 2 Ball Right ";
+        GyroRoll = (double)m_gyro.getRoll();
         Constants.telemetry.putString("Auton ", sAuton );
 
         Constants.telemetry.saveDouble("Auton Step Timer", timStepTimer.get() );  // capture timer on ever step
@@ -85,26 +99,29 @@ public class Auton extends MyStateMachine {
                 //Inputs.driveDesiredHeading = 0.0;       
                 //Inputs.driveGyroCorrected = true;         // force robot to turn an maintain this heading
 
-                Inputs.intakeDeploy = true;                 // drop the intake
-                Inputs.shooterFullAutoModeOn = true;       // turn on targetting
 
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
+
+                Inputs.driverPower = 0.8;
                 
-                if( trpDrivePower.isDone())             // we are far enought
-                    iStep = 3; //++;
+                if(GyroRoll < -8) {
+                    iStep++;
+                }
+                SmartDashboard.putNumber("AutonGyroroll", GyroRoll);
+                /*if( trpDrivePower.isDone())             // we are far enought
+                    iStep++;
 
-                Constants.telemetry.saveString("Auton Step Desc", status );           
-                break;
+                Constants.telemetry.saveString("Auton Step Desc", status );  */         
+                break; 
 
             case 2: // drive back forward to get a good shot.
                 if (bStepFirstPass) {
                     status = "Step " + String.valueOf(iStep) + ": First Pass...";
-                    Constants.telemetry.saveString("Auton Step Desc", status );           
+                    /*Constants.telemetry.saveString("Auton Step Desc", status );           
                     trpDrivePower.reconfigure(Constants.Auton2BallRightConstants.kToShoot_Time, 
                                             Constants.Auton2BallRightConstants.kToShoot_Power, 
                                              .1,  // min drive power
                                             .10,  // ramp up percent, .20 as we have to reset gyro here
-                                            .20);
+                                            .20);*/
 
                     break;
                 }
@@ -114,12 +131,11 @@ public class Auton extends MyStateMachine {
                 //Inputs.driveDesiredHeading = Constants.Auton2BallConstants.kToShoot_Heading;       
                 //Inputs.driveGyroCorrected = true;       // force robot to turn an maintain this heading
 
-                Inputs.intakeDeploy = false;            //pick up the intake
-                Inputs.shooterFullAutoModeOn = true;    // turn on targetting
 
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
+
+                Inputs.driverPower = .15;
                 
-                if( trpDrivePower.isDone())             // the 
+                if(GyroRoll >= -5)             // the 
                     iStep++;
 
                 Constants.telemetry.saveString("Auton Step Desc", status );           
@@ -128,8 +144,24 @@ public class Auton extends MyStateMachine {
 
             case 3: // Stop and shoot
                 if (bStepFirstPass) {
-                    timShootingLimit.reset();						// reset this timer
+                    
                 }
+
+                Inputs.driverPower = 0;
+
+                if (timStepTimer.get() < 0.25){
+                    Inputs.driverTurn = 0.1;            // Lock wheels 
+                }
+
+                /*if (GyroRoll > 4) {
+                    Inputs.driverPower = -0.2;
+                } else if (GyroRoll < -4){
+                    Inputs.driverPower = 0.2;
+                } else{
+                    iStep++;
+                }*/
+
+
 
                 status = "Step " + String.valueOf(iStep) + ": ";
                 status += "Shooting";
@@ -159,6 +191,9 @@ public class Auton extends MyStateMachine {
                 }
                 status = "Step " + String.valueOf(iStep) + ": ";
                 status += "Started, rolling back to ball, intake delpoyed.";
+                
+                Inputs.driverPower = 0;
+                Inputs.driverTurn = 0.0;
 
                 Inputs.driveDesiredHeading = Constants.Auton2BallRightConstants.kBackOut_Heading;       
                 Inputs.driveGyroCorrected = true;       // force robot to turn an maintain this heading
@@ -166,10 +201,10 @@ public class Auton extends MyStateMachine {
                 Inputs.intakeDeploy = false;             // drop the intake
                 Inputs.shooterFullAutoModeOff = true;    // turn on targetting
 
-                Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
+                //Inputs.driverPower = trpDrivePower.getRampedPower(timStepTimer.get());
                 
-                if( trpDrivePower.isDone())             // the 
-                    iStep++;
+                /*if( trpDrivePower.isDone())             // the 
+                    iStep++;*/
 
                 Constants.telemetry.saveString("Auton Step Desc", status );           
                 break;

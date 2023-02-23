@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
                         "Port 23" 
                     };
 
-  //public Auton auton = new Auton();
+  public Auton auton = new Auton();
  // public ClimberAutomation climberAutomation = new ClimberAutomation();
   
   //public static PlayBack pbSquare = new PlayBack( "/c/1218Data/playback", "playback_square.csv" );
@@ -187,9 +187,9 @@ public class Robot extends TimedRobot {
      *  these button presses are only processed during the disabled peroidic time. 
      *  this is called in the dead time before anything is run
      **************************************************************************************/ 
-    //Inputs.setAuton();                          // call to read specific buttons being pressed
-    //auton.iAutonId = Inputs.autonToRun;         
-    //auton.setDelayStartTime(Inputs.autonDelay);
+    Inputs.setAuton();                          // call to read specific buttons being pressed
+    auton.iAutonId = Inputs.autonToRun;         
+    auton.setDelayStartTime(Inputs.autonDelay);
 
   }
 
@@ -214,7 +214,7 @@ public class Robot extends TimedRobot {
 
 
     
-    /*Inputs.periodic();   ***FLAG***
+    Inputs.periodic();
 
     
     auton.executeAuton(Inputs.autonToRun);  

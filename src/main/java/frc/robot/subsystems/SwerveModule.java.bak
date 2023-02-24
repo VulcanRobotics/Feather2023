@@ -32,7 +32,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import frc.robot.Constants;
-import frc.robot.Inputs;
+
 //import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.Constants.ModuleConstants;
 //import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -77,7 +77,7 @@ public class SwerveModule {
   private double talonOffsetOnBoot; 
 
 
-  //private final XboxController m_driveController = new XboxController(0);
+  private final XboxController m_driveController = new XboxController(0);
 
   private final PIDController m_drivePIDController =
       new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
@@ -304,7 +304,7 @@ public class SwerveModule {
       
    
     
-    if(Inputs.driveSwerveEncoderReset){
+    if (m_driveController.getStartButton()) {
        talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360;
     }
 
@@ -338,24 +338,22 @@ public class SwerveModule {
 
   // we want to go to the degree based on the cancoder
 
-    //SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
+    SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
 
-    if( Constants.TelemetrySwitches.SwerveDisplayOn) {
-      SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
-      SmartDashboard.putNumber("Desired Position for Wheel" +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
-      SmartDashboard.putNumber("TALON OFFSET ON BOOT" + Integer.toString(turnMotorPortGlobal) , talonOffsetOnBoot);
-      SmartDashboard.putNumber("Wheel " + Integer.toString(turnMotorPortGlobal) + " TalonFX Position", m_turningMotor.getSelectedSensorPosition(0));
-      SmartDashboard.putNumber("Wheel " + Integer.toString(turnEncoderPortGlobal) + " CANCoder Position", m_turningEncoder.getAbsolutePosition());
-      SmartDashboard.putNumber("DESIRED TURN OUTPUT TICKS", realTurn);
-      SmartDashboard.putNumber("DESIRED TURN OUTPUT DEGREES", realTurn/TalonDegrees);
-      //SmartDashboard.putNumber("Closest Zero" + Integer.toString(turnMotorPortGlobal), getClosestZero(desiredState));
-      //SmartDashboard.putNumber("Optimized Turn" + Integer.toString(turnMotorPortGlobal), getOptimizedTurn(desiredState));
-      SmartDashboard.putNumber("Brake Mode", brakeMode);
-      SmartDashboard.putNumber("Current Ticks" + Integer.toString(turnMotorPortGlobal), getCurrentTicks() ); 
-    }
- 
-  }
- 
+
+    SmartDashboard.putNumber("Desired Position for Wheel" +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
+    SmartDashboard.putNumber("TALON OFFSET ON BOOT" + Integer.toString(turnMotorPortGlobal) , talonOffsetOnBoot);
+    SmartDashboard.putNumber("Wheel " + Integer.toString(turnMotorPortGlobal) + " TalonFX Position", m_turningMotor.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("Wheel " + Integer.toString(turnEncoderPortGlobal) + " CANCoder Position", m_turningEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("DESIRED TURN OUTPUT TICKS", realTurn);
+    SmartDashboard.putNumber("DESIRED TURN OUTPUT DEGREES", realTurn/TalonDegrees);
+    //SmartDashboard.putNumber("Closest Zero" + Integer.toString(turnMotorPortGlobal), getClosestZero(desiredState));
+    //SmartDashboard.putNumber("Optimized Turn" + Integer.toString(turnMotorPortGlobal), getOptimizedTurn(desiredState));
+    SmartDashboard.putNumber("Brake Mode", brakeMode);
+    SmartDashboard.putNumber("Current Ticks" + Integer.toString(turnMotorPortGlobal), getCurrentTicks() ); 
+  } 
+
+  
 
   /** Zeros all the SwerveModule encoders. */
   public void resetEncoders() {

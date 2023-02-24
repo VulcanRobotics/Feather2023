@@ -5,11 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.cameraserver.CameraServer;
 
 import edu.wpi.first.cscore.CvSink;
@@ -21,9 +23,15 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Inputs;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.TowerSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.Auton;
+import frc.robot.Constants;
 
 
 
@@ -34,12 +42,12 @@ import frc.robot.Auton;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot {   // RobotBase {
   private Command m_autonomousCommand;
 
-  Thread m_visionThread;
+  //Thread m_visionThread;
 
-  private RobotContainer m_robotContainer;
+  //private RobotContainer m_robotContainer;
 
 
   // Note: according to WPILIB we MUST use Can Port 1 for Rev Power Board.  (FWL-2022/04/12)
@@ -78,6 +86,14 @@ public class Robot extends TimedRobot {
 
   //public Auton auton = new Auton();
  // public ClimberAutomation climberAutomation = new ClimberAutomation();
+  // create public instances for the subsystems
+  // we do not need to do this for Inputs as it is already static
+  public Auton auton = new Auton();
+  public DriveSubsystem m_DriveSubsystem = new DriveSubsystem();
+  public IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+  public PneumaticSubsystem m_PneumaticSubsystem = new PneumaticSubsystem();
+  public TowerSubsystem m_TowerSubsystem = new TowerSubsystem();
+  public VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   
   //public static PlayBack pbSquare = new PlayBack( "/c/1218Data/playback", "playback_square.csv" );
   //public static PlayBack pbAuton3ball = new PlayBack( "/c/1218Data/playback", "auton_3_ball_playback.csv" );
@@ -97,8 +113,10 @@ public class Robot extends TimedRobot {
 
     //CameraServer.startAutomaticCapture();
 
-    m_robotContainer = new RobotContainer();
+    //m_robotContainer = new RobotContainer();
+    //m_robotContainer = new RobotContainer();
 
+    /*/
     m_visionThread =
         new Thread(
             () -> {
@@ -136,6 +154,7 @@ public class Robot extends TimedRobot {
             });
     m_visionThread.setDaemon(true);
     m_visionThread.start();
+    */
 
   }
 
@@ -153,58 +172,29 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     
-    CommandScheduler.getInstance().run();
+    //CommandScheduler.getInstance().run();
+    //CommandScheduler.getInstance().run();
+    // unlike the command scheduler this will shot the order we will run
 
-    trackRobotBattery();
-
-    Constants.telemetry.writeRow(); // after all the susbsystems run write telem row. 
-  
   }
 
-
-
-  /** This function is called once each time the robot enters Disabled mode. */
+  // Initialization code for disabled mode should go here.
   @Override
-  public void disabledInit() {
+  public void disabledPeriodic(){
 
-    Constants.config.saveNewKeys();       // save any new key encountered if a call to config. 
-    Constants.telemetry.saveSpreadSheet();
-
-    if( stickyPowerAlarmsReset == false){
-      robotPowerPanel.clearStickyFaults();  // only do this once after robot is powered on
-      stickyPowerAlarmsReset = true;
-    }
-
-    //SwerveDriveSubsystem.resetGyro();
+      Constants.telemetry.saveSpreadSheet();
+      //Constants.telemetry.save
 
   }
-
-  @Override
-  public void disabledPeriodic() {
-
-    /************************************************************************************** 
-     *  process the auton setting buttons here
-     *  these button presses are only processed during the disabled peroidic time. 
-     *  this is called in the dead time before anything is run
-     **************************************************************************************/ 
-    //Inputs.setAuton();                          // call to read specific buttons being pressed
-    //auton.iAutonId = Inputs.autonToRun;         
-    //auton.setDelayStartTime(Inputs.autonDelay);
-
-  }
-
 
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-        m_autonomousCommand.schedule();
-    }
+    //auton.iAutonId = 1;
+    setAllianceInfo(); // get alliance color from driver station 
+    auton.reset();
 
   }
 
@@ -212,36 +202,31 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
+    Inputs.periodic();                // Make inputs read all their variables
 
-    
-    /*Inputs.periodic();   ***FLAG***
+    // Auton code goes here
+    auton.executeAuton(1);
 
-    
-    auton.executeAuton(Inputs.autonToRun);  
-    
-    
-          // what auton do we run. 
-    LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
+    // process each subsystem in order now that we have inputs read in
+    callRobotSubsystems();      // call other robot processes in order
 
-    Inputs.saveTelem();  // put this here after any Automation and Auton
-                         // this way we can see changes made by them
-
-    // system will next call Robot Periodic
-    // then all subsystems will be serviced in order */
 
   }
 
   @Override
   public void teleopInit() {
+
+    setAllianceInfo(); // get alliance color from driver station 
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    //if (m_autonomousCommand != null) {
+    // m_autonomousCommand.cancel();
+    //
   
-    Inputs.driveResetGyro = true;
+    //Inputs.driveResetGyro = true;
 
   }
 
@@ -250,39 +235,48 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     
-    Inputs.periodic();                            // read the inputs from the CBUs.
+    Inputs.periodic();             // Make inputs read all their variables
 
-                                                  // only executed in end game mode
-   /*  if( Inputs.masterEndgameArm &&                // masterEndgame switch up
-                Inputs.masterClimbAutoEnabled ){  // extraBox DeadMan button held down
-      climberAutomation.switchSteps();            // execute the climber automation
-                                                  // like Auton this manipulates Inputs to do our bidding
-    } */
-      
-    // LEDDisplay.periodic();          // update the LED display in each loop, this will read inputs to get states
-
-    if( Inputs.runAuto == true)
-      //auton.executeAuton(Inputs.autonToRun);  
-
-
-    Inputs.saveTelem();  // put this here after climber automation and Auton
-                         // this way we can see changes made by them
-
-
-    // system will next call Robot Periodic
-    // then all systems will be service in order
+    // process each subsystem in order now that we have inputs read in
+    callRobotSubsystems();      // call other robot processes in order
 
    }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+
+      setAllianceInfo(); // get alliance color from driver station 
+      auton.reset();
+
   }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic(){
+
+    Inputs.periodic();                // Make inputs read all their variables
+
+    // Auton code goes here
+    auton.executeAuton(9);    // 9 is set asside for testing. 
+
+    // process each subsystem in order now that we have inputs read in
+    callRobotSubsystems();      // call other robot processes in order
+
+  }
+
+  private void callRobotSubsystems(){      // call other robot processes in order
+
+    m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
+    m_TowerSubsystem.periodic(); 
+    m_IntakeSubsystem.periodic();
+    m_PneumaticSubsystem.periodic();
+    m_DriveSubsystem.periodic();      // two steps,  here determine where we are. 
+
+    trackRobotBattery();              // write out telemetry fore the battery ports
+
+    Constants.telemetry.writeRow();   // after all the susbsystems run write telem row. 
+
+  }
 
   private void trackRobotBattery(){
 
@@ -298,6 +292,19 @@ public class Robot extends TimedRobot {
       key = "Robot Power Port " + String.format("%02d", portId) + " " + aryPowerPortName[portId];
       Constants.telemetry.saveDouble(key, robotPowerPanel.getCurrent(portId));  
     }
+
+  }
+
+  private void setAllianceInfo(){
+
+    Constants.MatchSetttings.kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
+
+    if( Constants.MatchSetttings.kAllianceColorName.startsWith("b") )           // blue string?
+        Constants.MatchSetttings.kAllianceColor = Constants.MatchSetttings.kBlueAlliance;
+    else if( Constants.MatchSetttings.kAllianceColorName.startsWith("r"))       // red string?
+        Constants.MatchSetttings.kAllianceColor = Constants.MatchSetttings.kRedAlliance;
+    else 
+        Constants.MatchSetttings.kAllianceColor = 0;    // not set
 
   }
 }

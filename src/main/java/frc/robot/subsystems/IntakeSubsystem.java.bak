@@ -104,9 +104,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rightPinchMotor.set(rightPinchSpeed);
         m_leftPinchMotor.set(leftPinchSpeed);
 
-        //SmartDashboard.putNumber("rightPinchSpeed", rightPinchSpeed);
-        //SmartDashboard.putNumber("leftPinchSpeed", leftPinchSpeed);
-        //SmartDashboard.putNumber("elapsedTime", elapsedtime);
+        SmartDashboard.putNumber("rightPinchSpeed", rightPinchSpeed);
+        SmartDashboard.putNumber("leftPinchSpeed", leftPinchSpeed);
+        SmartDashboard.putNumber("elapsedTime", elapsedtime);
 
 
     }

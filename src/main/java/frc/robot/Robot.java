@@ -266,6 +266,8 @@ public class Robot extends TimedRobot {   // RobotBase {
 
   private void callRobotSubsystems(){      // call other robot processes in order
 
+    Inputs.saveTelem();               // do this here so we capture any changes made by auton. 
+
     m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
     m_TowerSubsystem.periodic(); 
     m_IntakeSubsystem.periodic();
@@ -286,7 +288,7 @@ public class Robot extends TimedRobot {   // RobotBase {
     Constants.telemetry.saveDouble( "Robot Total Power", robotPowerPanel.getTotalPower() );
     Constants.telemetry.saveDouble( "Robot Total Energy", robotPowerPanel.getTotalEnergy() );
     Constants.telemetry.saveDouble( "Robot Total Volts", robotPowerPanel.getVoltage() );
-    Constants.telemetry.saveDouble( "Robot Panel Temp", robotPowerPanel.getTemperature() );
+    //Constants.telemetry.saveDouble( "Robot Panel Temp", robotPowerPanel.getTemperature() );
 
     for( int portId = 0; portId < 24; portId++){
       key = "Robot Power Port " + String.format("%02d", portId) + " " + aryPowerPortName[portId];
@@ -297,15 +299,14 @@ public class Robot extends TimedRobot {   // RobotBase {
 
   private void setAllianceInfo(){
 
-    Constants.MatchSetttings.kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
+    Constants.MatchSettings.kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
 
-    if( Constants.MatchSetttings.kAllianceColorName.startsWith("b") )           // blue string?
-        Constants.MatchSetttings.kAllianceColor = Constants.MatchSetttings.kBlueAlliance;
-    else if( Constants.MatchSetttings.kAllianceColorName.startsWith("r"))       // red string?
-        Constants.MatchSetttings.kAllianceColor = Constants.MatchSetttings.kRedAlliance;
+    if( Constants.MatchSettings.kAllianceColorName.startsWith("b") )           // blue string?
+        Constants.MatchSettings.kAllianceColor = Constants.MatchSettings.kBlueAlliance;
+    else if( Constants.MatchSettings.kAllianceColorName.startsWith("r"))       // red string?
+        Constants.MatchSettings.kAllianceColor = Constants.MatchSettings.kRedAlliance;
     else 
-        Constants.MatchSetttings.kAllianceColor = 0;    // not set
-
+        Constants.MatchSettings.kAllianceColor = 0;    // not set
   }
 }
 

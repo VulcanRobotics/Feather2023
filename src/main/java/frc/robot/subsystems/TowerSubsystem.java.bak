@@ -546,23 +546,19 @@ public class TowerSubsystem extends SubsystemBase {
         
             SmartDashboard.putNumber("initial wrist encoder", initialWristEncoder);
 
-            SmartDashboard.putNumber("String Potentiometer Tower", m_stringPotentiometerTower.get());
-            SmartDashboard.putNumber("String Potentiometer Elbow", m_stringPotentiometerElbow.get());
-            SmartDashboard.putNumber("Wrist Encoder", m_wristEncoder);
 
-        	SmartDashboard.putNumber("Tower Encoder", towerEncoder);
-        	SmartDashboard.putNumber("Elbow Encoder", elbowEncoder);
+        SmartDashboard.putNumber("Tower Encoder", towerEncoder);
+        SmartDashboard.putNumber("Elbow Encoder", elbowEncoder);
 
-        	SmartDashboard.putNumber("Tower Encoder", mTower.getSelectedSensorPosition());
-        	SmartDashboard.putNumber("Elbow Encoder", mElbow.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Tower Encoder", mTower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Elbow Encoder", mElbow.getSelectedSensorPosition());
         
-        	SmartDashboard.putNumber("Tower IK Angle", 180*theta1/ Math.PI);
-        	SmartDashboard.putNumber("Elbow IK Angle", 180*theta2/ Math.PI);
+        SmartDashboard.putNumber("Tower IK Angle", 180*theta1/ Math.PI);
+        SmartDashboard.putNumber("Elbow IK Angle", 180*theta2/ Math.PI);
 
-        	SmartDashboard.putNumber("Target X", targetX);
-        	SmartDashboard.putNumber("Target Y", targetY);
+        SmartDashboard.putNumber("Target X", targetX);
+        SmartDashboard.putNumber("Target Y", targetY);
 
-        }
 
 
 

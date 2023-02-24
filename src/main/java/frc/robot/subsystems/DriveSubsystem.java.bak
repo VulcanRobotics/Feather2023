@@ -142,13 +142,12 @@ public class DriveSubsystem extends SubsystemBase {
           Inputs.driverTurn,
           Inputs.fieldCentric);
           
-      if( Constants.TelemetrySwitches.DriveDisplayOn){
-        SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
-        SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
-        SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
-        SmartDashboard.putNumber("POV", m_driveController.getPOV());
-        SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-      }
+        
+      SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
+      SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
+      SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
+      SmartDashboard.putNumber("POV", m_driveController.getPOV());
+      SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
   }
 
   /**
@@ -199,7 +198,6 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d currentPose = m_odometry.getPoseMeters();
     double currentX = currentPose.getX();
     double currentY = currentPose.getY();
-    Constants.telemetry.putNumber("DRIVE Gyro Roll", m_gyro.getRoll());
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
     /* 
@@ -217,8 +215,6 @@ public class DriveSubsystem extends SubsystemBase {
 */
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
-   // not critical display items
-  if( Constants.TelemetrySwitches.DriveDisplayOn){
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
     SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));
@@ -226,7 +222,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("currentX", currentPose.getX());
     SmartDashboard.putNumber("currentY", currentPose.getY());
     SmartDashboard.putBoolean("Robot Mode", fieldRelative);
-  }
 
    /* if (autonMode == true) {
       if ((currentX >= destinationPointX) && (currentY >= destinationPointY)) {
@@ -262,25 +257,25 @@ public class DriveSubsystem extends SubsystemBase {
                 : new ChassisSpeeds(-xSpeed, ySpeed, rot)); //xspeed was positive
     //SwerveDriveKinematics.desaturateWheelSpeeds(
         //swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    //SmartDashboard.putNumber("Rotation?", rot );
+    SmartDashboard.putNumber("Rotation?", rot );
     m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
     m_frontRight.setDesiredState(swerveModuleStates[0]); 
     m_rearLeft.setDesiredState(swerveModuleStates[3]); //3
     m_rearRight.setDesiredState(swerveModuleStates[2]);
 
     
-    if(Inputs.driveResetGyro) {
+    if (m_driveController.getAButtonReleased()) {
       zeroGyro();
     }
 
-    if(Inputs.driveToggleBrakeMode){
+    if (m_driveController.getBButtonReleased()) {
       m_frontLeft.changeBrakeMode();
       m_frontRight.changeBrakeMode();
       m_rearLeft.changeBrakeMode();
       m_rearRight.changeBrakeMode();
     }
 
-    if(Inputs.driveToggleAutoPoseMode){
+    if (m_driveController.getYButtonReleased()) {
       if (autonMode == true) {
         autonMode = false;
       }

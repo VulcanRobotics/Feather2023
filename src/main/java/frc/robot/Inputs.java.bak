@@ -184,11 +184,22 @@ public class Inputs {
         intakePinchIn    =  m_driverXbox.getRightBumperPressed() ? true : false;    
         intakePinchOut   =  m_driverXbox.getLeftBumperPressed() ? true : false;    
 
-        driveSwerveEncoderReset = m_driverXbox.getStartButtonReleased();
-        driveZeroGyro           = m_driverXbox.getAButtonReleased();
-        driveToggleBrakeMode    = m_driverXbox.getBButtonReleased();
-        driveToggleAutoPoseMode = m_driverXbox.getYButtonReleased();
-      
+
+
+
+
+
+
+
+
+        Constants.telemetry.putNumber("INPUT Driver Power", driverPower );
+        Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe );
+        Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn);
+
+        Constants.telemetry.putTrueBoolean("INPUT Intake Deploy", intakeDeploy);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch", intakePinch);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch In", intakePinchIn);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch Out", intakePinchOut);
 
 
         /////////////////////////////////////////////////////////////////
@@ -201,11 +212,13 @@ public class Inputs {
         towerShoulderPower = m_operatorControl.getY();
         towerWristSpeed    = m_operatorControl.getZ();
 
-        
+        Constants.telemetry.putNumber("INPUT Elbow Power (x)", towerElbowPower);
+        Constants.telemetry.putNumber("INPUT Shodr Power (y)", towerShoulderPower);
+        Constants.telemetry.putNumber("INPUT Wrist Power (z)", towerWristSpeed);
+
         if( m_operatorControl.getRawButton(6)){ // if we have the top right button of the operator joystick or switch 4 pressed
         }
-
-        // saveTelem(); do not do this here. We will do it after auton in robot teleop and auton.
+       
 
     }  
 
@@ -249,7 +262,6 @@ public class Inputs {
 
     }
 
-    
     public static void setAuton(){
 
         // change the auton number
@@ -276,40 +288,43 @@ public class Inputs {
         autonDelay = autonDelay < 0.0 ? 0.0 : autonDelay ; 
         autonDelay = autonDelay > 10.0 ? 10.0 : autonDelay ;
 
-        //SmartDashboard.putString("INPUT AUTON To Run", String.valueOf(autonToRun));
-        //SmartDashboard.putString("INPUT AUTON Delay", String.valueOf(autonDelay));
-        //SmartDashboard.putString("ROBOT ALIANCE Color", 
-        //                                    DriverStation.getAlliance().toString().toLowerCase()); 
+        SmartDashboard.putString("INPUT AUTON To Run", String.valueOf(autonToRun));
+        SmartDashboard.putString("INPUT AUTON Delay", String.valueOf(autonDelay));
+        SmartDashboard.putString("ROBOT ALIANCE Color", 
+                                            DriverStation.getAlliance().toString().toLowerCase()); 
 
     }
 
 
     public static void saveTelem(){     // this is called in robot.periodic so we can pick up any auton changes.
 
-        if( Constants.TelemetrySwitches.InputsDisplayOn){
-            Constants.telemetry.putNumber("INPUT Driver Power", driverPower);
-            Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe);
-            Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn);
+        //Constants.telemetry.saveString("*RECORD", recordingStatus );
+        
+        /*
+        Constants.telemetry.saveTrueBoolean("INPUT Lift1 Button Up", Inputs.climberLift1Up );
+        Constants.telemetry.saveTrueBoolean("INPUT Lift1 Button Down", Inputs.climberLift1Down );
+        Constants.telemetry.saveTrueBoolean("INPUT Lift2 Button Up", Inputs.climberLift2Up );
+        Constants.telemetry.saveTrueBoolean("INPUT Lift2 Button Down", Inputs.climberLift2Down );
+        Constants.telemetry.saveTrueBoolean("INPUT Dart Button Up", Inputs.climberDartUp );
+        Constants.telemetry.saveTrueBoolean("INPUT Dart Button Down", Inputs.climberDartDown );
+        */
 
-            Constants.telemetry.putTrueBoolean("INPUT Driver Field Centric", fieldCentric, true);
-            Constants.telemetry.putTrueBoolean("INPUT Driver Reset Gyro", driveResetGyro, true);
+        Constants.telemetry.putNumber("INPUT Driver Power", driverPower, false);
+        Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, false);
+        Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, false);
 
-            Constants.telemetry.putTrueBoolean("INPUT Intake Deploy", intakeDeploy);
-            Constants.telemetry.putTrueBoolean("INPUT Intake Pinch", intakePinch);
-            Constants.telemetry.putTrueBoolean("INPUT Intake Pinch In", intakePinchIn);
-            Constants.telemetry.putTrueBoolean("INPUT Intake Pinch Out", intakePinchOut);
+        Constants.telemetry.putTrueBoolean("INPUT Driver Field Centric", fieldCentric, true);
+        Constants.telemetry.putTrueBoolean("INPUT Driver Reset Gyro", driveResetGyro);
 
-            Constants.telemetry.putNumber("INPUT Elbow Power (x)", towerElbowPower);
-            Constants.telemetry.putNumber("INPUT Shodr Power (y)", towerShoulderPower);
-            Constants.telemetry.putNumber("INPUT Wrist Power (z)", towerWristSpeed);
-
-            Constants.telemetry.putNumber("Drive Power Offset", drivePowerOffset);
-        }
+        Constants.telemetry.putTrueBoolean("INPUT Intake Deploy", intakeDeploy);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch", intakePinch);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch In", intakePinchIn);
+        Constants.telemetry.putTrueBoolean("INPUT Intake Pinch Out", intakePinchOut);
 
         Constants.telemetry.putString("INPUT AUTON To Run", String.valueOf(autonToRun),true);
         Constants.telemetry.putString("INPUT AUTON Delay", String.valueOf(autonDelay),true);
-        Constants.telemetry.putString("INPUT ALIANCE Color", Constants.MatchSettings.kAllianceColorName);
-        
+        Constants.telemetry.putString("INPUT ALIANCE Color", 
+                                        Constants.ShooterConstants.aryAllianceColor[allianceColor],false);
         
 
     }

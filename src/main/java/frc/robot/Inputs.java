@@ -113,11 +113,11 @@ public class Inputs {
         driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset); // reduce top power 
         driverPower = getCubePower(driverPower);
 
-        driverStrafe = applyDeadBand(-m_driverXbox.getLeftX(), Constants.DriveConstants.kJoystickDeadband); 
+        driverStrafe = applyDeadBand(m_driverXbox.getLeftX(), Constants.DriveConstants.kJoystickDeadband); 
         driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
         driverStrafe = getCubePower(driverStrafe);
 
-        driverTurn = applyDeadBand( -m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
+        driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
         driverTurn *= Constants.OIConstants.kDriverTurnPCT;
         //driverTurn = getCubePower(driverTurn);
 
@@ -285,11 +285,13 @@ public class Inputs {
 
 
     public static void saveTelem(){     // this is called in robot.periodic so we can pick up any auton changes.
+        
+        Constants.telemetry.putNumber("INPUT Driver Power", driverPower, true);
+        Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, true);
+        Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, true);
 
         if( Constants.TelemetrySwitches.InputsDisplayOn){
-            Constants.telemetry.putNumber("INPUT Driver Power", driverPower);
-            Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe);
-            Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn);
+            
 
             Constants.telemetry.putTrueBoolean("INPUT Driver Field Centric", fieldCentric, true);
             Constants.telemetry.putTrueBoolean("INPUT Driver Reset Gyro", driveResetGyro, true);

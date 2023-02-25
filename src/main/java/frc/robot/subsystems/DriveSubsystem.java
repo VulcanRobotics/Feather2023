@@ -258,8 +258,8 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(-xSpeed, ySpeed, -rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
-                : new ChassisSpeeds(-xSpeed, ySpeed, rot)); //xspeed was positive
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(-xSpeed, -ySpeed, -rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
+                : new ChassisSpeeds(-xSpeed, -ySpeed, -rot)); //xspeed was positive
     //SwerveDriveKinematics.desaturateWheelSpeeds(
         //swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     //SmartDashboard.putNumber("Rotation?", rot );

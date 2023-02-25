@@ -98,7 +98,7 @@ public class TowerSubsystem extends SubsystemBase {
         m_stringElbow = m_stringPotentiometerElbow.get();
 
         if (towerPriority){
-            if (m_stringTower < Tvalue + 0.001 && m_stringTower > Tvalue - 0.001){
+            if (m_stringTower > 0.473){
                 if (m_stringElbow >= Evalue + .01) {
                     mElbowSpeed = -0.3;
                 } else if (m_stringElbow <= Evalue - .01) {
@@ -107,6 +107,16 @@ public class TowerSubsystem extends SubsystemBase {
                     mElbowSpeed = -0.1;
                 } else if (m_stringElbow <= Evalue - 0.001) {
                     mElbowSpeed = 0.1;
+                }
+
+                if (m_stringTower >= Tvalue + .01) {
+                    mTowerSpeed = 0.9;
+                } else if (m_stringTower <= Tvalue - .01) {
+                    mTowerSpeed = -0.9;
+                } else if (m_stringTower >= Tvalue + 0.001) {
+                    mTowerSpeed = 0.3;
+                } else if (m_stringTower <= Tvalue - 0.001) { 
+                    mTowerSpeed = -0.3;
                 }
             } else{
                 if (m_stringTower >= Tvalue + .01) {

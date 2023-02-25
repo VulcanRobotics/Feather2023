@@ -3,9 +3,11 @@ package frc.robot;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.Tower.AutonFlags;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ShootSubsystem;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
 
 import edu.wpi.first.util.EventVector;
@@ -39,7 +41,9 @@ public class Inputs {
     public static double  towerShoulderPower = 0.0;
     public static double  towerElbowPower   = 0.0;
     public static double  towerWristSpeed    = 0.0;
-    public static boolean towerClawCloseState  = false;
+    public static boolean towerClawOpenState  = false;
+
+    public static Constants.Tower.AutonFlags autonRequestGoTo = AutonFlags.IGNORE ; //-100 = ignore movement
 
     //public static boolean m1Override = false;  
 
@@ -194,8 +198,6 @@ public class Inputs {
         /////////////////////////////////////////////////////////////////
         // Operator controls
         /////////////////////////////////////////////////////////////////
-        if( m_operatorControl.getTriggerReleased() )             // operatro trigger button
-            towerClawCloseState = !towerClawCloseState;                 // Toggle the state, True=Closed, False=Open
 
         towerElbowPower    = m_operatorControl.getX();
         towerShoulderPower = m_operatorControl.getY();
@@ -247,6 +249,8 @@ public class Inputs {
         intakePinchIn    = false;
         intakePinchOut   = false;
 
+        autonRequestGoTo = AutonFlags.IGNORE;
+
     }
 
     
@@ -290,6 +294,7 @@ public class Inputs {
         Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, true);
         Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, true);
 
+        Constants.telemetry.putString("INPUT Auton Goto", autonRequestGoTo.name(), true);
         if( Constants.TelemetrySwitches.InputsDisplayOn){
             
 

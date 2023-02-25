@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+import javax.swing.text.html.HTMLDocument.BlockElement;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -28,14 +30,15 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.Tower.AutonFlags;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class TowerSubsystem extends SubsystemBase {
 
-    DigitalInput m_towerUpProximity = new DigitalInput(2);
+    static DigitalInput m_towerUpProximity = new DigitalInput(2);
     DigitalInput m_towerDownProximity = new DigitalInput(3);
     DigitalInput m_ElbowDownProximity = new DigitalInput(8);
-    DigitalInput m_ElbowUpProximity = new DigitalInput(7);
+    static DigitalInput m_ElbowUpProximity = new DigitalInput(7);
 
     private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
@@ -69,12 +72,12 @@ public class TowerSubsystem extends SubsystemBase {
     private static double m_towerEncoderMax = -383.340546 - 135.450546; // -518.791092
     private static double m_elbowEncoderMax = 73.00 - (-8.50); // 81.5
     
-    private double m_stringTower = 0.0;
-    private double m_stringElbow = 0.0;
+    private static double m_stringTower = 0.0;
+    private static double m_stringElbow = 0.0;
     private double m_wristEncoder = 0.0;
 
-    private double mTowerSpeed = 0;
-    private double mElbowSpeed = 0;
+    private static double mTowerSpeed = 0;
+    private static double mElbowSpeed = 0;
     private double mWristSpeed = .4;
 
     private boolean IKMode = false;
@@ -92,68 +95,77 @@ public class TowerSubsystem extends SubsystemBase {
 
     private double initialWristEncoder = m_encoderWrist.getPosition();
     private final double wristEncoder180 = 47.642;
+
+    private static boolean elbowMoveTo(double Evalue){
+        boolean done = false;
+
+        if (m_stringElbow >= Evalue + .01) {
+            mElbowSpeed = -0.3;
+        } else if (m_stringElbow <= Evalue - .01) {
+            mElbowSpeed = 0.3;
+        } else if (m_stringElbow >= Evalue - 0.01) {
+            mElbowSpeed = 0;
+        } else if (m_stringElbow <= Evalue + 0.01) {
+            mElbowSpeed = 0;
+        }
+
+        if (m_stringElbow <= Evalue + 0.01 && m_stringElbow >= Evalue - 0.01){
+            done = true;
+        }
+
+        return done;
+    }
+
+    private static boolean towerMoveTo(double Tvalue){
+    boolean done = false;
+
+        if (m_stringTower >= Tvalue + .01) {
+            mTowerSpeed = 0.7;
+        } else if (m_stringTower <= Tvalue - .01) {
+            mTowerSpeed = -0.7;
+        } else if (m_stringTower >= Tvalue - 0.01) {
+            mTowerSpeed = 0;
+        } else if (m_stringTower <= Tvalue + 0.01) { 
+            mTowerSpeed = 0;
+        }
+
+        if (m_stringTower <= Tvalue + 0.01 && m_stringTower >= Tvalue - 0.01){
+            done = true;
+        }
+
+        return done;
+    }
      
-    private void goToPosition(double Tvalue, double Evalue, boolean towerPriority) {
+    private static boolean goToPosition(double Tvalue, double Evalue, boolean towerPriority) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
 
-        if (towerPriority){
-            if (m_stringTower > 0.473){
-                if (m_stringElbow >= Evalue + .01) {
-                    mElbowSpeed = -0.3;
-                } else if (m_stringElbow <= Evalue - .01) {
-                    mElbowSpeed = 0.3;
-                } else if (m_stringElbow >= Evalue + 0.001) {
-                    mElbowSpeed = -0.1;
-                } else if (m_stringElbow <= Evalue - 0.001) {
-                    mElbowSpeed = 0.1;
-                }
+        boolean elbowDone = false;
+        boolean towerDone = false;
 
-                if (m_stringTower >= Tvalue + .01) {
-                    mTowerSpeed = 0.9;
-                } else if (m_stringTower <= Tvalue - .01) {
-                    mTowerSpeed = -0.9;
-                } else if (m_stringTower >= Tvalue + 0.001) {
-                    mTowerSpeed = 0.3;
-                } else if (m_stringTower <= Tvalue - 0.001) { 
-                    mTowerSpeed = -0.3;
-                }
+        if (towerPriority){
+            if (m_stringTower > 0.38){
+                elbowDone = elbowMoveTo(Evalue);
+
+                towerDone = towerMoveTo(Tvalue);
             } else{
-                if (m_stringTower >= Tvalue + .01) {
-                    mTowerSpeed = 0.9;
-                } else if (m_stringTower <= Tvalue - .01) {
-                    mTowerSpeed = -0.9;
-                } else if (m_stringTower >= Tvalue + 0.001) {
-                    mTowerSpeed = 0.3;
-                } else if (m_stringTower <= Tvalue - 0.001) { 
-                    mTowerSpeed = -0.3;
-                }
+                towerDone = towerMoveTo(Tvalue);
             }
         } else{
-            if (m_stringTower >= Tvalue + .01) {
-                mTowerSpeed = 0.9;
-            } else if (m_stringTower <= Tvalue - .01) {
-                mTowerSpeed = -0.9;
-            } else if (m_stringTower >= Tvalue + 0.001) {
-                mTowerSpeed = 0.3;
-            } else if (m_stringTower <= Tvalue - 0.001) { 
-                mTowerSpeed = -0.3;
-            }
+            towerDone = towerMoveTo(Tvalue);
     
-            if (m_stringElbow >= Evalue + .01) {
-                mElbowSpeed = -0.3;
-            } else if (m_stringElbow <= Evalue - .01) {
-                mElbowSpeed = 0.3;
-            } else if (m_stringElbow >= Evalue + 0.001) {
-                mElbowSpeed = -0.1;
-            } else if (m_stringElbow <= Evalue - 0.001) {
-                mElbowSpeed = 0.1;
-            }
+            elbowDone = elbowMoveTo(Evalue);
+        }
+
+        if (towerDone && elbowDone){
+            return true;
+        } else{
+            return false;
         }
 
     }
 
-    private void flipWrist() { //DOES NOT WORK
+    public void flipWrist() { //DOES NOT WORK
         if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) {
             m_Wrist.set(0.1);
         } else {
@@ -161,26 +173,26 @@ public class TowerSubsystem extends SubsystemBase {
         }
     }
 
-    private void highPlace(){
-        goToPosition(.511, .796, true);
+    public static boolean highPlace(){
+        return goToPosition(.511, .796, true);
     }
-    private void midPlace(){
-        goToPosition(.336, .792 , false);
+    public boolean midPlace(){
+        return goToPosition(.336, .792 , false);
     }
-    private void humanPlayerGrab(){
-        goToPosition(.390, .713, false);
-    }
-
-    private void grabFromIntake() {
-        goToPosition(0, 0, true);
+    public boolean humanPlayerGrab(){
+        return goToPosition(.390, .713, false);
     }
 
-    private void tuckArm(){
+    public boolean grabFromIntake() {
+        return goToPosition(0, 0, true);
+    }
+
+    public static void tuckArm(){
         if (!m_towerUpProximity.get() == true){
             mTowerSpeed = 0.75;
         }
         if (m_ElbowUpProximity.get()){
-            mElbowSpeed = 0.5;
+            mElbowSpeed = 0.25;
         }
     }
 
@@ -539,7 +551,25 @@ public class TowerSubsystem extends SubsystemBase {
 
 
 
+        switch (Inputs.autonRequestGoTo){
+            case IGNORE: 
+                break;
 
+            case HIGHPLACE:
+                boolean done = highPlace();
+
+                if (done) {
+                    PneumaticSubsystem.setClawState(true);
+                }
+                break;
+            
+            case ORIGIN:
+                tuckArm();
+                break;
+                
+            default:
+                break;
+        }
 
    
         if (Inputs.m_operatorControl.getRawButton(3)) {

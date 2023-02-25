@@ -199,7 +199,7 @@ public final class Constants {
     public static final double kShoulderPCTPower = config.getDouble("TOWER_Shoulder_PCT_Power", .85);
     public static final double kIntakeDeployMills = config.getDouble("INTAKE_Deploy_Mills", 1000);
 
-
+    public static enum AutonFlags {IGNORE, ORIGIN, HIGHPLACE, MIDPLACE, HUMANPLAYERGRAB, GRABFROMINTAKE}
   }
 
 

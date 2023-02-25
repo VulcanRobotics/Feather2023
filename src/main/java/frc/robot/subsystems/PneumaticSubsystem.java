@@ -43,11 +43,14 @@ public class PneumaticSubsystem extends SubsystemBase {
         m_compressor.enableDigital();
   }
 
-  public void peroidic(){                   // called every robot cycle to ensure state is active
+  /*public void periodic(){           
+      if (Inputs.towerClawOpenState){
+        m_clawSolenoid.set(true);
+      }
       m_clawSolenoid.set(clawClosed);
       m_intakePullUpSolenoid.set(pinchClosed);
       m_intakePinchSolenoid.set(intakeDeployed);
-  }
+  }*/
 
   public static void toggleIntakeState(){   // sometimes we want to toggle this 
     intakeDeployed = !intakeDeployed;

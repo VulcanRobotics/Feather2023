@@ -1,7 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants.Tower.AutonFlags;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.TimedRampPower;
+import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -24,10 +28,12 @@ public class Auton extends MyStateMachine {
 	private Timer timShootingLimit = new Timer();	// used to decide if we should keep shooting
 	
     private TimedRampPower trpDrivePower;
+    
 
     public  Auton() {               // constructor
         reset();
-        timStepTimer.start();       // required as MyStateMachine cannot do this.
+        timStepTimer.start();
+        trpDrivePower = new TimedRampPower (4, 0.8, 0.25, 0, 0.25);       // required as MyStateMachine cannot do this.
     }
 
     public void auton1() { // This overrides the auton2 method defined in the state machine class.
@@ -58,11 +64,12 @@ public class Auton extends MyStateMachine {
                     DriveSubsystem.m_gyro.zeroYaw();
                 }
 
-                if (Inputs.autonDelay == 0) {
+                /*if (Inputs.autonDelay == 0) {
                     iStep += 1;
                 } else if (timStepTimer.get() >= Inputs.autonDelay) {
                     iStep += 1;
-                }
+                }*/
+                iStep = 2; //if only trying to do charge station
 
                 break;
 
@@ -72,6 +79,22 @@ public class Auton extends MyStateMachine {
                 Constants.telemetry.putString("Auton Step Desc", "Attack Ramp", true);
             }
 
+                if(timStepTimer.get() < 5.0) {
+                    Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
+
+                    break;
+                }
+
+                if (timStepTimer.get() < 10.0){
+                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+
+                    break;
+                }
+
+                iStep ++;
+                break;
+
+            case 2:
                 Inputs.driverPower = .8;
 
                 if( DriveSubsystem.m_gyro.getRoll() < -10 )
@@ -79,19 +102,52 @@ public class Auton extends MyStateMachine {
 
                 break;
 
-            case 2: 
+            case 3: 
                 if (bStepFirstPass) {
                     Constants.telemetry.putString("Auton Step Desc", "On Ramp - Forward", true);
                 }
 
-                Inputs.driverPower = .2;       
+                if (timStepTimer.get() < 1.2) { //1.2
+                    Inputs.driverPower = 0.3; //0.3
 
-                if( DriveSubsystem.m_gyro.getRoll() >= -5.0 )
-                    iStep = 4; //++;
+                    break;
+                }
+
+                iStep++;
+
+                /*if (DriveSubsystem.m_gyro.getRoll() < -2.5) {
+                    Inputs.driverPower = 0.085;
+                } else if (DriveSubsystem.m_gyro.getRoll() > 2.5) {
+                    Inputs.driverPower = -0.085;
+                } else {
+                    Inputs.driverPower = 0;  
+                    Inputs.driverTurn = 0.00001;
+                }*/
+                /*if( DriveSubsystem.m_gyro.getRoll() >= -5.0 )
+                    iStep = 4; //++;*/
 
                 break;
+            
+            case 4:
+                if (bStepFirstPass) {
+                    Constants.telemetry.putString("Auton Step Desc", "Balance On Ramp", true);
+                }
 
-            case 3: // drive back forward to get a good shot.
+                if (timStepTimer.get() < 0.25){
+                    /*if (DriveSubsystem.m_gyro.getRoll() < -2.5) {
+                        Inputs.driverPower = 0.3;
+                    } else*/ if (DriveSubsystem.m_gyro.getRoll() > 2.5) {
+                        Inputs.driverPower = -0.3;
+                    } else{
+                        Inputs.driverPower = 0;
+                    }
+                } else{
+                    Inputs.driverPower = 0;
+                    iStep++;
+                }
+                
+                break;
+            case 5: // drive back forward to get a good shot.
                 if (bStepFirstPass) {
                     Constants.telemetry.putString("Auton Step Desc", "Balance On Ramp", true);
                 }
@@ -100,12 +156,12 @@ public class Auton extends MyStateMachine {
 
                 if (timStepTimer.get() < 0.25){
                     Inputs.driverTurn = 0.1;
-                    iStep++;
+                    //iStep++;
                 }
 
                 break;
     
-            case 4: // stop robot 
+            case 6: // stop robot 
                 if (bStepFirstPass) {
                     Constants.telemetry.putString("Auton Step Desc", "Stop & Set Wheels", true);
                 }

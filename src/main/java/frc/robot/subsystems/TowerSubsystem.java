@@ -160,12 +160,18 @@ public class TowerSubsystem extends SubsystemBase {
 
     }
 
-    private void flipWrist() { //DOES NOT WORK
-        if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) {
-            m_Wrist.set(0.1);
+    private void flipWrist(int button) { //DOES NOT m                WORK, do not use | proof of concept | would be included with ur mom
+
+        if (m_Joystick.getRawButton(button)) {
+        if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) { //asking which side the wrist starts on
+            double wristDesiredPos = 1.0; //one extreme
         } else {
-            m_Wrist.set(-0.1);
+            double wristDesiredPos = 0.0;
         }
+        //We would then simply call a "go to wristpos" function.
+        //could cause some issues if the process is interrupted.
+        //if it is made to be very fast near the end, this should be avoidable.
+    }
     }
 
     private void highPlace(){

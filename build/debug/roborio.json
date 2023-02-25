@@ -3,7 +3,7 @@
     "type": "java",
     "name": "frcJava",
     "port": 8349,
-    "target": "10.12.18.2",
-    "project": "Feather2023_main"
+    "target": "172.22.11.2",
+    "project": "Feather2023"
   }
 ]

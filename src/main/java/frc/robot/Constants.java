@@ -93,6 +93,7 @@ public final class Constants {
     public static final double kHeatherFrontRightTurnEncoderOffsetDeg = 18.5;
     public static final double kHeatherRearLeftTurnEncoderOffsetDeg = -113.0;
     public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
+    //sensor coefficent = .0015339775
 
     public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09
 

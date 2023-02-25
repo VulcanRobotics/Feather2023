@@ -79,6 +79,7 @@ public class TowerSubsystem extends SubsystemBase {
 
     private boolean IKMode = false;
     private boolean wristFlipped = true;
+    private boolean wristLock = true;
 
     private double estX = 0.0;
     private double estY = 0.0;
@@ -92,38 +93,84 @@ public class TowerSubsystem extends SubsystemBase {
     private double initialWristEncoder = m_encoderWrist.getPosition();
     private final double wristEncoder180 = 47.642;
      
-    private void goToPosition(double Tvalue, double Evalue) {
+    private void goToPosition(double Tvalue, double Evalue, boolean towerPriority) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
-        if (m_stringTower >= Tvalue + .01) {
-            mTowerSpeed = 0.9;
-        } else if (m_stringTower <= Tvalue - .01) {
-            mTowerSpeed = -0.9;
-        } else if (m_stringTower >= Tvalue + 0.001) {
-            mTowerSpeed = 0.3;
-        } else if (m_stringTower <= Tvalue - 0.001) { 
-            mTowerSpeed = -0.3;
-        }
-        if (m_stringElbow >= Evalue + .01) {
-            mElbowSpeed = -0.3;
-        } else if (m_stringElbow <= Evalue - .01) {
-            mElbowSpeed = 0.3;
-        } else if (m_stringElbow >= Evalue + 0.001) {
-            mElbowSpeed = -0.1;
-        } else if (m_stringElbow <= Evalue - 0.001) {
-            mElbowSpeed = 0.1;
+
+        if (towerPriority){
+            if (m_stringTower < Tvalue + 0.001 && m_stringTower > Tvalue - 0.001){
+                if (m_stringElbow >= Evalue + .01) {
+                    mElbowSpeed = -0.3;
+                } else if (m_stringElbow <= Evalue - .01) {
+                    mElbowSpeed = 0.3;
+                } else if (m_stringElbow >= Evalue + 0.001) {
+                    mElbowSpeed = -0.1;
+                } else if (m_stringElbow <= Evalue - 0.001) {
+                    mElbowSpeed = 0.1;
+                }
+            } else{
+                if (m_stringTower >= Tvalue + .01) {
+                    mTowerSpeed = 0.9;
+                } else if (m_stringTower <= Tvalue - .01) {
+                    mTowerSpeed = -0.9;
+                } else if (m_stringTower >= Tvalue + 0.001) {
+                    mTowerSpeed = 0.3;
+                } else if (m_stringTower <= Tvalue - 0.001) { 
+                    mTowerSpeed = -0.3;
+                }
+            }
+        } else{
+            if (m_stringTower >= Tvalue + .01) {
+                mTowerSpeed = 0.9;
+            } else if (m_stringTower <= Tvalue - .01) {
+                mTowerSpeed = -0.9;
+            } else if (m_stringTower >= Tvalue + 0.001) {
+                mTowerSpeed = 0.3;
+            } else if (m_stringTower <= Tvalue - 0.001) { 
+                mTowerSpeed = -0.3;
+            }
+    
+            if (m_stringElbow >= Evalue + .01) {
+                mElbowSpeed = -0.3;
+            } else if (m_stringElbow <= Evalue - .01) {
+                mElbowSpeed = 0.3;
+            } else if (m_stringElbow >= Evalue + 0.001) {
+                mElbowSpeed = -0.1;
+            } else if (m_stringElbow <= Evalue - 0.001) {
+                mElbowSpeed = 0.1;
+            }
         }
 
     }
 
+    private void flipWrist() { //DOES NOT WORK
+        if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) {
+            m_Wrist.set(0.1);
+        } else {
+            m_Wrist.set(-0.1);
+        }
+    }
+
+    private void highPlace(){
+        goToPosition(.511, .796, true);
+    }
+    private void midPlace(){
+        goToPosition(.336, .792 , false);
+    }
+    private void humanPlayerGrab(){
+        goToPosition(.390, .713, false);
+    }
+
+    private void grabFromIntake() {
+        goToPosition(0, 0, true);
+    }
+
     private void tuckArm(){
-        if (m_towerDownProximity.get() == true){
+        if (!m_towerUpProximity.get() == true){
             mTowerSpeed = 0.75;
         }
-        if (m_stringPotentiometerElbow.get() > 0.58){
-            mElbowSpeed = -0.15;
-        } else if(m_stringPotentiometerElbow.get() < 0.565){
-            mElbowSpeed = 0.15;
+        if (m_ElbowUpProximity.get()){
+            mElbowSpeed = 0.5;
         }
     }
 
@@ -161,7 +208,7 @@ public class TowerSubsystem extends SubsystemBase {
             PneumaticSubsystem.toggleClawState();
         }
 
-        if (Inputs.m_operatorControl.getRawButtonPressed(4)){
+        if (false){
             IKMode = !IKMode;
         }
         //Moving elbow
@@ -446,20 +493,23 @@ public class TowerSubsystem extends SubsystemBase {
                 mWristSpeed = -Constants.Tower.kWristMaxPower;
         }
 
+		// fwl - this code was still in cybersonics code
         //if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){
         //    mWristSpeed = 0.2;
         //} else {
         //    mWristSpeed = 0.0;
         //} 
 
-        /*if (m_Joystick.getRawButtonPressed(2)) {
+        /*if (Inputs.m_operatorControl.getRawButtonPressed(2)) {
             wristFlipped = !wristFlipped;
         }*/
         
-        if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
-            mWristSpeed = 0;
-        }else if (m_encoderWrist.getPosition() > initialWristEncoder && mWristSpeed > 0){
-            mWristSpeed = 0;
+        if (wristLock == true){
+	        if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
+	            mWristSpeed = 0;
+	        }else if (m_encoderWrist.getPosition() > initialWristEncoder && mWristSpeed > 0){
+	            mWristSpeed = 0;
+			}
         }
 
         /*if (Math.abs(Inputs.zAxisJoystick) < 0.4) {
@@ -471,12 +521,36 @@ public class TowerSubsystem extends SubsystemBase {
         }*/
 
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
-        if (Inputs.m_operatorControl.getRawButton(3)) {
+        if (Inputs.m_operatorControl.getRawButton(2)) {
             //goToPosition(-55, -12);
             tuckArm();
         }
-        if (Inputs.m_operatorControl.getRawButton(5)) {
-            goToPosition(0.185, 0.519);
+
+
+
+
+
+
+   
+        if (Inputs.m_operatorControl.getRawButton(3)) {
+            humanPlayerGrab();
+        }
+
+        if (Inputs.m_operatorControl.getRawButton(4)) {
+            midPlace();
+        }
+
+        if (Inputs.m_operatorControl.getRawButton(6)) {
+            highPlace();
+        }
+
+        if (Inputs.m_operatorControl.getRawButton(8)) {
+            wristLock = false;
+        }
+
+        if (Inputs.m_operatorControl.getRawButtonReleased(8)){
+            wristLock = true;
+            initialWristEncoder = m_wristEncoder;
         }
         
 

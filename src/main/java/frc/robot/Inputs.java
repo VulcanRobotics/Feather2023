@@ -117,7 +117,7 @@ public class Inputs {
         driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
         driverStrafe = getCubePower(driverStrafe);
 
-        driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
+        driverTurn = applyDeadBand( -m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
         driverTurn *= Constants.OIConstants.kDriverTurnPCT;
         //driverTurn = getCubePower(driverTurn);
 

@@ -250,7 +250,7 @@ public final class Constants {
             kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
-  public static class MatchSetttings{
+  public static class MatchSettings{
     public static int      kAllianceColor         = 0;       // these will be set on robot class in init
     public static String   kAllianceColorName     = "unk";  // these will be set on robot class in init
     public static int      kBlueAlliance          = 1;  // these will be set on robot class in init
@@ -273,97 +273,15 @@ public final class Constants {
 
   }
 
-
-  public static final class Auton2BallRightConstants {
-
-    public static double kInitial_Heading       = config.getDouble("AUTON_2BALL_RIGHT_kInitial_Heading", 0.0);
-    public static double kInitial_Power         = config.getDouble("AUTON_2BALL_RIGHT_kInitial_Power", .40);
-    public static double kInitial_Time          = config.getDouble("AUTON_2BALL_RIGHT_kInitial_Time", 1.0);
-
-    public static double kToShoot_Heading       = config.getDouble("AUTON_2BALL_RIGHT_kToShoot_Heading", 0.0);
-    public static double kToShoot_Power         = config.getDouble("AUTON_2BALL_RIGHT_kToShoot_Power",  .40);
-    public static double kToShoot_Time          = config.getDouble("AUTON_2BALL_RIGHT_kToShoot_Time", 3.0);
-
-    public static double kShoot_Time            = config.getDouble("AUTON_2BALL_RIGHT_kShoot_Time", 1.5);
-
-    public static double kBackOut_Heading       = config.getDouble("AUTON_2BALL_RIGHT_kBackOut_Heading", 0.0);
-    public static double kBackOut_Power         = config.getDouble("AUTON_2BALL_RIGHT_kBackOut_Power", -.40);
-    public static double kBackOut_Time          = config.getDouble("AUTON_2BALL_RIGHT_kBackOut_Time", 1);
-
-  }
+  public static final class TelemetrySwitches {
+    public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", true);
+    public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", true);
+    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);
+    public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
+    public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", false);
 
 
 
-  public static final class Auton2BallConstants {
-
-    public static double kInitial_Heading       = config.getDouble("AUTON_2BALL_kInitial_Heading", 0.0);
-    public static double kInitial_Power         = config.getDouble("AUTON_2BALL_kInitial_Power", .40);
-    public static double kInitial_Time          = config.getDouble("AUTON_2BALL_kInitial_Time", 1.0); 
-
-    public static double kToShoot_Heading       = config.getDouble("AUTON_2BALL_kToShoot_Heading", 0.0);
-    public static double kToShoot_Power         = config.getDouble("AUTON_2BALL_kToShoot_Power", -.30);
-    public static double kToShoot_Time          = config.getDouble("AUTON_2BALL_kToShoot_Time", 4.0);
-
-  }
-
-
-  public static final class Auton3BallRightConstants {
-
-    public static double kInitial_Heading       = config.getDouble("AUTON_3BALL_RIGHT_kInitial_Heading", 0.0);
-    public static double kInitial_Power         = config.getDouble("AUTON_3BALL_RIGHT_kInitial_Power", -.50);
-    public static double kInitial_Time          = config.getDouble("AUTON_3BALL_RIGHT_kInitial_Time", 3.0);
-
-    public static double kToShoot_Heading       = config.getDouble("AUTON_3BALL_RIGHT_kToShoot_Heading", 0.0);
-    public static double kToShoot_Power         = config.getDouble("AUTON_3BALL_RIGHT_kToShoot_Power",  .50);
-    public static double kToShoot_Time          = config.getDouble("AUTON_3BALL_RIGHT_kToShoot_Time", 2.0);
-
-    public static double kShoot_Time            = config.getDouble("AUTON_3BALL_RIGHT_kShoot_Time", 1.5);
-
-    public static double kToBall3_Heading       = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Heading", 90.0);
-    public static double kToBall3_Power         = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Power", -.70);
-    public static double kToBall3_Time          = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Time", 2.5);
-
-    public static double kToShoot3_Heading       = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Heading", 80.0);
-    public static double kToShoot3_Power         = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Power", -.70);
-    public static double kToShoot3_Time          = config.getDouble("AUTON_3BALL_RIGHT_ToBall3_Time", 1.5);
-
-  }
-
-
-  public static final class Auton4BallConstants {
-
-    public static double kInitial_Heading       = config.getDouble("AUTON_4BALL_kInitial_Heading", 0.0);
-    public static double kInitial_Power         = config.getDouble("AUTON_4BALL_kInitial_Power", -.50);
-    public static double kInitial_Time          = config.getDouble("AUTON_4BALL_kInitial_Time", 1.5);
-    public static double kInitial_ShootTime     = config.getDouble("AUTON_4BALL_kInitial_ShootTime", 1.5);
-
-    public static double kAfterShot1_Time       = config.getDouble("AUTON_4BALL_kAfterShot1_Time",   .5);
-    public static double kAfterShot1_Power      = config.getDouble("AUTON_4BALL_kAfterShot1_Power", -.7);
-
-    public static double kToTerm_Heading        = config.getDouble("AUTON_4BALL_kToTerm_Heading", -31.0);
-    public static double kToTerm_Power          = config.getDouble("AUTON_4BALL_kToTerm_Power", -.85);
-    public static double kToTerm_Time           = config.getDouble("AUTON_4BALL_kToTerm_Time",   1.5);
-
-    public static double kAtTerm_Heading        = config.getDouble("AUTON_4BALL_kAtTerm_Heading", -31.0);
-    public static double kAtTerm_Power          = config.getDouble("AUTON_4BALL_kAtTerm_Power", -.60);
-    public static double kAtTerm_Time           = config.getDouble("AUTON_4BALL_kAtTerm_Time",   1.5);
-    public static double kAtTerm_RampDownProp   = config.getDouble("AUTON_4BALL_kAtTerm_RampDownProp", .40);
-
-    public static double kAtTerm_IntakeUpTime   = config.getDouble("AUTON_4BALL_kAtTerm_IntakeUpTime", 1.0);
-    public static double kAtTerm_IntakeDownTime = config.getDouble("AUTON_4BALL_kAtTerm_DownTime", 500);
-
-    //public static double kFromTerm_Heading      = config.getDouble("AUTON_4BALL_kFromTerm_Heading", -40.0);
-    //public static double kFromTerm_Power        = config.getDouble("AUTON_4BALL_kFromTerm_Power", 0.20);
-    //public static double kFromTerm_Time         = config.getDouble("AUTON_4BALL_kFromTerm_Time", 2.0);
-
-    public static double kShot2_Heading         = config.getDouble("AUTON_4BALL_kShot2_Heading", 37.4);
-    public static double kShot2_Power           = config.getDouble("AUTON_4BALL_kShot2_Power", 0.85);
-    public static double kShot2_DriveTime            
-                  = config.getDouble("AUTON_4BALL_kShot2_DriveTime", 2.5);   // time to drive to shot 2 
-    public static double kShot2_DelayShotTime       
-                  = config.getDouble("AUTON_4BALL_kShot2_DelayShotTime", .25); // give robot time to stop forward motion
-
-    
   }
 
   public static final class ShooterConstants {

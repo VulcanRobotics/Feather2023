@@ -52,7 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
   ****************************************************/
 
   // Robot swerve modules
-  private final SwerveModule m_frontLeft =
+  public static final SwerveModule m_frontLeft =
       new SwerveModule(
           DriveConstants.kFrontLeftDriveMotorPort,
           DriveConstants.kFrontLeftTurningMotorPort,
@@ -63,7 +63,7 @@ public class DriveSubsystem extends SubsystemBase {
           //getRobotSpecificOffset(0));
           
 
-  private final SwerveModule m_rearLeft =
+  private static final SwerveModule m_rearLeft =
       new SwerveModule(
           DriveConstants.kRearLeftDriveMotorPort,
           DriveConstants.kRearLeftTurningMotorPort,
@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
           330.117 - 279.316 + 45 + 3); //-113, 16.5
           //getRobotSpecificOffset(1));
 
-  private final SwerveModule m_frontRight =
+  private static final SwerveModule m_frontRight =
       new SwerveModule(
           DriveConstants.kFrontRightDriveMotorPort,
           DriveConstants.kFrontRightTurningMotorPort,
@@ -83,7 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
           79.013 - 0.615 - 135);//-153); //18.5, 250
           //getRobotSpecificOffset(2));
 
-  private final SwerveModule m_rearRight =
+  private static final SwerveModule m_rearRight =
       new SwerveModule(
           DriveConstants.kRearRightDriveMotorPort,
           DriveConstants.kRearRightTurningMotorPort,
@@ -100,7 +100,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final XboxController m_driveController = new XboxController(0);
 
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry =
+  public static SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
       new SwerveModulePosition[] { //do we need position
         m_frontLeft.getPosition(),
@@ -202,7 +202,7 @@ public class DriveSubsystem extends SubsystemBase {
     Constants.telemetry.putNumber("DRIVE Gyro Roll", m_gyro.getRoll());
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
-    /* 
+     
     if (xSpeed + ySpeed + rot > 0.05) {
       lastX = xSpeed;
       lastY = ySpeed;
@@ -214,7 +214,7 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeed = lastY * 0.001;
       rot = lastZ * 0.001;
     }
-*/
+
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
    // not critical display items
@@ -225,7 +225,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Cool Auton Mode", autonMode);
     SmartDashboard.putNumber("currentX", currentPose.getX());
     SmartDashboard.putNumber("currentY", currentPose.getY());
+    SmartDashboard.putNumber("Current Position", m_frontLeft.getCurrentDriveTicks());
     SmartDashboard.putBoolean("Robot Mode", fieldRelative);
+    SmartDashboard.putNumber("RR", m_rearRight.getPosition().distanceMeters);
+    SmartDashboard.putNumber("FR", m_frontRight.getPosition().distanceMeters);
+    SmartDashboard.putNumber("FL", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("RL", m_rearLeft.getPosition().distanceMeters);
   }
 
    /* if (autonMode == true) {

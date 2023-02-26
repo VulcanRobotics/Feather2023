@@ -39,10 +39,16 @@ public final class Constants {
     public static final double driveGearRatio = (6.86 / 1.0); //6.86:1
     public static final double angleGearRatio = 32 / 3;//12.8;//10.67;
 
-    public static final double trackWidth = 0.565;
-    public static final double wheelBase = 0.565;
+    public static final double trackWidth = 0.457;
+    public static final double wheelBase = 0.457;
     public static final double wheelDiameter = Units.inchesToMeters(3.94);
     public static final double wheelCircumference = wheelDiameter * Math.PI;
+
+    public static final double turnWheel360Ticks = 31597.3632;
+    public static final double driveWheel360Ticks = 2048.0 * driveGearRatio;
+  
+
+    public static final double ticksPerMeter = driveWheel360Ticks/wheelCircumference;
 
     public static final double maxSpeed = 4.5; //meters per second
     public static final double maxAngularVelocity = 11.5;
@@ -97,9 +103,9 @@ public final class Constants {
 
     public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09
 
-    public static final double kTrackWidth = 0.565;  // PGR 30" square perimeter  // no config as this is nailed up
+    public static final double kTrackWidth = .457;//0.565;  // PGR 30" square perimeter  // no config as this is nailed up
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.565;         //cange                       // no config as this is nailed up
+    public static final double kWheelBase = .457;//0.565;         //cange                       // no config as this is nailed up
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(

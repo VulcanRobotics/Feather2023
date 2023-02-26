@@ -10,6 +10,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.EventVector;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;

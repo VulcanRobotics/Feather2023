@@ -56,12 +56,14 @@ import edu.wpi.first.wpilibj.XboxController;
 public class SwerveModule {
 
   private int turnMotorPortGlobal;
+  private int driveMotorPortGlobal;
+
   private int turnEncoderPortGlobal;
   private double turningEncoderOffsetGlobal;
   private double realTurn;
   private double degreesToTicks;
 
-  private double Talon360 = 31597.3632; // This is the true value, based on TalonFX data sheet. Was 31604.76;
+  private double Talon360 = Constants.Swerve.turnWheel360Ticks; // This is the true value, based on TalonFX data sheet. Was 31604.76;
   final double Talon180 = Talon360/2;
   final double Talon90 = Talon360/4;
   final double Talon270 = Talon90*3;
@@ -148,6 +150,9 @@ public class SwerveModule {
     //finds the offset between the CAN Coder zero and TalonFX zero in ticks; remains constant
 
     turnMotorPortGlobal = turningMotorChannel; //Globals are used for reference in Smartdashboard
+    driveMotorPortGlobal = driveMotorChannel; //Globals are used for reference in Smartdashboard
+
+    
 
     turnEncoderPortGlobal = turningEncoderPorts;
 
@@ -192,12 +197,19 @@ public class SwerveModule {
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition();
+    // Working on Odometry
+    double robotMeters = m_driveMotor.getSelectedSensorPosition()/Constants.Swerve.ticksPerMeter;
+    return new SwerveModulePosition(robotMeters, new Rotation2d(m_turningEncoder.getAbsolutePosition()));
+    //return new SwerveModulePosition();
   }
 
 
   private double getCurrentTicks(){
     return m_turningMotor.getSelectedSensorPosition();
+  }
+
+  public double getCurrentDriveTicks(){
+    return m_driveMotor.getSelectedSensorPosition();
   }
 
   private double getCANTicks(){
@@ -304,7 +316,7 @@ public class SwerveModule {
       
    
     
-    if(Inputs.driveSwerveEncoderReset){
+    if(Inputs.driveSwerveEncoderReset){ //hardware rest
        talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360;
     }
 
@@ -347,6 +359,8 @@ public class SwerveModule {
       SmartDashboard.putNumber("Wheel " + Integer.toString(turnMotorPortGlobal) + " TalonFX Position", m_turningMotor.getSelectedSensorPosition(0));
       SmartDashboard.putNumber("Wheel " + Integer.toString(turnEncoderPortGlobal) + " CANCoder Position", m_turningEncoder.getAbsolutePosition());
       SmartDashboard.putNumber("DESIRED TURN OUTPUT TICKS", realTurn);
+      SmartDashboard.putNumber("Drive Wheel" + Integer.toString(driveMotorPortGlobal) + " TalonFX Position", m_driveMotor.getSelectedSensorPosition());
+
       SmartDashboard.putNumber("DESIRED TURN OUTPUT DEGREES", realTurn/TalonDegrees);
       //SmartDashboard.putNumber("Closest Zero" + Integer.toString(turnMotorPortGlobal), getClosestZero(desiredState));
       //SmartDashboard.putNumber("Optimized Turn" + Integer.toString(turnMotorPortGlobal), getOptimizedTurn(desiredState));

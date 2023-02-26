@@ -5,8 +5,13 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.Tower.AutonFlags;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.TimedRampPower;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+
+import java.sql.Driver;
+
 import com.kauailabs.navx.frc.AHRS;
 
 /* Auton Class
@@ -30,6 +35,9 @@ public class Auton extends MyStateMachine {
     private TimedRampPower trpDrivePower;
     
 
+    double targetPosition = 58000;
+    double initialPosition = 0.0;
+
     public  Auton() {               // constructor
         reset();
         timStepTimer.start();
@@ -37,6 +45,8 @@ public class Auton extends MyStateMachine {
     }
 
     public void auton1() { // This overrides the auton2 method defined in the state machine class.
+        
+
         //DriveSubsystem.m_gyro.zeroYaw();
         //String sAuton = "Auton1 -  ";
         //Constants.telemetry.putString("Auton ", sAuton );
@@ -54,27 +64,35 @@ public class Auton extends MyStateMachine {
 
         Inputs.fieldCentric = true;        // do this in call cases
 
+        double currentPosition = DriveSubsystem.m_frontLeft.getCurrentDriveTicks();
+
+        Constants.telemetry.putNumber("Current Position", currentPosition, true);
+
         switch (iStep) {                            // switch statement.
             // it will look at iStep and find the case where it should run code.
             // if iStep not found, it will go to default section at bottom.
 
-            case 0:                                    // case 0 is where we can set up a bunch of stuff for the state machine.    
+            
+
+            case 0:              
+                Inputs.driveSwerveEncoderReset = true;                      // case 0 is where we can set up a bunch of stuff for the state machine.    
                 if (bStepFirstPass) {
                     Constants.telemetry.putString("Auton Step Desc", "Delay Test", true);
                     DriveSubsystem.m_gyro.zeroYaw();
                 }
 
-                /*if (Inputs.autonDelay == 0) {
+                if (Inputs.autonDelay == 0) {
                     iStep += 1;
                 } else if (timStepTimer.get() >= Inputs.autonDelay) {
                     iStep += 1;
-                }*/
-                iStep = 2; //if only trying to do charge station
+                }
+                //iStep = 2; //if only trying to do charge station
 
                 break;
 
             
             case 1: // drive back to wall with intake down
+                Inputs.driveSwerveEncoderReset = false;
             if (bStepFirstPass) {
                 Constants.telemetry.putString("Auton Step Desc", "Attack Ramp", true);
             }
@@ -97,8 +115,10 @@ public class Auton extends MyStateMachine {
             case 2:
                 Inputs.driverPower = .8;
 
-                if( DriveSubsystem.m_gyro.getRoll() < -10 )
-                    iStep++; //++;
+                if( DriveSubsystem.m_gyro.getRoll() < -10 ){
+                    iStep++;
+                    initialPosition = currentPosition;
+                 }
 
                 break;
 
@@ -107,7 +127,8 @@ public class Auton extends MyStateMachine {
                     Constants.telemetry.putString("Auton Step Desc", "On Ramp - Forward", true);
                 }
 
-                if (timStepTimer.get() < 1.2) { //1.2
+                
+                if (targetPosition > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; //0.3
 
                     break;
@@ -133,11 +154,11 @@ public class Auton extends MyStateMachine {
                     Constants.telemetry.putString("Auton Step Desc", "Balance On Ramp", true);
                 }
 
-                if (timStepTimer.get() < 0.25){
-                    /*if (DriveSubsystem.m_gyro.getRoll() < -2.5) {
-                        Inputs.driverPower = 0.3;
-                    } else*/ if (DriveSubsystem.m_gyro.getRoll() > 2.5) {
-                        Inputs.driverPower = -0.3;
+                if (timStepTimer.get() < 1.25){
+                    if (DriveSubsystem.m_gyro.getRoll() < -2.0) {
+                        Inputs.driverPower = 0.15;
+                    } else if (DriveSubsystem.m_gyro.getRoll() > 2.0) {
+                        Inputs.driverPower = -0.15;
                     } else{
                         Inputs.driverPower = 0;
                     }

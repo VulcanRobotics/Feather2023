@@ -296,6 +296,7 @@ public class Inputs {
         Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, true);
 
         Constants.telemetry.putString("INPUT Auton Goto", autonRequestGoTo.name(), true);
+        Constants.telemetry.putNumber("Drive Power Offset", drivePowerOffset, true);
         if( Constants.TelemetrySwitches.InputsDisplayOn){
             
 
@@ -311,7 +312,7 @@ public class Inputs {
             Constants.telemetry.putNumber("INPUT Shodr Power (y)", towerShoulderPower);
             Constants.telemetry.putNumber("INPUT Wrist Power (z)", towerWristSpeed);
 
-            Constants.telemetry.putNumber("Drive Power Offset", drivePowerOffset);
+            Constants.telemetry.putNumber("Drive Power Offset", drivePowerOffset, true);
         }
 
         Constants.telemetry.putString("INPUT AUTON To Run", String.valueOf(autonToRun),true);

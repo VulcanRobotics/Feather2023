@@ -119,7 +119,11 @@ public class TowerSubsystem extends SubsystemBase {
     private static boolean towerMoveTo(double Tvalue){
     boolean done = false;
 
-        if (m_stringTower >= Tvalue + .01) {
+        if (m_stringTower >= Tvalue + .05) {
+            mTowerSpeed = 1;
+        } else if (m_stringTower <= Tvalue - .05) {
+            mTowerSpeed = -1;
+        } else if (m_stringTower >= Tvalue + .01) {
             mTowerSpeed = 0.7;
         } else if (m_stringTower <= Tvalue - .01) {
             mTowerSpeed = -0.7;
@@ -136,7 +140,7 @@ public class TowerSubsystem extends SubsystemBase {
         return done;
     }
      
-    private static boolean goToPosition(double Tvalue, double Evalue, boolean towerPriority) {
+    private static boolean goToPosition(double Tvalue, double Evalue, boolean towerPriority, boolean flipArm) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
 
@@ -144,6 +148,10 @@ public class TowerSubsystem extends SubsystemBase {
         boolean towerDone = false;
 
         if (towerPriority){
+            if (towerDone = towerMoveTo(Tvalue)){
+                elbowDone = elbowMoveTo(Evalue);
+            }
+        }else if (flipArm){
             if (m_stringTower > 0.38){
                 elbowDone = elbowMoveTo(Evalue);
 
@@ -174,22 +182,22 @@ public class TowerSubsystem extends SubsystemBase {
     }
 
     public static boolean highPlace(){
-        return goToPosition(.511, .796, true);
+        return goToPosition(.511, .796, false, true);
     }
     public boolean midPlace(){
-        return goToPosition(.336, .792 , false);
+        return goToPosition(.336, .792 , false, false);
     }
     public boolean humanPlayerGrab(){
-        return goToPosition(.390, .713, false);
+        return goToPosition(.390, .713, false, false);
     }
 
     public boolean grabFromIntake() {
-        return goToPosition(0, 0, true);
+        return goToPosition(0.322, 0.71, true, false);
     }
 
     public static void tuckArm(){
         if (!m_towerUpProximity.get() == true){
-            mTowerSpeed = 0.75;
+            mTowerSpeed = 0.85;
         }
         if (m_ElbowUpProximity.get()){
             mElbowSpeed = 0.25;
@@ -508,7 +516,7 @@ public class TowerSubsystem extends SubsystemBase {
 
         //For wrist movement, rotate joystick
         mWristSpeed = 0.0;
-        if( Math.abs(Inputs.towerWristSpeed) > .4){
+        if( Math.abs(Inputs.towerWristSpeed) > .6){
             if( Inputs.towerWristSpeed > 0.0)
                 mWristSpeed = Constants.Tower.kWristMaxPower;
             else if( Inputs.towerWristSpeed < 0.0)
@@ -578,6 +586,10 @@ public class TowerSubsystem extends SubsystemBase {
 
         if (Inputs.m_operatorControl.getRawButton(4)) {
             midPlace();
+        }
+
+        if (Inputs.m_operatorControl.getRawButton(5)) {
+            grabFromIntake();
         }
 
         if (Inputs.m_operatorControl.getRawButton(6)) {

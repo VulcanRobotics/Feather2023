@@ -134,7 +134,7 @@ public final class Constants {
 
   public static final class ModuleConstants {
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = config.getDouble("SWRV_kMaxModuleAngularSpeedRadiansPerSecond", 2 * Math.PI);
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 4.5;//config.getDouble("SWRV_kMaxModuleAngularAccelerationRadiansPerSecondSquared", 2 * Math.PI);
+    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 4.5;//4.5//config.getDouble("SWRV_kMaxModuleAngularAccelerationRadiansPerSecondSquared", 2 * Math.PI);
 
     public static final double kTurnPIDTolerance = config.getDouble("SWRV_PID_TurnPIDTolerance", 0.005 );
 

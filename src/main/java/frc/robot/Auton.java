@@ -35,7 +35,7 @@ public class Auton extends MyStateMachine {
     private TimedRampPower trpDrivePower;
     
 
-    double targetPosition = 58000;
+    double targetPosition = 26000;  //ticks
     double initialPosition = 0.0;
 
     public  Auton() {               // constructor
@@ -97,15 +97,16 @@ public class Auton extends MyStateMachine {
                 Constants.telemetry.putString("Auton Step Desc", "Attack Ramp", true);
             }
 
-                if(timStepTimer.get() < 5.0) {
+                if(timStepTimer.get() < 3.5) {
                     Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
 
                     break;
                 }
 
-                if (timStepTimer.get() < 10.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+          
 
+                if (timStepTimer.get() < 7.0){
+                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
                     break;
                 }
 
@@ -113,8 +114,11 @@ public class Auton extends MyStateMachine {
                 break;
 
             case 2:
-                Inputs.driverPower = .8;
+                Inputs.driverPower = 1;
 
+                if (timStepTimer.get() < 6.0){
+                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                }
                 if( DriveSubsystem.m_gyro.getRoll() < -10 ){
                     iStep++;
                     initialPosition = currentPosition;
@@ -156,12 +160,12 @@ public class Auton extends MyStateMachine {
 
                 if (timStepTimer.get() < 1.25){
                     if (DriveSubsystem.m_gyro.getRoll() < -2.0) {
-                        Inputs.driverPower = 0.15;
+                        Inputs.driverPower = 0.2;
                     } else if (DriveSubsystem.m_gyro.getRoll() > 2.0) {
-                        Inputs.driverPower = -0.15;
+                        Inputs.driverPower = -0.2;
                     } else{
                         Inputs.driverPower = 0;
-                    }
+                    }  
                 } else{
                     Inputs.driverPower = 0;
                     iStep++;

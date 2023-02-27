@@ -202,7 +202,7 @@ public class DriveSubsystem extends SubsystemBase {
     Constants.telemetry.putNumber("DRIVE Gyro Roll", m_gyro.getRoll());
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
-     
+     /* 
     if (xSpeed + ySpeed + rot > 0.05) {
       lastX = xSpeed;
       lastY = ySpeed;
@@ -213,7 +213,7 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeed = lastX * 0.001;
       ySpeed = lastY * 0.001;
       rot = lastZ * 0.001;
-    }
+    } */
 
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)

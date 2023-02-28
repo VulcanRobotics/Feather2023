@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   @Override
   public void disabledPeriodic(){
 
-      Constants.telemetry.saveSpreadSheet();
+      // Constants.telemetry.saveSpreadSheet();
       //Constants.telemetry.save
 
   }
@@ -274,14 +274,14 @@ public class Robot extends TimedRobot {   // RobotBase {
     m_PneumaticSubsystem.periodic();
     m_DriveSubsystem.periodic();      // two steps,  here determine where we are. 
 
-    trackRobotBattery();              // write out telemetry fore the battery ports
-
-    Constants.telemetry.writeRow();   // after all the susbsystems run write telem row. 
-
+    // YK - Disabled telemetry 2023-02-27
+    // trackRobotBattery();              // write out telemetry fore the battery ports
+    // Constants.telemetry.writeRow();   // after all the susbsystems run write telem row. 
   }
 
-  private void trackRobotBattery(){
+  private void trackRobotBattery() {
 
+    /*
     String key = "";
 
     Constants.telemetry.saveDouble( "Robot Total Current", robotPowerPanel.getTotalCurrent() );
@@ -294,7 +294,7 @@ public class Robot extends TimedRobot {   // RobotBase {
       key = "Robot Power Port " + String.format("%02d", portId) + " " + aryPowerPortName[portId];
       Constants.telemetry.saveDouble(key, robotPowerPanel.getCurrent(portId));  
     }
-
+    */
   }
 
   private void setAllianceInfo(){

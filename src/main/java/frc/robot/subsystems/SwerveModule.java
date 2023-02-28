@@ -352,7 +352,7 @@ public class SwerveModule {
 
     //SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
 
-    if( Constants.TelemetrySwitches.SwerveDisplayOn) {
+    if( Constants.DashboardSwitches.SwerveDisplayOn) {
       SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
       SmartDashboard.putNumber("Desired Position for Wheel" +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
       SmartDashboard.putNumber("TALON OFFSET ON BOOT" + Integer.toString(turnMotorPortGlobal) , talonOffsetOnBoot);

@@ -102,7 +102,7 @@ public class Inputs {
 
         zeroValues(); // clear out all varible before we read again
 
-        boolean bForceDisplay = Constants.TelemetrySwitches.InputsDisplayOn;
+        boolean bForceDisplay = Constants.DashboardSwitches.InputsDisplayOn;
         /////////////////////////////////////////////////////////////////
         // Extra Box control
         /////////////////////////////////////////////////////////////////
@@ -290,7 +290,8 @@ public class Inputs {
 
 
     public static void saveTelem(){     // this is called in robot.periodic so we can pick up any auton changes.
-        
+    // YK - Disabled telemetry 2023-02-27
+    /*
         Constants.telemetry.putNumber("INPUT Driver Power", driverPower, true);
         Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, true);
         Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, true);
@@ -318,7 +319,7 @@ public class Inputs {
         Constants.telemetry.putString("INPUT AUTON To Run", String.valueOf(autonToRun),true);
         Constants.telemetry.putString("INPUT AUTON Delay", String.valueOf(autonDelay),true);
         Constants.telemetry.putString("INPUT ALIANCE Color", Constants.MatchSettings.kAllianceColorName);
-        
+     */   
         
 
     }

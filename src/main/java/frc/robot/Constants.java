@@ -23,16 +23,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
   
 public final class Constants {
   public static final Config config           = new Config("/c/1218Data", "1218Config.txt");
-  public static final SCHTelemetry telemetry  = new SCHTelemetry("/c/1218Data", "1218_Telemetry", "Telemetry_Columns.txt");    // do not add extension, code will add it. 
-  // when ready please call Frank Larkin at 215-823-9593
-  public static final String whichRobot  = "Heather";
+  // public static final SCHTelemetry telemetry  = new SCHTelemetry("/c/1218Data", "1218_Telemetry", "Telemetry_Columns.txt");    // do not add extension, code will add it. 
+  
+  public static final String whichRobot  = "Stinger";
   public static final class Display {
 
     public static final double kKLEDDefaultDisplay    =  0.49;
     public static final double kKLEDOnTargetDisplay   = -0.07;
     public static final double kKLEDTargettingDisplay = -0.09;
-
-
   }
 
   public static final class Swerve {
@@ -280,15 +278,12 @@ public final class Constants {
 
   }
 
-  public static final class TelemetrySwitches {
+  public static final class DashboardSwitches {
     public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", true);
     public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", true);
     public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);
     public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
     public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", false);
-
-
-
   }
 
   public static final class ShooterConstants {

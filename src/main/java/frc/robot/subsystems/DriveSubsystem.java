@@ -142,7 +142,7 @@ public class DriveSubsystem extends SubsystemBase {
           Inputs.driverTurn,
           Inputs.fieldCentric);
           
-      if( Constants.TelemetrySwitches.DriveDisplayOn){
+      if( Constants.DashboardSwitches.DriveDisplayOn){
         SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
         SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
         SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );
@@ -199,7 +199,7 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d currentPose = m_odometry.getPoseMeters();
     double currentX = currentPose.getX();
     double currentY = currentPose.getY();
-    Constants.telemetry.putNumber("DRIVE Gyro Roll", m_gyro.getRoll());
+    // Constants.telemetry.putNumber("DRIVE Gyro Roll", m_gyro.getRoll());
 
     //Shaun 2/6/23 - Wheels remain in last position without moving.
      /* 
@@ -218,7 +218,7 @@ public class DriveSubsystem extends SubsystemBase {
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
    // not critical display items
-  if( Constants.TelemetrySwitches.DriveDisplayOn){
+  if( Constants.DashboardSwitches.DriveDisplayOn){
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
     SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));

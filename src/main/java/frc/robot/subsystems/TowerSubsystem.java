@@ -372,7 +372,7 @@ public class TowerSubsystem extends SubsystemBase {
                 // mElbowSpeed = 0.05;
             }
 
-            if( Constants.TelemetrySwitches.TowerDisplayOn){
+            if( Constants.DashboardSwitches.TowerDisplayOn){
                 SmartDashboard.putNumber("Tower X", tow_x);
                 SmartDashboard.putNumber("Tower Y", tow_y);   
                 SmartDashboard.putNumber("Tower angle", 180*(tower_rad)/PI );          
@@ -486,7 +486,7 @@ public class TowerSubsystem extends SubsystemBase {
             //elbowEncoderTarget = elbowEncoder + (48 * theta2_diff / PI);
             elbowEncoderTarget = elbowEncoder - (elbowEncoder180Ticks * theta2_diff / PI); // Is elbow going backwards?
 
-            if( Constants.TelemetrySwitches.TowerDisplayOn){
+            if( Constants.DashboardSwitches.TowerDisplayOn){
                 SmartDashboard.putNumber("Tower angle diff", theta1_diff);
                 SmartDashboard.putNumber("Elbow angle diff", theta2_diff);            
             
@@ -660,7 +660,7 @@ public class TowerSubsystem extends SubsystemBase {
         //m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
         m_Wrist.set(mWristSpeed);
          
-        if( Constants.TelemetrySwitches.TowerDisplayOn){
+        if( Constants.DashboardSwitches.TowerDisplayOn){
             SmartDashboard.putNumber("mElbow", m_stringPotentiometerElbow.get());
             SmartDashboard.putNumber("mTowerSpeed", mTowerSpeed);
             SmartDashboard.putBoolean("upperProximity", isElbowOnTop);

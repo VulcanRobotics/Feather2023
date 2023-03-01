@@ -80,6 +80,8 @@ public class Inputs {
     public static int     autonToRun        = 0;
     public static int     autonToRunHighest = Constants.AutoConstants.kTotalAutons;
     public static double  autonDelay        = 0.0;
+    public static String  autonMessage = "No Auton Selected";
+
     public static boolean runAuto = false;                  // not clear out
  
     public static int     allianceColor     = Constants.ShooterConstants.kAllianceBlue;
@@ -101,8 +103,8 @@ public class Inputs {
     public static void periodic(){
 
         zeroValues(); // clear out all varible before we read again
-
-        boolean bForceDisplay = Constants.DashboardSwitches.InputsDisplayOn;
+        setAuton();
+         boolean bForceDisplay = Constants.DashboardSwitches.InputsDisplayOn;
         /////////////////////////////////////////////////////////////////
         // Extra Box control
         /////////////////////////////////////////////////////////////////
@@ -261,9 +263,9 @@ public class Inputs {
         //if( m_extraControl.getRawButtonReleased(1) == false )  // master arm button, red switch on extra control
         //    return;
 
-        if( m_extraControl.getRawButtonReleased(8) == true){  ///Top button
+        if( m_operatorControl.getRawButtonReleased(12) == true){  ///Top button
             autonToRun++;
-        } else if( m_extraControl.getRawButtonReleased(7) == true){  ///Bottom button
+        } else if( m_operatorControl.getRawButtonReleased(11) == true){  ///Bottom button
             autonToRun--;
         }
         // force us to within limits
@@ -272,16 +274,30 @@ public class Inputs {
                                 Constants.AutoConstants.kTotalAutons : autonToRun ; 
 
         // now do auton delay
-        if( m_extraControl.getRawButtonReleased(10) == true){  ///Top button
+        /* 
+        if( m_operatorControl.getRawButtonReleased(10) == true){  ///Top button
             autonDelay += .25;
-        } else if( m_extraControl.getRawButtonReleased(9) == true){  ///Bottom button
+        } else if(m_operatorControl.getRawButtonReleased(9) == true){  ///Bottom button
             autonDelay -= .25;
         }
         // force us to within limits
         autonDelay = autonDelay < 0.0 ? 0.0 : autonDelay ; 
         autonDelay = autonDelay > 10.0 ? 10.0 : autonDelay ;
-
-        //SmartDashboard.putString("INPUT AUTON To Run", String.valueOf(autonToRun));
+*/      if (autonToRun == 0) {
+            autonMessage = "0: No auton currently";
+        } else if (autonToRun == 1) {
+            autonMessage = "1: Drop cone high, balance (18p)";
+        } else if (autonToRun == 2) {
+            autonMessage = "2: Drop cone high, leave community, balance (21p)";
+        } else if (autonToRun == 3) {
+            autonMessage = "3: Drop cone high, drive out of community (9p)";
+        } else if (autonToRun == 4) {
+            autonMessage = "4: No auton currently";
+        } else if (autonToRun == 5) {
+            autonMessage = "5: No auton currently";
+        }
+        SmartDashboard.putNumber("INPUT AUTON To Run", autonToRun);
+        SmartDashboard.putString("Running What Auton?", autonMessage);  
         //SmartDashboard.putString("INPUT AUTON Delay", String.valueOf(autonDelay));
         //SmartDashboard.putString("ROBOT ALIANCE Color", 
         //                                    DriverStation.getAlliance().toString().toLowerCase()); 

@@ -20,6 +20,7 @@ import frc.robot.Inputs;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -97,6 +98,9 @@ public class DriveSubsystem extends SubsystemBase {
   //private final Gyro m_gyro = new ADXRS450_Gyro();
   public static AHRS m_gyro = new AHRS();
 
+  private final Ultrasonic m_distanceUltrasonic = new Ultrasonic(6, 5);
+  
+
   private final XboxController m_driveController = new XboxController(0);
 
   // Odometry class for tracking robot pose
@@ -110,8 +114,11 @@ public class DriveSubsystem extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {}
-
+  public DriveSubsystem() {
+    Ultrasonic.setAutomaticMode(true);
+    //m_distanceUltrasonic.setEnabled(true);
+  }
+  
   double defaultXSpeed = 0;
   double defaultYSpeed = 0;
   double defaultRot = 0;
@@ -143,6 +150,9 @@ public class DriveSubsystem extends SubsystemBase {
           Inputs.fieldCentric);
           
       if( Constants.DashboardSwitches.DriveDisplayOn){
+        SmartDashboard.putNumber("Ultrasonic Distane", m_distanceUltrasonic.getRangeMM());
+        SmartDashboard.putBoolean("Is US Enabled?", m_distanceUltrasonic.isEnabled());
+        SmartDashboard.putBoolean("Is US Range Valid", m_distanceUltrasonic.isRangeValid());
         SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
         SmartDashboard.putNumber("periodic Y", m_odometry.getPoseMeters().getY() );
         SmartDashboard.putNumber("periodic rot", m_odometry.getPoseMeters().getRotation().getDegrees() );

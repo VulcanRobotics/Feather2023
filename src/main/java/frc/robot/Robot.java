@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   //public static PlayBack pbAutonTest = new PlayBack( "/c/1218Data/playback", "autontest_playback.csv" );
 
   private static boolean stickyPowerAlarmsReset = false;
+  
 
 
   /**
@@ -181,7 +183,8 @@ public class Robot extends TimedRobot {   // RobotBase {
   // Initialization code for disabled mode should go here.
   @Override
   public void disabledPeriodic(){
-
+    Inputs.periodic();
+    SmartDashboard.putNumber("Auton to run", Inputs.autonToRun);
       // Constants.telemetry.saveSpreadSheet();
       //Constants.telemetry.save
 
@@ -205,7 +208,7 @@ public class Robot extends TimedRobot {   // RobotBase {
     Inputs.periodic();                // Make inputs read all their variables
 
     // Auton code goes here
-    auton.executeAuton(1);
+    auton.executeAuton(Inputs.autonToRun);
 
     // process each subsystem in order now that we have inputs read in
     callRobotSubsystems();      // call other robot processes in order
@@ -266,9 +269,9 @@ public class Robot extends TimedRobot {   // RobotBase {
 
   private void callRobotSubsystems(){      // call other robot processes in order
 
-    Inputs.saveTelem();               // do this here so we capture any changes made by auton. 
+    // Inputs.saveTelem();               // do this here so we capture any changes made by auton. 
 
-    m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
+    // m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
     m_TowerSubsystem.periodic(); 
     m_IntakeSubsystem.periodic();
     m_PneumaticSubsystem.periodic();

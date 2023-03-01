@@ -589,7 +589,9 @@ public class TowerSubsystem extends SubsystemBase {
         }
 
         if (Inputs.m_operatorControl.getRawButton(5)) {
-            grabFromIntake();
+            if (grabFromIntake()){
+                
+            }
         }
 
         if (Inputs.m_operatorControl.getRawButton(6)) {

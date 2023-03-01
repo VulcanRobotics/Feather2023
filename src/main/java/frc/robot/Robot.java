@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.Auton;
 import frc.robot.Constants;
 
@@ -95,6 +97,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   public PneumaticSubsystem m_PneumaticSubsystem = new PneumaticSubsystem();
   public TowerSubsystem m_TowerSubsystem = new TowerSubsystem();
   public VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
+  public LightingSubsystem m_LightingSubsystem = new LightingSubsystem();
   
   //public static PlayBack pbSquare = new PlayBack( "/c/1218Data/playback", "playback_square.csv" );
   //public static PlayBack pbAuton3ball = new PlayBack( "/c/1218Data/playback", "auton_3_ball_playback.csv" );
@@ -184,6 +187,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   @Override
   public void disabledPeriodic(){
     Inputs.periodic();
+    runLights();
     SmartDashboard.putNumber("Auton to run", Inputs.autonToRun);
       // Constants.telemetry.saveSpreadSheet();
       //Constants.telemetry.save
@@ -276,10 +280,15 @@ public class Robot extends TimedRobot {   // RobotBase {
     m_IntakeSubsystem.periodic();
     m_PneumaticSubsystem.periodic();
     m_DriveSubsystem.periodic();      // two steps,  here determine where we are. 
+    m_LightingSubsystem.periodic();
 
     // YK - Disabled telemetry 2023-02-27
     // trackRobotBattery();              // write out telemetry fore the battery ports
     // Constants.telemetry.writeRow();   // after all the susbsystems run write telem row. 
+  }
+
+  private void runLights() {
+    m_LightingSubsystem.periodic();
   }
 
   private void trackRobotBattery() {

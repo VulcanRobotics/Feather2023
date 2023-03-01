@@ -98,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
   //private final Gyro m_gyro = new ADXRS450_Gyro();
   public static AHRS m_gyro = new AHRS();
 
-  private final Ultrasonic m_distanceUltrasonic = new Ultrasonic(6, 5);
+  private final Ultrasonic m_distanceUltrasonic = new Ultrasonic(0, 1);
   
 
   private final XboxController m_driveController = new XboxController(0);

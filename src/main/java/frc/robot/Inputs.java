@@ -7,6 +7,8 @@ import frc.robot.Constants.Tower.AutonFlags;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ShootSubsystem;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.FloatArraySerializer;
 
@@ -22,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Inputs {
     public static XboxController m_driverXbox  = new XboxController(Constants.OIConstants.kDriverControllerPort);
     public static Joystick m_operatorControl = new Joystick(Constants.OIConstants.kOperatorControllerPort);
-    public static Joystick m_extraControl    = new Joystick(3); //OIConstants.kClimbButtonBoxPort);
+    public static Joystick m_extraControl    = new Joystick(2); //OIConstants.kClimbButtonBoxPort);
 
         // Define all your variables here.
 
@@ -62,7 +64,11 @@ public class Inputs {
     public static boolean driveToggleBrakeMode    = false;
     public static boolean driveToggleAutoPoseMode = false;
   
-
+    
+    public static boolean yellowLED = false;
+    public static boolean purpleLED = false;
+    public static boolean redLED = false;
+    public static boolean greenLED = false;
 
     // these are set by the driver 
     public static boolean intakeDeploy   = false;
@@ -77,7 +83,7 @@ public class Inputs {
 
     // these must are not reset by zeroValues
     // these are changed by Inputs.setAuton while in display.periodic.
-    public static int     autonToRun        = 0;
+    public static int     autonToRun        = 1;
     public static int     autonToRunHighest = Constants.AutoConstants.kTotalAutons;
     public static double  autonDelay        = 0.0;
     public static String  autonMessage = "No Auton Selected";
@@ -89,6 +95,8 @@ public class Inputs {
     public static boolean fieldCentric = true;
 
     public static boolean inAutonMode = false;
+
+    public static boolean endGame = false;
 
     // power massaging experiment. 
     public static double initialYAW = 0.0;
@@ -206,9 +214,28 @@ public class Inputs {
         towerShoulderPower = m_operatorControl.getY();
         towerWristSpeed    = m_operatorControl.getZ();
 
+        endGame = m_extraControl.getRawButton(1);
         
-        if( m_operatorControl.getRawButton(6)){ // if we have the top right button of the operator joystick or switch 4 pressed
+        if (endGame){
+            if (Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5){
+                greenLED = true;
+            } else{
+                redLED = true;
+            }
+        } else{
+            if(m_extraControl.getRawButton(3)){ // if we have the top right button of the operator joystick or switch 4 pressed
+                yellowLED = true;
+            } else {
+                yellowLED = false;
+            }
+            if(m_extraControl.getRawButton(4)){ // if we have the top right button of the operator joystick or switch 4 pressed
+            purpleLED = true; 
+            } else {
+                purpleLED = false;
+            }
         }
+        
+
 
         // saveTelem(); do not do this here. We will do it after auton in robot teleop and auton.
 

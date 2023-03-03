@@ -39,18 +39,22 @@ public class Auton extends MyStateMachine {
     double targetPosition = 26000;  //ticks
     double targetPastChargeStation = 52000;
     double targetToNextPiece = 52000;
-    double targetQuickMove = 2000;
+    double targetQuickMove = 5000;
     double initialPosition = 0.0;
+
+    boolean targetLock = true;
 
     public  Auton() {               // constructor
         reset();
         timStepTimer.start();
-        trpDrivePower = new TimedRampPower (4, 0.8, 0.25, 0, 0.25);       // required as MyStateMachine cannot do this.
     }
 
     public void displayLightBalance() {
-        if (Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5){
+        if (Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 || Math.abs(DriveSubsystem.m_gyro.getPitch()) < 2.5){
             Inputs.greenLED = true;
+
+        }else if(Math.abs(DriveSubsystem.m_gyro.getRoll()) > 10 || Math.abs(DriveSubsystem.m_gyro.getPitch()) > 10){
+            
         } else{
             Inputs.redLED = true;
         }
@@ -58,7 +62,7 @@ public class Auton extends MyStateMachine {
 
     public void auton1() { // This overrides the auton2 method defined in the state machine class.
         
-
+        displayLightBalance();
         //DriveSubsystem.m_gyro.zeroYaw();
         //String sAuton = "Auton1 -  ";
         //SmartDashboard.putString("Auton ", sAuton );
@@ -144,7 +148,7 @@ public class Auton extends MyStateMachine {
                     SmartDashboard.putString("Auton Step Desc", "On Ramp - Forward");
                 }
 
-                displayLightBalance();
+                
                 
                 if (targetPosition*3 - 18000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; //0.3
@@ -163,6 +167,12 @@ public class Auton extends MyStateMachine {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
+
+                Inputs.driverPower = 0.0;
+                if(timStepTimer.get() < 0.25) {
+                    Inputs.driverTurn = .00001;
+                }
+
                 initialPosition = currentPosition;
                 if(timStepTimer.get() > 2) {
                     iStep++;
@@ -175,11 +185,13 @@ public class Auton extends MyStateMachine {
 
                 displayLightBalance();
 
+                
+
                 if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 2.5) { //1.2
-                    Inputs.driverPower = 0.15; //0.3
+                    Inputs.driverPower = -0.3; //0.3
                     break;
                 } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -2.5) {
-                    Inputs.driverPower = -0.15; //0.3
+                    Inputs.driverPower = 0.3; //0.3
                     break;
                 }
 
@@ -190,10 +202,9 @@ public class Auton extends MyStateMachine {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                displayLightBalance();
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
-                    Inputs.driverTurn = 1;
+                    Inputs.driverTurn = .00001;
                     iStep++;
                 }
                 
@@ -212,6 +223,7 @@ public class Auton extends MyStateMachine {
 
     public void auton2() { // Same thing as auton1, but now we leave the community for a short time for the additional 3 points
         
+        displayLightBalance();
         //DriveSubsystem.m_gyro.zeroYaw();
         //String sAuton = "Auton1 -  ";
         //SmartDashboard.putString("Auton ", sAuton );
@@ -316,7 +328,7 @@ public class Auton extends MyStateMachine {
                 break;
 
             case 5: //now that its out of the community, start driving backward until gyro > 10
-                Inputs.driverPower = -0.3;
+                Inputs.driverPower = -1;
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     iStep++;
@@ -336,17 +348,53 @@ public class Auton extends MyStateMachine {
                 iStep++;
                 break;
 
-            case 7: // stop robot from falling if unbalanced 
+            case 7:
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
+                }
+                initialPosition = currentPosition;
+                Inputs.driverPower = 0.0;
+                if(timStepTimer.get() < 0.25) {
+                    Inputs.driverTurn = 0.1;
+                } 
+
+                if(timStepTimer.get() > 2) {
+                    iStep++;
+                    Inputs.driverPower = 0.0;
+                }
+                break;
+            case 8: // drive back forward to get a good shot.
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
+                }
+                if(timStepTimer.get() < 0.25) {
+                    Inputs.driverTurn = -0.1;
+                    break;
+                } 
+                //Inputs.driverPower = 0.0;
+                if (timStepTimer.get() < 1.25){
+                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 2.5) { //1.2
+                        Inputs.driverPower = -0.4; //0.3
+                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -2.5) {
+                        Inputs.driverPower = 0.4; //0.3
+                    }
+                    break;
+                }
+                
+
+                iStep++;
+
+                break;
+            case 9: // stop robot 
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
                 Inputs.driverPower = 0.0;
-
-                if (timStepTimer.get() < 0.25){
+                if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.1;
                     iStep++;
                 }
-
+                
                 break;
             default:
             bIsDone = true;
@@ -372,6 +420,8 @@ public class Auton extends MyStateMachine {
         SmartDashboard.putString("Auton Desc", "Plan to score 1 and ramp.");
 
         SmartDashboard.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
+
+        displayLightBalance();
 
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
@@ -468,7 +518,7 @@ public class Auton extends MyStateMachine {
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
 
-        Inputs.fieldCentric = true;        // do this in call cases
+        Inputs.fieldCentric = false;        // do this in call cases
 
         double currentPosition = DriveSubsystem.m_frontLeft.getCurrentDriveTicks();
 
@@ -509,7 +559,9 @@ public class Auton extends MyStateMachine {
                     break;
                 }
 
-          
+                if (timStepTimer.get() < 7.0){
+                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                }
 
                 /*if (timStepTimer.get() < 7.0){
                     Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
@@ -522,12 +574,20 @@ public class Auton extends MyStateMachine {
             case 2: //arm keeps to origin, starts driving out of community until 7 seconds in auton
                 Inputs.driverPower = 1;
 
-                if (timStepTimer.get() < 7.0){
+                if (timStepTimer.get() < 6.0){
                     Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
                 }
                 if (targetPastChargeStation > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3;
                     Inputs.driverStrafe = 0.05;
+
+                    if (DriveSubsystem.m_gyro.getYaw() > 2) {
+                        Inputs.driverTurn = -0.1;
+                    } else if(DriveSubsystem.m_gyro.getYaw() < -2){
+                        Inputs.driverTurn = 0.1;
+                    } else {
+                        Inputs.driverTurn = 0.0;
+                    }
                     break;
                 }
 
@@ -542,6 +602,7 @@ public class Auton extends MyStateMachine {
         }  // end of switch statement
         
     } // end of auton4 method
+
 
 
 } // end of auton class

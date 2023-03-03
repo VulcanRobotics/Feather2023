@@ -186,9 +186,9 @@ public final class Constants {
     public static final int kExtraBoxPort = config.getInt("INPUT_kExtraBoxPort", 3);
     
     // these can be lowered to allow kids to drive the robot. 1.0 is full power
-    public static final double kDriverPowerPCT = config.getDouble("INPUT_kDriverPowerPCT", 0.7);    //1.0);   
+    public static final double kDriverPowerPCT = config.getDouble("INPUT_kDriverPowerPCT", 0.8);    //1.0);   
     public static final double kDriverTurnPCT = config.getDouble("INPUT_kDriverTurnPCT", 0.85);     //1.0);
-    public static final double kDriverStrafePCT = config.getDouble("INPUT_kDriverStrafePCT", 0.7);  //1.0);
+    public static final double kDriverStrafePCT = config.getDouble("INPUT_kDriverStrafePCT", 0.8);  //1.0);
 
     public static final double kTurretStickDeadBand = config.getDouble("INPUT_kTurretStickDeadBand", 0.80);
     public static final double kHoodStickDeadBand = config.getDouble("INPUT_kHoodStickDeadBand", 0.1);
@@ -279,9 +279,9 @@ public final class Constants {
   }
 
   public static final class DashboardSwitches {
-    public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", true);
-    public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", true);
-    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);
+    public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", false);//true
+    public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", false);//true
+    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", false);//true
     public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
     public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", false);
   }
@@ -297,6 +297,8 @@ public final class Constants {
     public static final double kD_TurretValue = config.getDouble("SHOOTR_kPTurretValue", 0.0); 
 
     public static final String aryAllianceColor[] = {"blue","red"};
+
+
 
     public static final int    kAllianceBlue = 0;
     public static final int    kAllianceRed = 1;

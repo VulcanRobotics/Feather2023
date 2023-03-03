@@ -200,7 +200,11 @@ public class TowerSubsystem extends SubsystemBase {
             mTowerSpeed = 0.85;
         }
         if (m_ElbowUpProximity.get()){
-            mElbowSpeed = 0.25;
+            mElbowSpeed = 0.3;
+        }
+
+        if (m_stringPotentiometerTower.get() < 0.32 && m_stringPotentiometerElbow.get() < 0.8) {
+            mTowerSpeed = 0.0;
         }
     }
 

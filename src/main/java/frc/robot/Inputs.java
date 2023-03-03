@@ -103,7 +103,7 @@ public class Inputs {
     public static double drivePowerOffset = 0.0;
     public static double lastDPAD = -1.0;
 
-
+    public static boolean startedBalance = false;
 
     public Inputs() {};             // Class constructor
 
@@ -159,19 +159,26 @@ public class Inputs {
             initialYAW = DriveSubsystem.m_gyro.getYaw();
         }
 
-        if (DPAD == 0){
-            drivePowerOffset += 0.05;
+
+        if (DPAD != lastDPAD && DPAD != -1){
+            if (DPAD == 0){
+                drivePowerOffset += 0.05;
+            } else if (DPAD == 180){
+                drivePowerOffset -= 0.05;
+            }
+        }/*else if (DPAD == 0){
+            drivePowerOffset += 0.01;
         } else if (DPAD == 180){
-            drivePowerOffset -= 0.05;
-        }
+            drivePowerOffset -= 0.01;
+        } */
 
         lastDPAD = DPAD;
 
         //drivePowerOffset = Math.max(Math.min(drivePowerOffset, 0.15), -0.85);
-        if (drivePowerOffset < 0.05){
-            drivePowerOffset = 0.05;
-        } else if (drivePowerOffset > 10){
-            drivePowerOffset = 10;
+        if (drivePowerOffset < -0.45){
+            drivePowerOffset = -0.45;
+        } else if (drivePowerOffset > 0.2){
+            drivePowerOffset = 0.2;
         }
         
         //int drivePowerInt = (int) ((0.85 + drivePowerOffset) * 100);
@@ -217,9 +224,13 @@ public class Inputs {
         endGame = m_extraControl.getRawButton(1);
         
         if (endGame){
-            if (Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5){
+            if ((Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 160) ||
+            (Math.abs(DriveSubsystem.m_gyro.getPitch()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 70 && Math.abs(DriveSubsystem.m_gyro.getYaw()) < 110) && startedBalance == true){
                 greenLED = true;
             } else{
+                if (Math.abs(DriveSubsystem.m_gyro.getRoll()) > 10 || Math.abs(DriveSubsystem.m_gyro.getPitch()) > 10){
+                    startedBalance = true;
+                }
                 redLED = true;
             }
         } else{
@@ -235,8 +246,10 @@ public class Inputs {
             }
         }
         
+        SmartDashboard.putNumber("driverPo", drivePowerOffset * 100);
+        SmartDashboard.putNumber("drivePowerSPEED", (Constants.OIConstants.kDriverStrafePCT+drivePowerOffset)*100);
 
-
+        
         // saveTelem(); do not do this here. We will do it after auton in robot teleop and auton.
 
     }  

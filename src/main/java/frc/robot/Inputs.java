@@ -224,8 +224,8 @@ public class Inputs {
         endGame = m_extraControl.getRawButton(1);
         
         if (endGame){
-            if ((Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 160) ||
-            (Math.abs(DriveSubsystem.m_gyro.getPitch()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 70 && Math.abs(DriveSubsystem.m_gyro.getYaw()) < 110) && startedBalance == true){
+            if ((Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 && startedBalance)){//&& Math.abs(DriveSubsystem.m_gyro.getYaw()) > 160) ||
+            //(Math.abs(DriveSubsystem.m_gyro.getPitch()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 70 && Math.abs(DriveSubsystem.m_gyro.getYaw()) < 110) && startedBalance == true){
                 greenLED = true;
             } else{
                 if (Math.abs(DriveSubsystem.m_gyro.getRoll()) > 10 || Math.abs(DriveSubsystem.m_gyro.getPitch()) > 10){

@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.15;
     // not used in code 
 
-    public static final double kMaxSpeedMetersPerSecond = config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 3.0);
+    public static final double kMaxSpeedMetersPerSecond = config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 3.0); // WAS 3, Changed at match 42, Hatboro Horsham
     public static final double kMaxAngularSpeedRadiansPerSecond = config.getDouble("SWRV_SPEED_kMaxAngularSpeedRadiansPerSecond", 3.0);//1.5;//5; 
 
 
@@ -200,7 +200,7 @@ public final class Constants {
     public static final double kIntakePinchPower = config.getDouble("TOWER_Intake_Pinch_Power", .5);
     public static final double kWristMaxPower    = config.getDouble("TOWER_Wrist_Max_Power", .2);
     public static final double kElbowPCTPower    = config.getDouble("TOWER_Elbow_PCT_Power", 1.0);
-    public static final double kShoulderPCTPower = config.getDouble("TOWER_Shoulder_PCT_Power", .85);
+    public static final double kShoulderPCTPower = config.getDouble("TOWER_Shoulder_PCT_Power", .9);
     public static final double kIntakeDeployMills = config.getDouble("INTAKE_Deploy_Mills", 1000);
 
     public static enum AutonFlags {IGNORE, ORIGIN, HIGHPLACE, MIDPLACE, HUMANPLAYERGRAB, GRABFROMINTAKE}

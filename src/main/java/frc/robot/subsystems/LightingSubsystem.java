@@ -12,8 +12,8 @@ import frc.robot.Constants;
 public class LightingSubsystem extends SubsystemBase{
     private final Spark m_light1 = new Spark(9);
 
-    public double LEDColor = 0.93;
-    public double DefaultLEDColor = 0.93;
+    public double LEDColor = 0.93; //solid white
+    public double DefaultLEDColor = 0.93; //solid white
 
     @Override
     public void periodic() {
@@ -22,24 +22,24 @@ public class LightingSubsystem extends SubsystemBase{
         
 
         if (Inputs.yellowLED) {
-            LEDColor = 0.67;
+            LEDColor = 0.67; //solid gold
             Inputs.yellowLED = false;
         } else if (Inputs.purpleLED) {
-            LEDColor = 0.91;
+            LEDColor = 0.91; //solid violet
             Inputs.purpleLED = false;
         } else if (Inputs.redLED) {
-            LEDColor = -0.25;
+            LEDColor = -0.47; //Twinkles, forest palette
             Inputs.redLED = false;
         } else if (Inputs.greenLED) {
-            LEDColor = -0.53;
-            Inputs.greenLED = false;
+            LEDColor = -0.53; //Twinkles, party palette
+            Inputs.greenLED = false;                  
         } else {
             if (Constants.MatchSettings.kAllianceColor == Constants.MatchSettings.kBlueAlliance) {
-                DefaultLEDColor = -0.51;
+                DefaultLEDColor = -0.51; //Twinkles, ocean palette
             } else if (Constants.MatchSettings.kAllianceColor == Constants.MatchSettings.kRedAlliance) {
-                DefaultLEDColor = -0.49;
+                DefaultLEDColor = -0.49; //Twinkles, lava palette
             } else {
-                DefaultLEDColor = 0.93;
+                DefaultLEDColor = 0.93; //solid white
             }
 
             LEDColor = DefaultLEDColor;

@@ -147,6 +147,8 @@ public class TowerSubsystem extends SubsystemBase {
         boolean elbowDone = false;
         boolean towerDone = false;
 
+        //Potentially add a case where if we are in a range that is "dangerous", move elbow back (e.g specific tower range)
+
         if (towerPriority){
             if (towerDone = towerMoveTo(Tvalue)){
                 elbowDone = elbowMoveTo(Evalue);
@@ -238,7 +240,7 @@ public class TowerSubsystem extends SubsystemBase {
         double elbowEncoder = mElbow.getSelectedSensorPosition();
         double towerEncoder = mTower.getSelectedSensorPosition();
 
-        if (Inputs.m_operatorControl.getTriggerPressed()){
+        if (Inputs.m_operatorControl.getTriggerPressed() || Inputs.m_operatorControl.getRawButtonPressed(7)){
             PneumaticSubsystem.toggleClawState();
         }
 
@@ -541,7 +543,7 @@ public class TowerSubsystem extends SubsystemBase {
         if (wristLock == true){
 	        if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
 	            mWristSpeed = 0;
-	        }else if (m_encoderWrist.getPosition() > initialWristEncoder && mWristSpeed > 0){
+	        }else if (m_encoderWrist.getPosition() > initialWristEncoder + wristEncoder180 && mWristSpeed > 0){
 	            mWristSpeed = 0;
 			}
         }

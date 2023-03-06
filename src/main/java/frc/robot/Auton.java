@@ -348,7 +348,7 @@ public void displayLightBalance() {
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
 
-                if (targetPosition*2.2 - 6000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (targetPosition*2.2 - 2750 > Math.abs(currentPosition - initialPosition)) { // was -3000
                     Inputs.driverPower = -0.3; //0.3
 
                     break;
@@ -367,7 +367,7 @@ public void displayLightBalance() {
                     Inputs.driverTurn = 0.0001;
                 } 
 
-                if(timStepTimer.get() > 2) {
+                if(timStepTimer.get() > 1) {
                     iStep++;
                     Inputs.driverPower = 0.0;
                 }
@@ -389,7 +389,7 @@ public void displayLightBalance() {
                         Inputs.driverPower = 0.4; //0.3
                     }
                     break;
-                }
+                } 
                 
 
                 iStep++;

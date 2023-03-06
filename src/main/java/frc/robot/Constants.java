@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * constants. This class should not be used for any other purpose. All constants should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>It is advised to statically import this class (or one of its inner classes) wher` ever the
  * constants are needed, to reduce verbosity.
  */
 
@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.15;
     // not used in code 
 
-    public static final double kMaxSpeedMetersPerSecond = config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 3.0); // WAS 3, Changed at match 42, Hatboro Horsham
+    public static final double kMaxSpeedMetersPerSecond = config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 4.0); // WAS 3, Changed at match 42, Hatboro Horsham
     public static final double kMaxAngularSpeedRadiansPerSecond = config.getDouble("SWRV_SPEED_kMaxAngularSpeedRadiansPerSecond", 3.0);//1.5;//5; 
 
 

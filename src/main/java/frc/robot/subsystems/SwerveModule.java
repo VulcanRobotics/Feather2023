@@ -69,7 +69,7 @@ public class SwerveModule {
   final double Talon270 = Talon90*3;
   final double TalonDegrees = Talon360 / 360; // was 87.791
   
-  private int brakeMode = 0;
+  private int brakeMode = 1;
   
   private final TalonFX m_driveMotor;
   private final TalonFX m_turningMotor; //changed from private
@@ -129,6 +129,8 @@ public class SwerveModule {
                                         40,         // trigger amp threshold
                                         0.1));      // trigger threshold time seconds
 
+    //m_driveMotor.configOpenloopRamp(0.5);
+
 
     m_turningEncoder = new CANCoder(turningEncoderPorts, "DriveSubsystemCANivore");
 
@@ -138,7 +140,8 @@ public class SwerveModule {
 
     // Parameters for StatorCurrentLimitConfiguration:   enabled | Limit(amp) | Trigger Threshold(amp) | Trigger Threshold Time(s)
     // We can play around with the amp and time numbers for driver preference
-    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 25, 30, 1.0));
+    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0.0)); //Starting on hard break mode
+    //m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 25, 30, 1.0));
 
     /*m_driveMotor.configSupplyCurrentLimit(
       new SupplyCurrentLimitConfiguration(true,     // enabled      
@@ -276,6 +279,7 @@ public class SwerveModule {
  }
 
  public void changeBrakeMode() {
+  SmartDashboard.putNumber("Brakemode", brakeMode);
   if (brakeMode == 0) {
     brakeMode = 1;
     m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0.0));

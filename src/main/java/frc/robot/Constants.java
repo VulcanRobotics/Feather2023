@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.15;
     // not used in code 
 
-    public static final double kMaxSpeedMetersPerSecond = config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 3.0); // WAS 3, Changed at match 42, Hatboro Horsham
+    public static final double kMaxSpeedMetersPerSecond = 4.0;//config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 4.0); // WAS 3, Changed at match 42, Hatboro Horsham
     public static final double kMaxAngularSpeedRadiansPerSecond = config.getDouble("SWRV_SPEED_kMaxAngularSpeedRadiansPerSecond", 3.0);//1.5;//5; 
 
 
@@ -281,7 +281,7 @@ public final class Constants {
   public static final class DashboardSwitches {
     public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", false);//true
     public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", false);//true
-    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", false);//true
+    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);//true
     public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
     public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", false);
   }

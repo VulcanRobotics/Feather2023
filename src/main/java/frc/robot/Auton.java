@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SwerveModule;
 
 import java.sql.Driver;
 
@@ -288,7 +289,7 @@ public void displayLightBalance() {
 
           
 
-                if (timStepTimer.get() < 7.0){
+                if (timStepTimer.get() < 5.0){
                     Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
                     break;
                 }
@@ -296,7 +297,7 @@ public void displayLightBalance() {
                 break;
 
             case 2: //arm keeps to origin, starts driving to balance
-                Inputs.driverPower = 1;
+                Inputs.driverPower = 0.4;
 
                 if (timStepTimer.get() < 6.0){
                     Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
@@ -312,8 +313,11 @@ public void displayLightBalance() {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "On Ramp - Forward");
                 }
+                if (timStepTimer.get() < 3.0){
+                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                }
 
-                Inputs.driverPower = 0.3; 
+                Inputs.driverPower = 0.4; 
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     iStep++;
@@ -325,7 +329,7 @@ public void displayLightBalance() {
             
             case 4: //Drive a little bit forward, just to get out of the community
                 if (targetPastChargeStation > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = 0.3; 
+                    Inputs.driverPower = 0.5; 
 
                     break;
                 }
@@ -334,7 +338,7 @@ public void displayLightBalance() {
                 break;
 
             case 5: //now that its out of the community, start driving backward until gyro > 10
-                Inputs.driverPower = -1;
+                Inputs.driverPower = -0.4;
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     displayLightBalance();
@@ -348,8 +352,8 @@ public void displayLightBalance() {
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
 
-                if (targetPosition*2.2 - 6000 > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = -0.3; //0.3
+                if (targetPosition*2.2 - 4500 > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = -0.3; //0.3 
 
                     break;
                 }
@@ -367,7 +371,7 @@ public void displayLightBalance() {
                     Inputs.driverTurn = 0.0001;
                 } 
 
-                if(timStepTimer.get() > 2) {
+                if(timStepTimer.get() > 1) {
                     iStep++;
                     Inputs.driverPower = 0.0;
                 }
@@ -384,9 +388,9 @@ public void displayLightBalance() {
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
                     if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 2.5) { //1.2
-                        Inputs.driverPower = -0.4; //0.3
+                        Inputs.driverPower = -0.3; //0.3
                     } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -2.5) {
-                        Inputs.driverPower = 0.4; //0.3
+                        Inputs.driverPower = 0.3; //0.3
                     }
                     break;
                 }

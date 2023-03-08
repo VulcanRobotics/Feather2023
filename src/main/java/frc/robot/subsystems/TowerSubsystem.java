@@ -16,10 +16,16 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+
+import java.util.InputMismatchException;
 
 import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.swing.text.html.HTMLDocument.BlockElement;
@@ -44,6 +50,8 @@ public class TowerSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
 
+    private static ProfiledPIDController towerPID = new ProfiledPIDController(8, 0.7, 1.2, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController elbowPID = new ProfiledPIDController(4, 1, 0.1, new TrapezoidProfile.Constraints(1, 1));
     //private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
     //private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
     //private static TalonSRX m_Wrist = new TalonSRX(16);
@@ -81,6 +89,7 @@ public class TowerSubsystem extends SubsystemBase {
     private double mWristSpeed = .4;
 
     private boolean IKMode = false;
+    private boolean PIDmode = false;
     private boolean wristFlipped = true;
     private boolean wristLock = true;
 
@@ -99,10 +108,14 @@ public class TowerSubsystem extends SubsystemBase {
     private static boolean elbowMoveTo(double Evalue){
         boolean done = false;
 
-        if (m_stringElbow >= Evalue + .01) {
-            mElbowSpeed = -0.3;
+        if (m_stringElbow >= Evalue + .05) {
+            mElbowSpeed = -1;
+        } else if (m_stringElbow <= Evalue - .05) {
+            mElbowSpeed = 1;
+        } else if (m_stringElbow >= Evalue + .01) {
+            mElbowSpeed = -0.7;
         } else if (m_stringElbow <= Evalue - .01) {
-            mElbowSpeed = 0.3;
+            mElbowSpeed = 0.7;
         } else if (m_stringElbow >= Evalue - 0.01) {
             mElbowSpeed = 0;
         } else if (m_stringElbow <= Evalue + 0.01) {
@@ -116,17 +129,21 @@ public class TowerSubsystem extends SubsystemBase {
         return done;
     }
 
+    private static void towerPidMove(double desiredPosition){
+        mTower.set(ControlMode.PercentOutput, towerPID.calculate(m_stringPotentiometerTower.get(), desiredPosition));
+    }
+
     private static boolean towerMoveTo(double Tvalue){
-    boolean done = false;
+        boolean done = false;
 
         if (m_stringTower >= Tvalue + .05) {
-            mTowerSpeed = 1;
-        } else if (m_stringTower <= Tvalue - .05) {
-            mTowerSpeed = -1;
-        } else if (m_stringTower >= Tvalue + .01) {
             mTowerSpeed = 0.7;
-        } else if (m_stringTower <= Tvalue - .01) {
+        } else if (m_stringTower <= Tvalue - .05) {
             mTowerSpeed = -0.7;
+        } else if (m_stringTower >= Tvalue + .01) {
+            mTowerSpeed = 0.4;
+        } else if (m_stringTower <= Tvalue - .01) {
+            mTowerSpeed = -0.4;
         } else if (m_stringTower >= Tvalue - 0.01) {
             mTowerSpeed = 0;
         } else if (m_stringTower <= Tvalue + 0.01) { 
@@ -154,7 +171,7 @@ public class TowerSubsystem extends SubsystemBase {
                 elbowDone = elbowMoveTo(Evalue);
             }
         }else if (flipArm){
-            if (m_stringTower > 0.38){
+            if (m_stringTower > 0.35 /*0.38 */){
                 elbowDone = elbowMoveTo(Evalue);
 
                 towerDone = towerMoveTo(Tvalue);
@@ -187,7 +204,7 @@ public class TowerSubsystem extends SubsystemBase {
         return goToPosition(.511, .796, false, true);
     }
     public boolean midPlace(){
-        return goToPosition(.336, .792 , false, false);
+        return goToPosition(.493 /*0.336 */, .81/*.792 */ , false, false);
     }
     public boolean humanPlayerGrab(){
         return goToPosition(.390, .713, false, false);
@@ -230,7 +247,11 @@ public class TowerSubsystem extends SubsystemBase {
         boolean isElbowOnTop = !m_ElbowUpProximity.get();
         boolean isElbowOnBottom = !m_ElbowDownProximity.get();
         //SmartDashboard.putBoolean("isElbowOnTop", isElbowOnTop);
-        //SmartDashboard.putBoolean("isElbowOnBottom", isElbowOnBottom);      
+        //SmartDashboard.putBoolean("isElbowOnBottom", isElbowOnBottom);   
+
+        towerPID.setTolerance(0, 0);
+        
+      
 
         //Built in encoder values 
         // m_elbowEncoder = mElbow.getEncoder();
@@ -244,8 +265,14 @@ public class TowerSubsystem extends SubsystemBase {
             PneumaticSubsystem.toggleClawState();
         }
 
+        
+
         if (false){
             IKMode = !IKMode;
+        }
+
+        if (Inputs.m_operatorControl.getRawButtonPressed(10)){
+            PIDmode = !PIDmode;
         }
         //Moving elbow
 
@@ -259,7 +286,9 @@ public class TowerSubsystem extends SubsystemBase {
             //    mElbowSpeed = 0;
             //}
             
+           
             mTowerSpeed = -Inputs.applyDeadBand(Inputs.towerShoulderPower, .1) * Constants.Tower.kShoulderPCTPower ;
+            
             //Moving shoulder
             //shaun - changed 1/25/23 - inverted y and added bottom potentiometer limit. The variable tower bottom is at the top of file.
             //if (Math.abs(Inputs.yAxisJoystick) >= 0.1) { //Checking if the arm is above stringpot limit, also applying deadband
@@ -268,6 +297,7 @@ public class TowerSubsystem extends SubsystemBase {
             //} else {
             //    mTowerSpeed = 0.0;
             //}
+        
         }
          else // for later, when this actually works
         {
@@ -613,6 +643,11 @@ public class TowerSubsystem extends SubsystemBase {
             initialWristEncoder = m_wristEncoder;
         }
         
+        if (PIDmode == true){
+            mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), 0.4);
+            //mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), 0.4);
+       }
+        SmartDashboard.putNumber("tower pid", mTowerSpeed);
 
         //Limit Switches to make any last changes to the speed before setting it, must go last!
         if (isArmOnTop && mTowerSpeed > 0) {
@@ -656,6 +691,8 @@ public class TowerSubsystem extends SubsystemBase {
                 mElbowSpeed = -0.1;
             }
         }*/
+
+        
 
         //mTower.set(mTowerSpeed);
         //mElbow.set(mElbowSpeed);

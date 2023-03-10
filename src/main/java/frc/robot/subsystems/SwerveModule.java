@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.Joystick;

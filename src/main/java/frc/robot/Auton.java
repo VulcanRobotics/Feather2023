@@ -317,7 +317,7 @@ public void displayLightBalance() {
                     Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
                 }
 
-                Inputs.driverPower = 0.4; 
+                Inputs.driverPower = 0.2; //was 0.4
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     iStep++;

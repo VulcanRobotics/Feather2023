@@ -32,6 +32,7 @@ import javax.swing.text.html.HTMLDocument.BlockElement;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
@@ -49,9 +50,11 @@ public class TowerSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
-
-    private static ProfiledPIDController towerPID = new ProfiledPIDController(8, 0.7, 1.2, new TrapezoidProfile.Constraints(1, 1));
-    private static ProfiledPIDController elbowPID = new ProfiledPIDController(4, 1, 0.1, new TrapezoidProfile.Constraints(1, 1));
+    //8, 0.7, 1.2//acc was 1, p was 10
+    private static ProfiledPIDController towerPID = new ProfiledPIDController(9,0, 0, new TrapezoidProfile.Constraints(1, 1));
+    //private static ProfiledPIDController towerPID = new ProfiledPIDController(1,1, 3, new TrapezoidProfile.Constraints(1, 1));
+    //4, 1, 0.1
+    private static ProfiledPIDController elbowPID = new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(1, 1));
     //private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
     //private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
     //private static TalonSRX m_Wrist = new TalonSRX(16);
@@ -60,7 +63,8 @@ public class TowerSubsystem extends SubsystemBase {
     private static TalonFX mElbow = new TalonFX(12, "roborio");
     
     private static CANSparkMax m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    //private static XboxController m_Controller = new XboxController(0);
+    private static TalonSRX gripMotor = new TalonSRX(16);
+    //private static XboxController m_Controller = new XboxController(0); 
     //private static Joystick m_Joystick = new Joystick(1);
     //private static Joystick m_BoxController = new Joystick(3);
     //private RelativeEncoder m_towerEncoder;// = mTower.getEncoder();
@@ -87,11 +91,14 @@ public class TowerSubsystem extends SubsystemBase {
     private static double mTowerSpeed = 0;
     private static double mElbowSpeed = 0;
     private double mWristSpeed = .4;
+    private double mGripSpeed = 0;
 
     private boolean IKMode = false;
     private boolean PIDmode = false;
     private boolean wristFlipped = true;
     private boolean wristLock = true;
+
+    private boolean firstLoop = true;
 
     private double estX = 0.0;
     private double estY = 0.0;
@@ -129,8 +136,8 @@ public class TowerSubsystem extends SubsystemBase {
         return done;
     }
 
-    private static void towerPidMove(double desiredPosition){
-        mTower.set(ControlMode.PercentOutput, towerPID.calculate(m_stringPotentiometerTower.get(), desiredPosition));
+    private static double towerPidMove(double desiredPosition){
+        return towerPID.calculate(m_stringPotentiometerTower.get(), desiredPosition);
     }
 
     private static boolean towerMoveTo(double Tvalue){
@@ -163,15 +170,16 @@ public class TowerSubsystem extends SubsystemBase {
 
         boolean elbowDone = false;
         boolean towerDone = false;
+        SmartDashboard.putBoolean("TOWER DONE", towerPID.atGoal());
 
         //Potentially add a case where if we are in a range that is "dangerous", move elbow back (e.g specific tower range)
 
-        if (towerPriority){
+        /*if (towerPriority){
             if (towerDone = towerMoveTo(Tvalue)){
                 elbowDone = elbowMoveTo(Evalue);
             }
         }else if (flipArm){
-            if (m_stringTower > 0.35 /*0.38 */){
+            if (m_stringTower > 0.38 ){
                 elbowDone = elbowMoveTo(Evalue);
 
                 towerDone = towerMoveTo(Tvalue);
@@ -182,6 +190,61 @@ public class TowerSubsystem extends SubsystemBase {
             towerDone = towerMoveTo(Tvalue);
     
             elbowDone = elbowMoveTo(Evalue);
+        }*/
+
+       
+
+        
+        if (towerPriority){
+            
+
+            if (m_stringTower < Tvalue + 0.05 && m_stringTower > Tvalue - 0.05){ //towerDone = towerPID.atSetpoint()
+                towerDone = true;
+
+                if (m_stringElbow < Evalue + 0.05 && m_stringElbow > Evalue - 0.05){
+                    elbowDone = true;
+                } else{
+                    mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+                }
+
+            } else {
+                mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+            }
+            
+            
+
+        }else if (flipArm){
+            if (m_stringTower > 0.33 ){
+                if (towerDone = towerPID.atSetpoint()){
+                    towerDone = true;
+                } else{
+                    mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+                }
+
+                if (elbowDone = elbowPID.atSetpoint()){
+                    elbowDone = true;
+                } else{
+                    mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+                }
+            } else{
+                if (towerDone = towerPID.atSetpoint()){
+                    towerDone = true;
+                } else{
+                    mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+                }
+            }
+        } else{
+            if (towerDone = towerPID.atSetpoint()){
+                towerDone = true;
+            } else{
+                mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+            }
+
+            if (elbowDone = elbowPID.atSetpoint()){
+                elbowDone = true;
+            } else{
+                mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+            }
         }
 
         if (towerDone && elbowDone){
@@ -189,6 +252,7 @@ public class TowerSubsystem extends SubsystemBase {
         } else{
             return false;
         }
+        
 
     }
 
@@ -200,14 +264,25 @@ public class TowerSubsystem extends SubsystemBase {
         }
     }
 
+    
+
     public static boolean highPlace(){
+        //goToPosition(0.511, 0.796, true, false);
+        //mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .511);
+        //ElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .796);
         return goToPosition(.511, .796, false, true);
     }
     public boolean midPlace(){
-        return goToPosition(.493 /*0.336 */, .81/*.792 */ , false, false);
+        /*mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .493);
+        mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .81);*/
+        return goToPosition(.346 /*0.336 */, .781/*.792 */ , false, false);
     }
     public boolean humanPlayerGrab(){
-        return goToPosition(.390, .713, false, false);
+        return goToPosition(.390, .718, false, false);
+    }
+
+    public boolean humanPlayerGrabDrop(){
+        return goToPosition(.377, .701, false, false);
     }
 
     public boolean grabFromIntake() {
@@ -215,7 +290,7 @@ public class TowerSubsystem extends SubsystemBase {
     }
 
     public static void tuckArm(){
-        if (!m_towerUpProximity.get() == true){
+        /*if (!m_towerUpProximity.get() == true){
             mTowerSpeed = 0.85;
         }
         if (m_ElbowUpProximity.get()){
@@ -224,7 +299,8 @@ public class TowerSubsystem extends SubsystemBase {
 
         if (m_stringPotentiometerTower.get() < 0.32 && m_stringPotentiometerElbow.get() < 0.8) {
             mTowerSpeed = 0.0;
-        }
+        }*/
+        goToPosition(0.378, 0.656, false, false);
     }
 
     private void goToWristPosition(double wristValue){
@@ -239,7 +315,16 @@ public class TowerSubsystem extends SubsystemBase {
         }
     }
 
+    
+
     public void periodic(){
+
+        if (firstLoop){
+            firstLoop = false;
+
+            towerPID.reset(m_stringPotentiometerTower.get());
+            elbowPID.reset(m_stringPotentiometerElbow.get());
+        }
 
         boolean isArmOnTop = m_towerUpProximity.get();
         boolean isArmOnBottom = m_towerDownProximity.get();
@@ -249,9 +334,9 @@ public class TowerSubsystem extends SubsystemBase {
         //SmartDashboard.putBoolean("isElbowOnTop", isElbowOnTop);
         //SmartDashboard.putBoolean("isElbowOnBottom", isElbowOnBottom);   
 
-        towerPID.setTolerance(0, 0);
+        towerPID.setTolerance(0.01, 0);
         
-      
+        
 
         //Built in encoder values 
         // m_elbowEncoder = mElbow.getEncoder();
@@ -265,7 +350,13 @@ public class TowerSubsystem extends SubsystemBase {
             PneumaticSubsystem.toggleClawState();
         }
 
-        
+        if (Inputs.m_operatorControl.getPOV() == 0){
+            mGripSpeed = -1;
+        }else if (Inputs.m_operatorControl.getPOV() == 180){
+            mGripSpeed = 1;
+        } else{
+            mGripSpeed = 0;
+        }
 
         if (false){
             IKMode = !IKMode;
@@ -625,17 +716,24 @@ public class TowerSubsystem extends SubsystemBase {
         }
 
         if (Inputs.m_operatorControl.getRawButton(5)) {
-            if (grabFromIntake()){
-                
-            }
+            humanPlayerGrabDrop();
         }
 
         if (Inputs.m_operatorControl.getRawButton(6)) {
             highPlace();
+        } 
+
+        if (Inputs.m_operatorControl.getRawButtonReleased(6) || Inputs.m_operatorControl.getRawButtonReleased(3) || Inputs.m_operatorControl.getRawButtonReleased(4) || Inputs.m_operatorControl.getRawButtonReleased(5)){
+            towerPID.reset(m_stringPotentiometerTower.get());
+            elbowPID.reset(m_stringPotentiometerElbow.get());
         }
 
         if (Inputs.m_operatorControl.getRawButton(8)) {
             wristLock = false;
+        }
+
+        if (Inputs.m_operatorControl.getRawButton(9)) {
+            towerPidMove(.4);
         }
 
         if (Inputs.m_operatorControl.getRawButtonReleased(8)){
@@ -645,7 +743,7 @@ public class TowerSubsystem extends SubsystemBase {
         
         if (PIDmode == true){
             mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), 0.4);
-            //mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), 0.4);
+            mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), 0.8);
        }
         SmartDashboard.putNumber("tower pid", mTowerSpeed);
 
@@ -686,6 +784,8 @@ public class TowerSubsystem extends SubsystemBase {
             mWristSpeed = 0;
         }
 
+        
+
        /*  if (m_stringPotentiometerTower.get() >= 0.48 && m_stringPotentiometerTower.get() <= 0.53){
             if (m_stringPotentiometerElbow.get() >= 0.53){
                 mElbowSpeed = -0.1;
@@ -698,12 +798,18 @@ public class TowerSubsystem extends SubsystemBase {
         //mElbow.set(mElbowSpeed);
         mTower.setNeutralMode(NeutralMode.Brake);
         mElbow.setNeutralMode(NeutralMode.Brake);
+        gripMotor.setNeutralMode(NeutralMode.Brake);
+        
         //SmartDashboard.putNumber("mTowerSpeed", mTowerSpeed);
         mTower.set(ControlMode.PercentOutput, mTowerSpeed);
         mElbow.set(ControlMode.PercentOutput, mElbowSpeed);
 
+        
         //m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
         m_Wrist.set(mWristSpeed);
+        gripMotor.set(ControlMode.PercentOutput, mGripSpeed);
+
+        SmartDashboard.putNumber("operarot POV", Inputs.m_operatorControl.getPOV());
          
         if( Constants.DashboardSwitches.TowerDisplayOn){
             SmartDashboard.putNumber("mElbow", m_stringPotentiometerElbow.get());

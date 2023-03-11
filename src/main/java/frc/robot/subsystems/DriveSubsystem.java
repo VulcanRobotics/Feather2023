@@ -98,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
   //private final Gyro m_gyro = new ADXRS450_Gyro();
   public static AHRS m_gyro = new AHRS();
 
-  private final Ultrasonic m_distanceUltrasonic = new Ultrasonic(0, 1);
+  Ultrasonic m_distanceUltrasonic = new Ultrasonic(4, 5);
   
 
   private final XboxController m_driveController = new XboxController(0);
@@ -114,11 +114,12 @@ public class DriveSubsystem extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public void enableUltrasonic() {
     Ultrasonic.setAutomaticMode(true);
-    //m_distanceUltrasonic.setEnabled(true);
+    m_distanceUltrasonic.setEnabled(true);
+    m_distanceUltrasonic.setAutomaticMode(true);
   }
-  
+
   double defaultXSpeed = 0;
   double defaultYSpeed = 0;
   double defaultRot = 0;
@@ -131,10 +132,14 @@ public class DriveSubsystem extends SubsystemBase {
   double lastY = 0;
   double lastZ = 0;
 
+
+  
+
   @Override
   public void periodic() {
+  enableUltrasonic();
     // Update the odometry in the periodic block
-
+    
       m_odometry.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
@@ -149,8 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
           Inputs.driverTurn,
           Inputs.fieldCentric);
           
-      if( Constants.DashboardSwitches.DriveDisplayOn){
-        SmartDashboard.putNumber("Ultrasonic Distane", m_distanceUltrasonic.getRangeMM());
+      if(true){ //Constants.DashboardSwitches.DriveDisplayOn){
+        SmartDashboard.putNumber("Ultrasonic Distance", m_distanceUltrasonic.getRangeInches());
         SmartDashboard.putBoolean("Is US Enabled?", m_distanceUltrasonic.isEnabled());
         SmartDashboard.putBoolean("Is US Range Valid", m_distanceUltrasonic.isRangeValid());
         SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );
@@ -159,6 +164,8 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("POV", m_driveController.getPOV());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
       }
+
+
   }
 
   /**
@@ -228,7 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
    /****************************************************/
    //SmartDashboard.putNumber(Inputs., currentY)
    // not critical display items
-  if( Constants.DashboardSwitches.DriveDisplayOn){
+  if(true){ //Constants.DashboardSwitches.DriveDisplayOn
     SmartDashboard.putString("Gyro YAW", Double.toString((double)m_gyro.getYaw()));
     SmartDashboard.putString("Gyro PITCH", Double.toString((double)m_gyro.getPitch()));
     SmartDashboard.putString("Gyro ROLL", Double.toString((double)m_gyro.getRoll()));
@@ -372,6 +379,6 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
-
+  
   
 }

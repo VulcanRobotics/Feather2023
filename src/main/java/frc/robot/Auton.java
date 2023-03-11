@@ -3,7 +3,8 @@ package frc.robot;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.Tower.AutonFlags;
+import frc.robot.Constants.Tower.AutonIntakeFlags;
+import frc.robot.Constants.Tower.AutonTowerFlags;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.TimedRampPower;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,6 +14,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveModule;
 
 import java.sql.Driver;
+import java.sql.Time;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -110,14 +112,14 @@ public void displayLightBalance() {
                 break;
 
             
-            case 1: // drive back to wall with intake down
+            /*case 1: // drive back to wall with intake down
                 Inputs.driveSwerveEncoderReset = false;
             if (bStepFirstPass) {
                 SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
             }
 
                 if(timStepTimer.get() < 3.5) {
-                    Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
                 }
@@ -125,7 +127,7 @@ public void displayLightBalance() {
           
 
                 if (timStepTimer.get() < 7.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 }
 
@@ -136,7 +138,7 @@ public void displayLightBalance() {
                 Inputs.driverPower = 1;
 
                 if (timStepTimer.get() < 6.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
                 if( DriveSubsystem.m_gyro.getRoll() < -10 ){
                     displayLightBalance();
@@ -215,7 +217,7 @@ public void displayLightBalance() {
                 
                 break;
             
-
+                */
             default:
                 bIsDone = true;
                 SmartDashboard.putString("Auton Step Desc", "Done");           
@@ -281,16 +283,16 @@ public void displayLightBalance() {
                 SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
             }
 
-                if(timStepTimer.get() < 3.5) {
-                    Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
+                if(timStepTimer.get() < 2.45) {
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
                 }
 
           
 
-                if (timStepTimer.get() < 5.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                if (timStepTimer.get() < 3){
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
                     break;
                 }
                 iStep ++;
@@ -300,7 +302,7 @@ public void displayLightBalance() {
                 Inputs.driverPower = 0.4;
 
                 if (timStepTimer.get() < 6.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
                 }
                 if( DriveSubsystem.m_gyro.getRoll() < -10 ){
                     iStep++;
@@ -314,10 +316,10 @@ public void displayLightBalance() {
                     SmartDashboard.putString("Auton Step Desc", "On Ramp - Forward");
                 }
                 if (timStepTimer.get() < 3.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
                 }
 
-                Inputs.driverPower = 0.2; //was 0.4
+                Inputs.driverPower = 0.25; //was 0.4
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     iStep++;
@@ -328,17 +330,27 @@ public void displayLightBalance() {
                 break;
             
             case 4: //Drive a little bit forward, just to get out of the community
-                if (targetPastChargeStation > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = 0.5; 
+                if (targetPastChargeStation * 1.75 > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = 0.3; 
 
+                    IntakeSubsystem.spinMotors();
+                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
+                    
+                    
                     break;
                 }
+
+                /*if (timStepTimer.get() > 1){
+                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                    break;
+                }*/
 
                 iStep++;
                 break;
 
             case 5: //now that its out of the community, start driving backward until gyro > 10
                 Inputs.driverPower = -0.4;
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     displayLightBalance();
@@ -351,7 +363,7 @@ public void displayLightBalance() {
     
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
-
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 if (targetPosition*2.2 - 4500 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = -0.3; //0.3 
 
@@ -365,6 +377,8 @@ public void displayLightBalance() {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+
                 initialPosition = currentPosition;
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
@@ -381,15 +395,42 @@ public void displayLightBalance() {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = -0.001;
                     break;
                 } 
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
-                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 2.5) { //1.2
+                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
                         Inputs.driverPower = -0.3; //0.3
-                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -2.5) {
+                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -14) {
+                        Inputs.driverPower = 0.3; //0.3
+                    }
+                    break;
+                }
+                
+                initialPosition = currentPosition;
+                iStep++;
+
+                break;
+            case 9: // drive back forward to get a good shot.
+        
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
+                }
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+
+                if(timStepTimer.get() < 0.25) {
+                    Inputs.driverTurn = -0.001;
+                    break;
+                } 
+                //Inputs.driverPower = 0.0;
+                if (timStepTimer.get() < 1.25){
+                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
+                        Inputs.driverPower = -0.3; //0.3
+                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -14) {
                         Inputs.driverPower = 0.3; //0.3
                     }
                     break;
@@ -399,14 +440,14 @@ public void displayLightBalance() {
                 iStep++;
 
                 break;
-            case 9: // stop robot 
+            case 10: // stop robot 
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;
-                    iStep++;
                 }
                 
                 break;
@@ -478,7 +519,7 @@ public void displayLightBalance() {
             }
 
                 if(timStepTimer.get() < 3.5) {
-                    Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
                 }
@@ -486,7 +527,7 @@ public void displayLightBalance() {
           
 
                 /*if (timStepTimer.get() < 7.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 } */
                 iStep ++;
@@ -495,7 +536,7 @@ public void displayLightBalance() {
             case 2: //arm keeps to origin, starts driving out of community until 7 seconds in auton
 
                 if (timStepTimer.get() < 7.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
                 if(timStepTimer.get() < 2.0){
                     Inputs.driverPower = 0.8;
@@ -572,17 +613,17 @@ public void displayLightBalance() {
             }
 
                 if(timStepTimer.get() < 3.5) {
-                    Inputs.autonRequestGoTo = AutonFlags.HIGHPLACE;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
                 }
 
                 if (timStepTimer.get() < 7.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
 
                 /*if (timStepTimer.get() < 7.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 } */
                 initialPosition = currentPosition;
@@ -593,7 +634,7 @@ public void displayLightBalance() {
                 Inputs.driverPower = 1;
 
                 if (timStepTimer.get() < 6.0){
-                    Inputs.autonRequestGoTo = AutonFlags.ORIGIN;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
                 if (targetPastChargeStation > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3;

@@ -3,7 +3,8 @@ package frc.robot;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.Tower.AutonFlags;
+import frc.robot.Constants.Tower.AutonIntakeFlags;
+import frc.robot.Constants.Tower.AutonTowerFlags;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ShootSubsystem;
 
@@ -46,7 +47,8 @@ public class Inputs {
     public static double  towerWristSpeed    = 0.0;
     public static boolean towerClawOpenState  = false;
 
-    public static Constants.Tower.AutonFlags autonRequestGoTo = AutonFlags.IGNORE ; //-100 = ignore movement
+    public static Constants.Tower.AutonTowerFlags autonRequestTowerGoTo = AutonTowerFlags.IGNORE ;
+    public static Constants.Tower.AutonIntakeFlags autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
 
     //public static boolean m1Override = false;  
 
@@ -292,7 +294,8 @@ public class Inputs {
         intakePinchIn    = false;
         intakePinchOut   = false;
 
-        autonRequestGoTo = AutonFlags.IGNORE;
+        autonRequestTowerGoTo = AutonTowerFlags.IGNORE;
+        autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
 
     }
 
@@ -352,7 +355,7 @@ public class Inputs {
         Constants.telemetry.putNumber("INPUT Driver Strafe", driverStrafe, true);
         Constants.telemetry.putNumber("INPUT Driver Turn", driverTurn, true);
 
-        Constants.telemetry.putString("INPUT Auton Goto", autonRequestGoTo.name(), true);
+        Constants.telemetry.putString("INPUT Auton Goto", autonRequestTowerGoTo.name(), true);
         Constants.telemetry.putNumber("Drive Power Offset", drivePowerOffset, true);
         if( Constants.TelemetrySwitches.InputsDisplayOn){
             

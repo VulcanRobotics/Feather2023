@@ -35,9 +35,9 @@ public class PneumaticSubsystem extends SubsystemBase {
 
   //Solenoid m_solenoid = m_ph.makeSolenoid(0);
   
-  private static boolean clawClosed = false;
-  private static boolean intakeDeployed = false;
-  private static boolean pinchClosed = false;
+  public static boolean clawClosed = false;
+  public static boolean intakeDeployed = false;
+  public static boolean pinchClosed = false;
 
   public void Pneumatics() {
         m_compressor.enableDigital();

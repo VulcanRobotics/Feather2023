@@ -37,7 +37,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.Tower.AutonFlags;
+import frc.robot.Constants.Tower.AutonTowerFlags;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class TowerSubsystem extends SubsystemBase {
@@ -214,7 +214,7 @@ public class TowerSubsystem extends SubsystemBase {
             
 
         }else if (flipArm){
-            if (m_stringTower > 0.33 ){
+            if (m_stringTower > 0.46 ){
                 if (towerDone = towerPID.atSetpoint()){
                     towerDone = true;
                 } else{
@@ -270,7 +270,12 @@ public class TowerSubsystem extends SubsystemBase {
         //goToPosition(0.511, 0.796, true, false);
         //mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .511);
         //ElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .796);
-        return goToPosition(.511, .796, false, true);
+        goToPosition(.522, .801, false, true);
+
+        if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.01 && m_stringElbow > .801 - 0.01)) {
+            return true;
+        } 
+        return false;
     }
     public boolean midPlace(){
         /*mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .493);
@@ -289,6 +294,11 @@ public class TowerSubsystem extends SubsystemBase {
         return goToPosition(0.322, 0.71, true, false);
     }
 
+    public boolean pickUpFromIntake() {
+        return goToPosition(0.322, 0.71, false, false);
+    }
+
+
     public static void tuckArm(){
         /*if (!m_towerUpProximity.get() == true){
             mTowerSpeed = 0.85;
@@ -300,6 +310,10 @@ public class TowerSubsystem extends SubsystemBase {
         if (m_stringPotentiometerTower.get() < 0.32 && m_stringPotentiometerElbow.get() < 0.8) {
             mTowerSpeed = 0.0;
         }*/
+        goToPosition(0.27, 0.911, false, false);
+    }
+
+    public static void Origin(){
         goToPosition(0.378, 0.656, false, false);
     }
 
@@ -680,13 +694,13 @@ public class TowerSubsystem extends SubsystemBase {
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
         if (Inputs.m_operatorControl.getRawButton(2)) {
             //goToPosition(-55, -12);
-            tuckArm();
+            Origin();
         }
 
 
 
 
-        switch (Inputs.autonRequestGoTo){
+        switch (Inputs.autonRequestTowerGoTo){
             case IGNORE: 
                 break;
 
@@ -699,9 +713,12 @@ public class TowerSubsystem extends SubsystemBase {
                 break;
             
             case ORIGIN:
-                tuckArm();
+                Origin();
                 break;
                 
+            case TUCKARM:
+                tuckArm();
+            
             default:
                 break;
         }

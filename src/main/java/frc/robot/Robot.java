@@ -276,7 +276,7 @@ public class Robot extends TimedRobot {   // RobotBase {
 
     // Inputs.saveTelem();               // do this here so we capture any changes made by auton. 
 
-    // m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
+    m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
     m_TowerSubsystem.periodic(); 
     m_IntakeSubsystem.periodic();
     m_PneumaticSubsystem.periodic();

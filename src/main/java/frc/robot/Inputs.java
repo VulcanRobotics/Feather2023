@@ -7,6 +7,7 @@ import frc.robot.Constants.Tower.AutonIntakeFlags;
 import frc.robot.Constants.Tower.AutonTowerFlags;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ShootSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 import javax.swing.text.StyledEditorKit.BoldAction;
 
@@ -26,6 +27,7 @@ public class Inputs {
     public static XboxController m_driverXbox  = new XboxController(Constants.OIConstants.kDriverControllerPort);
     public static Joystick m_operatorControl = new Joystick(Constants.OIConstants.kOperatorControllerPort);
     public static Joystick m_extraControl    = new Joystick(2); //OIConstants.kClimbButtonBoxPort);
+    public static VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
         // Define all your variables here.
 
@@ -109,6 +111,15 @@ public class Inputs {
 
     public Inputs() {};             // Class constructor
 
+    public static void autoCenter(){
+        /* 
+        if (Math.abs(DriveSubsystem.m_gyro.getYaw()) > 1.0){
+            driverTurn = m_visionSubsystem.visionAdjustX()[1];
+        } else if (!m_visionSubsystem.areWeCentered()){
+            driverStrafe = m_visionSubsystem.visionAdjustX()[0];
+        }*/
+        driverStrafe = m_visionSubsystem.visionAdjustX()[0];
+    }
 
     public static void periodic(){
 
@@ -142,20 +153,20 @@ public class Inputs {
         // It is experimental. 
         double DPAD = m_driverXbox.getPOV(0); 
         if (DPAD == 90 || DPAD == 270) {
-            if (initialYAW < DriveSubsystem.m_gyro.getYaw() - 1.5) {
-                driverTurn = applyDeadBand(0.1, Constants.DriveConstants.kJoystickDeadband); 
-                driverTurn *= Constants.OIConstants.kDriverTurnPCT;
-            } else if (initialYAW > DriveSubsystem.m_gyro.getYaw() + 1.5) {
+            if (0 < DriveSubsystem.m_gyro.getYaw() - 1.5) {
                 driverTurn = applyDeadBand(-0.1, Constants.DriveConstants.kJoystickDeadband); 
+                driverTurn *= Constants.OIConstants.kDriverTurnPCT;
+            } else if (0 > DriveSubsystem.m_gyro.getYaw() + 1.5) {
+                driverTurn = applyDeadBand(0.1, Constants.DriveConstants.kJoystickDeadband); 
                 driverTurn *= Constants.OIConstants.kDriverTurnPCT;
             }
         }
 
         if (DPAD == 90) {
-            driverStrafe = applyDeadBand(-0.5, Constants.DriveConstants.kJoystickDeadband); 
+            driverStrafe = applyDeadBand(0.5, Constants.DriveConstants.kJoystickDeadband); 
             driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
         } else if (DPAD == 270) {
-            driverStrafe = applyDeadBand(0.5, Constants.DriveConstants.kJoystickDeadband); 
+            driverStrafe = applyDeadBand(-0.5, Constants.DriveConstants.kJoystickDeadband); 
             driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
         } else {
             initialYAW = DriveSubsystem.m_gyro.getYaw();
@@ -249,12 +260,27 @@ public class Inputs {
         }
         
         SmartDashboard.putNumber("driverPo", drivePowerOffset * 100);
+        SmartDashboard.putNumber("driver strafe", driverStrafe);
         SmartDashboard.putNumber("drivePowerSPEED", (Constants.OIConstants.kDriverStrafePCT+drivePowerOffset)*100);
 
+
+        //Alignment based on vision
+        if (m_driverXbox.getXButton()){
+            
+            
+            if (m_visionSubsystem.areWeCentered()) {
+                driverPower = -0.2;
+            } else {
+                autoCenter();
+            }
+
+        }
         
         // saveTelem(); do not do this here. We will do it after auton in robot teleop and auton.
 
     }  
+
+  
 
 
 

@@ -16,8 +16,12 @@ public class VisionSubsystem extends SubsystemBase{
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
+    NetworkTableEntry tv = table.getEntry("tv");
 
-    ProfiledPIDController visionAdjustPID = new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+ 
+
+     ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.025, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+     ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
 
@@ -38,20 +42,42 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
-        if (Inputs.m_driverXbox.getLeftStickButtonPressed()){
-            visionAdjust(x);
+        /* 
+        if (Inputs.m_driverXbox.getXButtonPressed()) {
+            Inputs.driverStrafe = visionAdjustX();
+            SmartDashboard.putNumber("Vision adjust PID OUT", visionAdjustPID.calculate(x, 0));
         }
+        */
         
     }
 
-    public void visionAdjust(double x) {
-         //This will need to be replaced with an inputs button.
-        Inputs.driverStrafe = visionAdjustPID.calculate(x, 0);
+    public double[] visionAdjustX() {
+        double dist = tx.getDouble(0.0);
+       //if (Math.abs(dist) > 6) {
+            return new double[]{visionAdjustPID.calculate(dist, 0), turnAdjustPID.calculate(DriveSubsystem.m_gyro.getYaw(), 0)};
+ 
+        
+    }
 
-        if (x > x - xDeadZone && x < x  + xDeadZone ) {
-            Inputs.driverPower = -0.1;
+    public boolean areWeCentered() {
+        double dist = tx.getDouble(0.0);
+        double area = ta.getDouble(0.0);
+        if (Math.abs(dist) < 3) {
+            return true;
+        } else {
+            return false;
         }
 
+
+    }
+
+    public boolean limelightHasTarget(){
+        long target = tv.getInteger(0);
+        if (target == 1){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

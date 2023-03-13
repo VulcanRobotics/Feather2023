@@ -440,7 +440,18 @@ public void displayLightBalance() {
                 iStep++;
 
                 break;
-            case 10: // stop robot 
+            case 10: // turn robot 180 degrees
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
+                }
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                Inputs.driverTurn = 0.0;
+                if(timStepTimer.get() < 0.25) {
+                    Inputs.driverTurn = 0.001;
+                }
+                
+                break;
+            case 11: // stop robot 
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }

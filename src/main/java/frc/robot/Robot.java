@@ -242,12 +242,12 @@ public class Robot extends TimedRobot {   // RobotBase {
   @Override
   public void teleopPeriodic() {
 
-    
-    Inputs.periodic();             // Make inputs read all their variables
+    Inputs.periodic(); 
+                // Make inputs read all their variables
 
     // process each subsystem in order now that we have inputs read in
     callRobotSubsystems();      // call other robot processes in order
-
+    
    }
 
   @Override
@@ -276,12 +276,14 @@ public class Robot extends TimedRobot {   // RobotBase {
 
     // Inputs.saveTelem();               // do this here so we capture any changes made by auton. 
 
-    m_VisionSubsystem.periodic();     // process vision targgets do it here so subs can use it.
+      // process vision targgets do it here so subs can use it.
     m_TowerSubsystem.periodic(); 
     m_IntakeSubsystem.periodic();
     m_PneumaticSubsystem.periodic();
+    m_VisionSubsystem.periodic();
     m_DriveSubsystem.periodic();      // two steps,  here determine where we are. 
     m_LightingSubsystem.periodic();
+       
 
     // YK - Disabled telemetry 2023-02-27
     // trackRobotBattery();              // write out telemetry fore the battery ports

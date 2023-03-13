@@ -284,7 +284,7 @@ public final class Constants {
     public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", false);//true
     public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);//true
     public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
-    public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", false);
+    public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", true);
   }
 
   public static final class ShooterConstants {

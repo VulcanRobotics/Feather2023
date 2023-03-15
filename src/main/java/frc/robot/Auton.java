@@ -725,14 +725,35 @@ public boolean maintainTurn(double YAWValue) {
                 if (timStepTimer.get() > 3.0){
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                     iStep++;
+                    initialPosition = currentPosition;
                 }
                 maintainTurn(-45);
                 break;
             case 4:
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
                 
-                maintainTurn(0);
+                if (target1Piece*2+20000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = -0.5; //0.3
+                } else {
+                    Inputs.driverPower = 0.0; //0.3
+                    iStep++;
+                }
 
+                maintainTurn(0);
+                break;
+            case 5:
+                if (timStepTimer.get() < 3.0){
+                    Inputs.driverStrafe = 0.2;
+                }
+                if (timStepTimer.get() > 3.0 && timStepTimer.get() < 8.0){
+                    Inputs.autoCenter();
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
+                }
+                maintainTurn(0);
+                break;
+            case 6:
+                
+                
             default:
             bIsDone = true;
             SmartDashboard.putString("Auton Step Desc", "Done");           

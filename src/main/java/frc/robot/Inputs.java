@@ -49,6 +49,8 @@ public class Inputs {
     public static double  towerWristSpeed    = 0.0;
     public static boolean towerClawOpenState  = false;
 
+    public static boolean armReachedTarget = false;
+
     public static double targetWristPosition = 0.0;
 
     public static Constants.Tower.AutonTowerFlags autonRequestTowerGoTo = AutonTowerFlags.IGNORE;
@@ -213,9 +215,9 @@ public class Inputs {
 
         // telemerty here will seve to telemetry record and the trys pushed to the dashboard. 
 
-        if (m_driverXbox.getBackButtonReleased()) { 
+        /*if (m_driverXbox.getBackButtonReleased()) { 
             fieldCentric = !fieldCentric;               // flip the vale to true or false. 
-        }
+        }*/
 
         driveResetGyro  = m_driverXbox.getStartButton();            // used in Drive subsystem to rest the gyro direction
         driveDesiredHeading = 0.0;                                  // turn robot to a specific gyro heading, changed in auton code

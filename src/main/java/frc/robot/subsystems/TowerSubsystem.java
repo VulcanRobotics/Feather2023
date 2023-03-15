@@ -110,9 +110,9 @@ public class TowerSubsystem extends SubsystemBase {
     private double elbowEncoderTarget = mElbow.getSelectedSensorPosition(); 
 
     private double initialWristEncoder = m_encoderWrist.getPosition();
-    private final double wristEncoder180 = 47.642;
+    public final double wristEncoder180 = 47.642;
 
-    private static boolean elbowMoveTo(double Evalue){
+    /*private static boolean elbowMoveTo(double Evalue){
         boolean done = false;
 
         if (m_stringElbow >= Evalue + .05) {
@@ -134,7 +134,7 @@ public class TowerSubsystem extends SubsystemBase {
         }
 
         return done;
-    }
+    } */
 
     private static double towerPidMove(double desiredPosition){
         return towerPID.calculate(m_stringPotentiometerTower.get(), desiredPosition);
@@ -214,37 +214,62 @@ public class TowerSubsystem extends SubsystemBase {
             
 
         }else if (flipArm){
-            if (m_stringTower > 0.46 ){
-                if (towerDone = towerPID.atSetpoint()){
+            if (m_stringTower > 0.5){
+                /*if (towerDone = towerPID.atSetpoint()){
                     towerDone = true;
                 } else{
-                    mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+                    
+                }*/
+
+                if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
+                    towerDone = true;
                 }
 
-                if (elbowDone = elbowPID.atSetpoint()){
+                if (m_stringElbow < Evalue + 0.01 && m_stringElbow > Evalue - 0.01){
+                    elbowDone = true;
+                }
+
+                mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+                mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+
+                /*if (elbowDone = elbowPID.atSetpoint()){
                     elbowDone = true;
                 } else{
-                    mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
-                }
+                    
+                }*/
             } else{
-                if (towerDone = towerPID.atSetpoint()){
+                /*if (towerDone = towerPID.atSetpoint()){
                     towerDone = true;
                 } else{
-                    mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
+                    
+                }*/
+                if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
+                    towerDone = true;
                 }
-            }
-        } else{
-            if (towerDone = towerPID.atSetpoint()){
-                towerDone = true;
-            } else{
+
                 mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
             }
+        } else{
+            /*if (towerDone = towerPID.atSetpoint()){
+                towerDone = true;
+            } else{} */
+            mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
 
-            if (elbowDone = elbowPID.atSetpoint()){
+            /*if (elbowDone = elbowPID.atSetpoint()){
                 elbowDone = true;
             } else{
-                mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+                
+            }*/
+
+            if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
+                towerDone = true;
             }
+
+            if (m_stringElbow < Evalue + 0.01 && m_stringElbow > Evalue - 0.01){
+                elbowDone = true;
+            }
+
+            mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
         }
 
         if (towerDone && elbowDone){
@@ -264,7 +289,7 @@ public class TowerSubsystem extends SubsystemBase {
         //ElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .796);
         goToPosition(.522, .801, false, true);
 
-        if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.01 && m_stringElbow > .801 - 0.01)) {
+        if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.03 && m_stringElbow > .801 - 0.03)) {
             return true;
         } 
         return false;
@@ -272,7 +297,7 @@ public class TowerSubsystem extends SubsystemBase {
     public boolean midPlace(){
         /*mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .493);
         mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .81);*/
-        return goToPosition(.346 /*0.336 */, .781/*.792 */ , false, false);
+        return goToPosition(.336 /*0.336 */, .805/*.792 */ , false, false);
     }
     public boolean humanPlayerGrab(){
         return goToPosition(.390, .718, false, false);
@@ -291,12 +316,12 @@ public class TowerSubsystem extends SubsystemBase {
     }
 
 
-    public static void tuckArm(){
-        goToPosition(0.27, 0.911, false, false);
+    public static boolean tuckArm(){
+        return goToPosition(0.27, 0.911, false, false);
     }
 
-    public static void Origin(){
-        goToPosition(0.378, 0.656, false, false);
+    public static boolean Origin(){
+        return goToPosition(0.378, 0.656, false, false);
     }
 
     public void goToWristPosition(double wristValue){
@@ -688,27 +713,33 @@ public class TowerSubsystem extends SubsystemBase {
 
             case HIGHPLACE:
                 boolean done = highPlace();
-
+                goToWristPosition(initialWristEncoder);
                 if (done) {
                     PneumaticSubsystem.setClawState(true);
+                    Inputs.armReachedTarget = true;
+                } else{
+                    Inputs.armReachedTarget = false;
                 }
                 break;
             
             case ORIGIN:
-                Origin();
+                Inputs.armReachedTarget = Origin();
                 break;
                 
             case TUCKARM:
-                tuckArm();
+                Inputs.armReachedTarget = tuckArm();
             
             case GRABFROMINTAKE:
                 
                 if(grabFromIntake()){
                     PneumaticSubsystem.setClawState(false);
+                    Inputs.armReachedTarget = true;
+                } else{
+                    Inputs.armReachedTarget = false;
                 }
             case IDLEABOVEINTAKE:
                 goToWristPosition(wristEncoder180/2);
-                goToPosition(0.33, 0.708, true, false);
+                Inputs.armReachedTarget = goToPosition(0.325, 0.710, false, false);// was .33, was .708
 
             default:
                 break;

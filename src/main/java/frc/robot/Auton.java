@@ -729,8 +729,9 @@ public boolean maintainTurn(double YAWValue) {
                 maintainTurn(-45);
                 break;
             case 4:
-
-
+                Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
+                
+                maintainTurn(0);
 
             default:
             bIsDone = true;

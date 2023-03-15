@@ -4,6 +4,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import frc.robot.Constants.Tower;
 import frc.robot.Constants.Tower.AutonIntakeFlags;
 import frc.robot.Constants.Tower.AutonTowerFlags;
 import frc.robot.subsystems.DriveSubsystem;
@@ -15,9 +16,12 @@ import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveModule;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.BooleanEntry;
 
 import java.sql.Driver;
 import java.sql.Time;
+
+import org.xml.sax.InputSource;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -71,30 +75,41 @@ public void displayLightBalance() {
         }
     }
 
-public boolean maintainTurn(double YAWValue) {
-    if (Math.abs(Inputs.currentYAW - Math.abs(YAWValue)) > 2) {
-        if (YAWValue == 180 || YAWValue == -180){
-            if (Inputs.currentYAW < 0.0) {
-                Inputs.driverTurn = -0.2;
+public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
+    if (!ignoreDeadBand){
+        if (Math.abs(Inputs.currentYAW - Math.abs(YAWValue)) > 2) {
+            if (YAWValue == 180 || YAWValue == -180){
+                if (Inputs.currentYAW < 0.0) {
+                    Inputs.driverTurn = -0.2;
+                }
+                if (Inputs.currentYAW > 0.0) {
+                    Inputs.driverTurn = 0.2;
+                }
+            } else {
+                if (Inputs.currentYAW > YAWValue+30) {
+                    Inputs.driverTurn = -0.3;
+                } else if (Inputs.currentYAW < YAWValue-30) {
+                    Inputs.driverTurn = 0.3;
+                } else if (Inputs.currentYAW > YAWValue+2) {
+                    Inputs.driverTurn = -0.1;
+                } else if (Inputs.currentYAW < YAWValue-2) {
+                    Inputs.driverTurn = 0.1;
+                }
             }
-            if (Inputs.currentYAW > 0.0) {
-                Inputs.driverTurn = 0.2;
-            }
+            return false;
         } else {
-            if (Inputs.currentYAW > YAWValue+30) {
-                Inputs.driverTurn = -0.3;
-            } else if (Inputs.currentYAW < YAWValue-30) {
-                Inputs.driverTurn = 0.3;
-            } else if (Inputs.currentYAW > YAWValue+2) {
-                Inputs.driverTurn = -0.1;
-            } else if (Inputs.currentYAW < YAWValue-2) {
-                Inputs.driverTurn = 0.1;
-            }
+            return true;
         }
+    } else{
+        if (Inputs.currentYAW > YAWValue) {
+            Inputs.driverTurn = -0.1;
+        } else if (Inputs.currentYAW < YAWValue) {
+            Inputs.driverTurn = 0.1;
+        }
+
         return false;
-    } else {
-        return true;
     }
+    
 
     
     
@@ -320,7 +335,7 @@ public boolean maintainTurn(double YAWValue) {
                 SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
             }
 
-                if(timStepTimer.get() < 2.45) {
+                if(!Inputs.armReachedTarget/*timStepTimer.get() < 2.45*/) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
@@ -329,7 +344,7 @@ public boolean maintainTurn(double YAWValue) {
           
 
                 if (timStepTimer.get() < 3){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.IDLEABOVEINTAKE;
                     break;
                 }
                 iStep ++;
@@ -339,13 +354,13 @@ public boolean maintainTurn(double YAWValue) {
                 Inputs.driverPower = 0.4;
 
                 if (timStepTimer.get() < 6.0){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.IDLEABOVEINTAKE;
                 }
                 if( DriveSubsystem.m_gyro.getRoll() < -10 ){
                     iStep++;
                     initialPosition = currentPosition;
                  }
-                maintainTurn(0);
+                maintainTurn(0, false);
                 break;
 
             case 3: //keeps going on balance until gyro is greater than 10
@@ -353,8 +368,9 @@ public boolean maintainTurn(double YAWValue) {
                     SmartDashboard.putString("Auton Step Desc", "On Ramp - Forward");
                 }
                 
-
+                Inputs.autonRequestTowerGoTo = AutonTowerFlags.IDLEABOVEINTAKE;
                 Inputs.driverPower = 0.25; //was 0.4
+                maintainTurn(0, false);
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     iStep++;
@@ -378,7 +394,7 @@ public boolean maintainTurn(double YAWValue) {
                     }
 
                     if (timStepTimer.get() > 0.75) {
-                        maintainTurn(0);
+                        maintainTurn(0, true);
                     }
                     
                     
@@ -396,6 +412,9 @@ public boolean maintainTurn(double YAWValue) {
             case 5: //now that its out of the community, start driving backward until gyro > 10
                 Inputs.driverPower = -0.3;
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
+
+                maintainTurn(0, false);
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     displayLightBalance();
@@ -409,7 +428,7 @@ public boolean maintainTurn(double YAWValue) {
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-                if (targetPosition*2.2 - 4500 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (targetPosition*2.2 - 4000 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = -0.3; //0.3 
 
                     break;
@@ -473,9 +492,9 @@ public boolean maintainTurn(double YAWValue) {
                 } 
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
-                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
+                    if (targetQuickMove-3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
                         Inputs.driverPower = -0.3; //0.3
-                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -14) {
+                    } else if (targetQuickMove-2000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -14) {
                         Inputs.driverPower = 0.3; //0.3
                     }
                     break;
@@ -496,9 +515,9 @@ public boolean maintainTurn(double YAWValue) {
                     Inputs.driverTurn = 0.001;
                 }
 
-                if (timStepTimer.get() > 1){
+                /*if (timStepTimer.get() > 1){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                }
+                }*/
                 
                 break;
             case 11: // stop robot 
@@ -611,7 +630,7 @@ public boolean maintainTurn(double YAWValue) {
                 }
                 Inputs.driverPower = 0.0;
 
-                if (maintainTurn(30)) {
+                if (maintainTurn(30, false)) {
                     break; 
                 }
 
@@ -622,7 +641,7 @@ public boolean maintainTurn(double YAWValue) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                maintainTurn(180);
+                maintainTurn(180, false);
                 break;
 
             default:
@@ -683,7 +702,7 @@ public boolean maintainTurn(double YAWValue) {
                 SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
             }
 
-                if(timStepTimer.get() < 2.45) {
+                if(!Inputs.armReachedTarget) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
@@ -705,14 +724,14 @@ public boolean maintainTurn(double YAWValue) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.TUCKARM;
                 }
                 
-                if (target1Piece*2+20000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (target1Piece*2+40000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.5; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3
                     iStep++;
                 }
 
-                maintainTurn(0);
+                maintainTurn(0, false);
                 
                 
 
@@ -727,29 +746,30 @@ public boolean maintainTurn(double YAWValue) {
                     iStep++;
                     initialPosition = currentPosition;
                 }
-                maintainTurn(-45);
+                maintainTurn(-45, false);
                 break;
             case 4:
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                
-                if (target1Piece*2+20000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                if (target1Piece*2-40000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = -0.5; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3
                     iStep++;
                 }
 
-                maintainTurn(0);
+                maintainTurn(0, false);
                 break;
             case 5:
-                if (timStepTimer.get() < 3.0){
-                    Inputs.driverStrafe = 0.2;
+                if (timStepTimer.get() < 1.0){
+                    Inputs.driverStrafe = -0.2;
                 }
-                if (timStepTimer.get() > 3.0 && timStepTimer.get() < 8.0){
-                    Inputs.autoCenter();
+                if (timStepTimer.get() > 3.0 && timStepTimer.get() < 10.0){
+                    Inputs.driverPower = -0.1;
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
+                    
                 }
-                maintainTurn(0);
+                maintainTurn(0, false);
                 break;
             case 6:
                 
@@ -874,7 +894,7 @@ public boolean maintainTurn(double YAWValue) {
                     Inputs.leftPincerMotorSpeed = -0.5;
 
                     if (timStepTimer.get() > 0.75) {
-                        maintainTurn(0);
+                        maintainTurn(0, false);
                     }
                     
                     

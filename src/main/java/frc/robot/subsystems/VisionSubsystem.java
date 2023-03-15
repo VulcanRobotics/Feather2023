@@ -8,7 +8,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import frc.robot.subsystems.DriveSubsystem;
+
 
 
 public class VisionSubsystem extends SubsystemBase{
@@ -20,7 +20,7 @@ public class VisionSubsystem extends SubsystemBase{
 
  
 
-     ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.025, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+     ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
      ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
@@ -59,10 +59,10 @@ public class VisionSubsystem extends SubsystemBase{
         
     }
 
-    public boolean areWeCentered() {
+    public boolean areWeCentered(double tolerance) {
         double dist = tx.getDouble(0.0);
         double area = ta.getDouble(0.0);
-        if (Math.abs(dist) < 3) {
+        if (Math.abs(dist) < tolerance) {
             return true;
         } else {
             return false;

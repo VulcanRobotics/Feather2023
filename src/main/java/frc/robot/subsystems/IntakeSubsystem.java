@@ -18,6 +18,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Constants;
 import frc.robot.Inputs;
 //import frc.robot.MyTimedPower;
+import frc.robot.Robot;
 
 //import java.time.Clock;
 
@@ -38,7 +39,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean startClock = true;
 
     public void autoPinch(){
-        PneumaticSubsystem.setPinchState(true);
+        if (!PneumaticSubsystem.pinchClosed){
+            PneumaticSubsystem.setPinchState(true);
+        }
+        
         if (startClock == true){
             startTime = System.currentTimeMillis();
             startClock = false;
@@ -58,8 +62,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void periodic(){
-
-
 
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
@@ -128,7 +130,8 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         
         
-
+        if (Inputs.rightPincerMotorSpeed != 0){leftPincerSpeed = 0.5;}
+        if (Inputs.leftPincerMotorSpeed != 0){rightPincerSpeed = -0.5;}
 
         m_rightPincerMotor.set(rightPincerSpeed);
         m_leftPincerMotor.set(leftPincerSpeed);

@@ -198,10 +198,10 @@ public class TowerSubsystem extends SubsystemBase {
         if (towerPriority){
             
 
-            if (m_stringTower < Tvalue + 0.05 && m_stringTower > Tvalue - 0.05){ //towerDone = towerPID.atSetpoint()
+            if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
                 towerDone = true;
 
-                if (m_stringElbow < Evalue + 0.05 && m_stringElbow > Evalue - 0.05){
+                if (m_stringElbow < Evalue + 0.01 && m_stringElbow > Evalue - 0.01){
                     elbowDone = true;
                 } else{
                     mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
@@ -256,14 +256,6 @@ public class TowerSubsystem extends SubsystemBase {
 
     }
 
-    public void flipWrist() { //DOES NOT WORK
-        if ((wristEncoder180 - m_encoderWrist.getPosition() > initialWristEncoder - m_encoderWrist.getPosition())) {
-            m_Wrist.set(0.1);
-        } else {
-            m_Wrist.set(-0.1);
-        }
-    }
-
     
 
     public static boolean highPlace(){
@@ -291,7 +283,7 @@ public class TowerSubsystem extends SubsystemBase {
     }
 
     public boolean grabFromIntake() {
-        return goToPosition(0.322, 0.71, true, false);
+        return goToPosition(0.32, 0.708, true, false);
     }
 
     public boolean pickUpFromIntake() {
@@ -300,16 +292,6 @@ public class TowerSubsystem extends SubsystemBase {
 
 
     public static void tuckArm(){
-        /*if (!m_towerUpProximity.get() == true){
-            mTowerSpeed = 0.85;
-        }
-        if (m_ElbowUpProximity.get()){
-            mElbowSpeed = 0.3;
-        }
-
-        if (m_stringPotentiometerTower.get() < 0.32 && m_stringPotentiometerElbow.get() < 0.8) {
-            mTowerSpeed = 0.0;
-        }*/
         goToPosition(0.27, 0.911, false, false);
     }
 
@@ -317,7 +299,7 @@ public class TowerSubsystem extends SubsystemBase {
         goToPosition(0.378, 0.656, false, false);
     }
 
-    private void goToWristPosition(double wristValue){
+    public void goToWristPosition(double wristValue){
         SmartDashboard.putNumber("wrist target", wristValue);
 
         if (m_wristEncoder <  wristValue - 3) {
@@ -719,6 +701,15 @@ public class TowerSubsystem extends SubsystemBase {
             case TUCKARM:
                 tuckArm();
             
+            case GRABFROMINTAKE:
+                
+                if(grabFromIntake()){
+                    PneumaticSubsystem.setClawState(false);
+                }
+            case IDLEABOVEINTAKE:
+                goToWristPosition(wristEncoder180/2);
+                goToPosition(0.33, 0.708, true, false);
+
             default:
                 break;
         }

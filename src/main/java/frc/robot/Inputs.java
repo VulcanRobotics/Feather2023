@@ -49,8 +49,13 @@ public class Inputs {
     public static double  towerWristSpeed    = 0.0;
     public static boolean towerClawOpenState  = false;
 
-    public static Constants.Tower.AutonTowerFlags autonRequestTowerGoTo = AutonTowerFlags.IGNORE ;
+    public static double targetWristPosition = 0.0;
+
+    public static Constants.Tower.AutonTowerFlags autonRequestTowerGoTo = AutonTowerFlags.IGNORE;
+
     public static Constants.Tower.AutonIntakeFlags autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
+    public static double rightPincerMotorSpeed = 0.0;
+    public static double leftPincerMotorSpeed = 0.0;
 
     //public static boolean m1Override = false;  
 
@@ -104,6 +109,7 @@ public class Inputs {
 
     // power massaging experiment. 
     public static double initialYAW = 0.0;
+    public static double currentYAW = 0.0;
     public static double drivePowerOffset = 0.0;
     public static double lastDPAD = -1.0;
 
@@ -120,6 +126,8 @@ public class Inputs {
         }*/
         driverStrafe = m_visionSubsystem.visionAdjustX()[0];
     }
+
+    
 
     public static void periodic(){
 
@@ -171,7 +179,13 @@ public class Inputs {
         } else {
             initialYAW = DriveSubsystem.m_gyro.getYaw();
         }
-
+        
+        /*if (DriveSubsystem.m_gyro.getYaw() < 0.0) {
+            currentYAW = DriveSubsystem.m_gyro.getYaw() + 360;
+        } else {
+            currentYAW = DriveSubsystem.m_gyro.getYaw();
+        }*/
+        currentYAW = DriveSubsystem.m_gyro.getYaw();
 
         if (DPAD != lastDPAD && DPAD != -1){
             if (DPAD == 0){
@@ -262,15 +276,19 @@ public class Inputs {
         SmartDashboard.putNumber("driverPo", drivePowerOffset * 100);
         SmartDashboard.putNumber("driver strafe", driverStrafe);
         SmartDashboard.putNumber("drivePowerSPEED", (Constants.OIConstants.kDriverStrafePCT+drivePowerOffset)*100);
+        SmartDashboard.putNumber("currentYAW", currentYAW);
 
 
         //Alignment based on vision
         if (m_driverXbox.getXButton()){
             
-            
-            if (m_visionSubsystem.areWeCentered()) {
+            //Still jitters a little when calling this (a bit less though) - how can that be fixed?
+            if (m_visionSubsystem.areWeCentered(3)) {
                 driverPower = -0.2;
-            } else {
+            } /*else {
+                autoCenter();
+            }*/
+            if (!m_visionSubsystem.areWeCentered(2)) {
                 autoCenter();
             }
 
@@ -322,6 +340,11 @@ public class Inputs {
 
         autonRequestTowerGoTo = AutonTowerFlags.IGNORE;
         autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
+
+        rightPincerMotorSpeed = 0.0;
+        leftPincerMotorSpeed = 0.0;
+
+        targetWristPosition = 0.0;
 
     }
 

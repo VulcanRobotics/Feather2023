@@ -27,6 +27,7 @@ import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Inputs;
+import frc.robot.Constants.Tower.AutonIntakeFlags;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
@@ -188,7 +189,10 @@ public class Robot extends TimedRobot {   // RobotBase {
   public void disabledPeriodic(){
     Inputs.periodic();
     runLights();
-    SmartDashboard.putNumber("Auton to run", Inputs.autonToRun);
+
+    //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+
+    //SmartDashboard.putNumber("Auton to run", Inputs.autonToRun);
       // Constants.telemetry.saveSpreadSheet();
       //Constants.telemetry.save
     
@@ -279,7 +283,7 @@ public class Robot extends TimedRobot {   // RobotBase {
       // process vision targgets do it here so subs can use it.
     m_TowerSubsystem.periodic(); 
     m_IntakeSubsystem.periodic();
-    m_PneumaticSubsystem.periodic();
+   // m_PneumaticSubsystem.periodic();
     m_VisionSubsystem.periodic();
     m_DriveSubsystem.periodic();      // two steps,  here determine where we are. 
     m_LightingSubsystem.periodic();

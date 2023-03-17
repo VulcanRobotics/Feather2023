@@ -203,7 +203,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-
+    Constants.MatchSettings.kInTeleop = false;
     //auton.iAutonId = 1;
     setAllianceInfo(); // get alliance color from driver station 
     auton.reset();
@@ -227,7 +227,7 @@ public class Robot extends TimedRobot {   // RobotBase {
 
   @Override
   public void teleopInit() {
-
+    Constants.MatchSettings.kInTeleop = true;
     setAllianceInfo(); // get alliance color from driver station 
 
     // This makes sure that the autonomous stops running when
@@ -245,7 +245,7 @@ public class Robot extends TimedRobot {   // RobotBase {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
+    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
     Inputs.periodic(); 
                 // Make inputs read all their variables
 

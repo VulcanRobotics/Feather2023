@@ -90,7 +90,7 @@ public class TowerSubsystem extends SubsystemBase {
 
     private static double mTowerSpeed = 0;
     private static double mElbowSpeed = 0;
-    private double mWristSpeed = .4;
+    private double mWristSpeed = 0;
     private double mGripSpeed = 0;
 
     private boolean IKMode = false;
@@ -308,7 +308,7 @@ public class TowerSubsystem extends SubsystemBase {
     }
 
     public boolean grabFromIntake() {
-        return goToPosition(0.32, 0.708, true, false);
+        return goToPosition(0.32, 0.7169, false, false);
     }
 
     public boolean pickUpFromIntake() {
@@ -318,6 +318,9 @@ public class TowerSubsystem extends SubsystemBase {
 
     public static boolean tuckArm(){
         return goToPosition(0.27, 0.911, false, false);
+
+
+
     }
 
     public static boolean Origin(){
@@ -383,9 +386,6 @@ public class TowerSubsystem extends SubsystemBase {
             IKMode = !IKMode;
         }
 
-        if (Inputs.m_operatorControl.getRawButtonPressed(10)){
-            PIDmode = !PIDmode;
-        }
         //Moving elbow
 
         //if (false) {
@@ -713,7 +713,7 @@ public class TowerSubsystem extends SubsystemBase {
 
             case HIGHPLACE:
                 boolean done = highPlace();
-                goToWristPosition(initialWristEncoder);
+                //goToWristPosition(initialWristEncoder);
                 if (done) {
                     PneumaticSubsystem.setClawState(true);
                     Inputs.armReachedTarget = true;
@@ -762,7 +762,7 @@ public class TowerSubsystem extends SubsystemBase {
             highPlace();
         } 
 
-        if (Inputs.m_operatorControl.getRawButtonReleased(6) || Inputs.m_operatorControl.getRawButtonReleased(3) || Inputs.m_operatorControl.getRawButtonReleased(4) || Inputs.m_operatorControl.getRawButtonReleased(5)){
+        if (Inputs.m_operatorControl.getRawButtonReleased(6) || Inputs.m_operatorControl.getRawButtonReleased(3) || Inputs.m_operatorControl.getRawButtonReleased(4) || Inputs.m_operatorControl.getRawButtonReleased(5) || Inputs.m_operatorControl.getRawButtonReleased(9)){
             towerPID.reset(m_stringPotentiometerTower.get());
             elbowPID.reset(m_stringPotentiometerElbow.get());
         }
@@ -772,7 +772,7 @@ public class TowerSubsystem extends SubsystemBase {
         }
 
         if (Inputs.m_operatorControl.getRawButton(9)) {
-            towerPidMove(.4);
+            grabFromIntake();
         }
 
         if (Inputs.m_operatorControl.getRawButtonReleased(8)){

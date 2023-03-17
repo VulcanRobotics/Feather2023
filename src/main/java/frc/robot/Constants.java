@@ -261,6 +261,7 @@ public final class Constants {
     public static String   kAllianceColorName     = "unk";  // these will be set on robot class in init
     public static int      kBlueAlliance          = 1;  // these will be set on robot class in init
     public static int      kRedAlliance          = 2;  // these will be set on robot class in init
+    public static boolean kInTeleop = false;
 
   }
 

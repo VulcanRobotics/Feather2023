@@ -28,7 +28,7 @@ public class LightingSubsystem extends SubsystemBase{
             LEDColor = 0.91; //solid violet
             Inputs.purpleLED = false;
         } else if (Inputs.redLED) {
-            LEDColor = -0.47; //Twinkles, forest palette
+            LEDColor = -0.25; //Heartbeat, red
             Inputs.redLED = false;
         } else if (Inputs.greenLED) {
             LEDColor = -0.53; //Twinkles, party palette
@@ -47,6 +47,7 @@ public class LightingSubsystem extends SubsystemBase{
 
 
         m_light1.set(LEDColor);
+        
         SmartDashboard.putBoolean("YELLOW", Inputs.yellowLED);
         SmartDashboard.putBoolean("PURPLE", Inputs.purpleLED);
         SmartDashboard.putNumber("LED COLOR", LEDColor);

@@ -52,7 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
             elapsedtime = System.currentTimeMillis() - startTime;
         }
     
-        if (elapsedtime < 500) {
+        if (elapsedtime < 1000) {
             rightPincerSpeed = 0.5;
             leftPincerSpeed = -0.5;
         } else {
@@ -88,7 +88,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 rightPincerSpeed = 0.0;
                 leftPincerSpeed = 0.0;
             }
-        } else{
+        } else /*if (Constants.MatchSettings.kInTeleop)*/ {
             PneumaticSubsystem.setIntakeState(false);
             PneumaticSubsystem.setPinchState(false);
             rightPincerSpeed = 0.0;

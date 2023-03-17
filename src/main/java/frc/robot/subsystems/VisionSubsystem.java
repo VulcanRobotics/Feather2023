@@ -6,6 +6,9 @@ import frc.robot.Inputs;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+//import javax.swing.text.html.AccessibleHTML.TableElementInfo.TableAccessibleContext;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
@@ -13,24 +16,27 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class VisionSubsystem extends SubsystemBase{
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
     NetworkTableEntry tv = table.getEntry("tv");
 
- 
+    NetworkTableEntry pipeline = table.getEntry("pipeline");
+    
 
      ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
      ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
 
-
+    
 
     //read values periodically
 
     public VisionSubsystem () {
         visionAdjustPID.reset(0);
+        pipeline.setDouble(0);
     }
     
 
@@ -42,6 +48,7 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
+        
         /* 
         if (Inputs.m_driverXbox.getXButtonPressed()) {
             Inputs.driverStrafe = visionAdjustX();
@@ -50,7 +57,7 @@ public class VisionSubsystem extends SubsystemBase{
         */
         
     }
-
+    
     public double[] visionAdjustX() {
         double dist = tx.getDouble(0.0);
        //if (Math.abs(dist) > 6) {
@@ -79,6 +86,15 @@ public class VisionSubsystem extends SubsystemBase{
             return false;
         }
     }
+
+    public void switchPipeline(int pipelineNumber) {
+        pipeline.setDouble(pipelineNumber);
+    }
+
+    public long getPipelineNumber() {
+        return pipeline.getInteger(0);
+    }
+
 }
 
     

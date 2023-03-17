@@ -251,6 +251,15 @@ public class Inputs {
         towerWristSpeed    = m_operatorControl.getZ();
 
         endGame = m_extraControl.getRawButton(1);
+
+        if(m_extraControl.getRawButtonPressed(5)){
+            long currentPipeline = m_visionSubsystem.getPipelineNumber();
+            if (currentPipeline == 0) {
+                m_visionSubsystem.switchPipeline(1);
+            } else {
+                m_visionSubsystem.switchPipeline(0);
+            }
+        }
         
         if (endGame){
             if ((Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 && startedBalance)){//&& Math.abs(DriveSubsystem.m_gyro.getYaw()) > 160) ||
@@ -275,6 +284,8 @@ public class Inputs {
             }
         }
         
+
+
         SmartDashboard.putNumber("driverPo", drivePowerOffset * 100);
         SmartDashboard.putNumber("driver strafe", driverStrafe);
         SmartDashboard.putNumber("drivePowerSPEED", (Constants.OIConstants.kDriverStrafePCT+drivePowerOffset)*100);
@@ -341,7 +352,7 @@ public class Inputs {
         intakePinchOut   = false;
 
         autonRequestTowerGoTo = AutonTowerFlags.IGNORE;
-        autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
+       
 
         rightPincerMotorSpeed = 0.0;
         leftPincerMotorSpeed = 0.0;

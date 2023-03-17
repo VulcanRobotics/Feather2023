@@ -323,8 +323,13 @@ public class TowerSubsystem extends SubsystemBase {
 
     }
 
-    public static boolean Origin(){
-        return goToPosition(0.378, 0.656, false, false);
+    public static boolean Origin(boolean Setup){ //0.39T and 0.662E
+        
+        if (Setup){
+            return goToPosition(0.39, 0.662, false, false);
+        } else {
+            return goToPosition(0.378, 0.656, false, false);
+        }
     }
 
     public void goToWristPosition(double wristValue){
@@ -701,10 +706,12 @@ public class TowerSubsystem extends SubsystemBase {
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
         if (Inputs.m_operatorControl.getRawButton(2)) {
             //goToPosition(-55, -12);
-            Origin();
+            Origin(false);
         }
 
-
+        if (Inputs.m_extraControl.getRawButton(2)) {
+            Origin(true);
+        }
 
 
         switch (Inputs.autonRequestTowerGoTo){
@@ -723,7 +730,7 @@ public class TowerSubsystem extends SubsystemBase {
                 break;
             
             case ORIGIN:
-                Inputs.armReachedTarget = Origin();
+                Inputs.armReachedTarget = Origin(false);
                 break;
                 
             case TUCKARM:

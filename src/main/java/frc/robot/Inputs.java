@@ -238,7 +238,7 @@ public class Inputs {
         driveSwerveEncoderReset = m_driverXbox.getStartButtonReleased();
         driveZeroGyro           = m_driverXbox.getAButtonReleased();
         driveToggleBrakeMode    = m_driverXbox.getBButtonReleased();
-        driveToggleAutoPoseMode = m_driverXbox.getYButtonReleased();
+        //driveToggleAutoPoseMode = m_driverXbox.getYButtonReleased();
       
 
 
@@ -252,7 +252,7 @@ public class Inputs {
 
         endGame = m_extraControl.getRawButton(1);
 
-        if(m_extraControl.getRawButtonPressed(5)){
+        if(m_driverXbox.getYButtonPressed()){
             long currentPipeline = m_visionSubsystem.getPipelineNumber();
             if (currentPipeline == 0) {
                 m_visionSubsystem.switchPipeline(1);

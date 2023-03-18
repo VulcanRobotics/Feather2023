@@ -300,7 +300,7 @@ public class TowerSubsystem extends SubsystemBase {
         return goToPosition(.336 /*0.336 */, .805/*.792 */ , false, false);
     }
     public boolean humanPlayerGrab(){
-        return goToPosition(.390, .718, false, false);
+        return goToPosition(.368, .755, false, false);//Hatboro: 0.390, 0.               718 SCH Day 0: 0.395, .711 
     }
 
     public boolean humanPlayerGrabDrop(){

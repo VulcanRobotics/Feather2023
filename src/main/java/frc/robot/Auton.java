@@ -443,7 +443,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-                if (targetPosition*2.2 - 2000 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
+                if (targetPosition*2.2 - 500 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = -0.3; //0.3 
 
                     break;

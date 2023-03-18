@@ -155,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
           Inputs.fieldCentric);
           
       if(true){ //Constants.DashboardSwitches.DriveDisplayOn){
-        SmartDashboard.putNumber("Ultrasonic Distance", -m_distanceUltrasonic.getRangeInches());
+        SmartDashboard.putNumber("Ultrasonic Distance", m_distanceUltrasonic.getRangeInches());
         SmartDashboard.putBoolean("Is US Enabled?", m_distanceUltrasonic.isEnabled());
         SmartDashboard.putBoolean("Is US Range Valid", m_distanceUltrasonic.isRangeValid());
         SmartDashboard.putNumber("periodic X", m_odometry.getPoseMeters().getX() );

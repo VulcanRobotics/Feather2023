@@ -713,6 +713,9 @@ public class TowerSubsystem extends SubsystemBase {
             Origin(true);
         }
 
+        if (Inputs.m_extraControl.getRawButton(5)) {
+            tuckArm();
+        }
 
         switch (Inputs.autonRequestTowerGoTo){
             case IGNORE: 

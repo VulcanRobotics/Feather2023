@@ -782,9 +782,9 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 break;
             case 4:
                 
-                if (timStepTimer.get() < 1.0){
+                /*if (timStepTimer.get() < 1.0){
                     Inputs.driverStrafe = 0.1;
-                }
+                }*/
 
                 if (timStepTimer.get() < 2.0){
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;

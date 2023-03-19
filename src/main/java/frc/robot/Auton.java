@@ -773,7 +773,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 }
                 
 
-                if (timStepTimer.get() > 1.0){
+                if (timStepTimer.get() > 0.5){
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                     iStep++;
                     initialPosition = currentPosition;

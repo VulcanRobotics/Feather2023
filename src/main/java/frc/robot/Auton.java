@@ -398,8 +398,9 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
                     if (timStepTimer.get() > 0.75) {
                         maintainTurn(0, true);
-                    }
-                    
+                    } /*else if (timStepTimer.get() < 0.75) {
+                        maintainTurn(0, false);
+                    }*/        
                     
                     break;
                 }
@@ -725,7 +726,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
           
 
-                if (timStepTimer.get() < 4){
+                if (timStepTimer.get() < 3){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 }
@@ -745,7 +746,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     break;
                 } 
 
-                if (target1Piece*2+25000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (target1Piece*2+55000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.2; //0.3
                     maintainTurn(-15, false);
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
@@ -772,7 +773,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 }
                 
 
-                if (timStepTimer.get() > 3.0){
+                if (timStepTimer.get() > 1.0){
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                     iStep++;
                     initialPosition = currentPosition;
@@ -790,7 +791,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 }
 
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                if (target1Piece*2-20000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (target1Piece*2-10000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = -0.5; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3
@@ -802,10 +803,10 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 maintainTurn(0, false);
                 break;
             case 5:
-                if (timStepTimer.get() < 1.4){
+                if (timStepTimer.get() < 0.7){
                     Inputs.driverStrafe = -0.2;
                 }
-                if (timStepTimer.get() > 3.0 && timStepTimer.get() < 10.0){
+                if (timStepTimer.get() > 1.0 && timStepTimer.get() < 10.0){
                     Inputs.driverPower = -0.1;
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
                     

@@ -126,10 +126,12 @@ public class Inputs {
         } else if (!m_visionSubsystem.areWeCentered()){
             driverStrafe = m_visionSubsystem.visionAdjustX()[0];
         }*/
-        driverStrafe = m_visionSubsystem.visionAdjustX()[0];
+        driverStrafe = m_visionSubsystem.visionAdjustX(false)[0];
     }
 
-    
+    public static void seekTarget() {
+        driverTurn = -m_visionSubsystem.visionAdjustX(true)[1];
+    }
 
     public static void periodic(){
 
@@ -261,6 +263,10 @@ public class Inputs {
             }
         }
         
+        if (m_driverXbox.getRightBumper()) {
+            seekTarget();   
+        }
+
         if (endGame){
             if ((Math.abs(DriveSubsystem.m_gyro.getRoll()) < 2.5 && startedBalance)){//&& Math.abs(DriveSubsystem.m_gyro.getYaw()) > 160) ||
             //(Math.abs(DriveSubsystem.m_gyro.getPitch()) < 2.5 && Math.abs(DriveSubsystem.m_gyro.getYaw()) > 70 && Math.abs(DriveSubsystem.m_gyro.getYaw()) < 110) && startedBalance == true){

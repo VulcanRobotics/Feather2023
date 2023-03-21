@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import com.ctre.phoenix.sensors.CANCoder;
 
+import frc.robot.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.math.controller.PIDController;
@@ -126,8 +127,14 @@ public class SwerveModule {
 
     m_turningMotor.configSupplyCurrentLimit(
       new SupplyCurrentLimitConfiguration(true,     // enabled      
-                                        10,         // limit
+                                        25,         // limit, was 10
                                         40,         // trigger amp threshold
+                                        0.1));      // trigger threshold time seconds
+
+    m_driveMotor.configSupplyCurrentLimit(
+      new SupplyCurrentLimitConfiguration(true,     // enabled      
+                                        35,         // limit
+                                        60,         // trigger amp threshold
                                         0.1));      // trigger threshold time seconds
 
     //m_driveMotor.configOpenloopRamp(0.5);
@@ -200,10 +207,16 @@ public class SwerveModule {
     //return new SwerveModuleState(m_driveEncoder.getRate(), new Rotation2d(m_turningEncoder.get()));
   }
 
+  public Rotation2d getAngle() {
+    return Rotation2d.fromDegrees(MathUtil.falconToDegrees(m_turningMotor.getSelectedSensorPosition(), Constants.Swerve.angleGearRatio));
+  }
+
   public SwerveModulePosition getPosition() {
     // Working on Odometry
-    double robotMeters = m_driveMotor.getSelectedSensorPosition()/Constants.Swerve.ticksPerMeter;
-    return new SwerveModulePosition(robotMeters, new Rotation2d(m_turningEncoder.getAbsolutePosition()));
+    //double robotMeters = m_driveMotor.getSelectedSensorPosition()/Constants.Swerve.ticksPerMeter;
+    return new SwerveModulePosition(
+      MathUtil.falconToMeters(m_driveMotor.getSelectedSensorPosition(), Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio),
+       getAngle());
     //return new SwerveModulePosition();
   }
 

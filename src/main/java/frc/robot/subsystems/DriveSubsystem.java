@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import frc.robot.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -107,10 +108,11 @@ public class DriveSubsystem extends SubsystemBase {
   public static SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
       new SwerveModulePosition[] { //do we need position
-        m_frontLeft.getPosition(),
-        m_frontRight.getPosition(),
-        m_rearLeft.getPosition(),
-        m_rearRight.getPosition()
+        m_frontRight.getPosition(), //0
+        m_frontLeft.getPosition(), //1
+        m_rearRight.getPosition(),
+        m_rearLeft.getPosition()
+        
       });
 
   /** Creates a new DriveSubsystem. */
@@ -143,10 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
       m_odometry.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
+          m_frontRight.getPosition(),//fl
+          m_frontLeft.getPosition(),//fr
+          m_rearRight.getPosition(),//rl
+          m_rearLeft.getPosition() //rr
+           
         });
 
       drive(Inputs.driverPower,

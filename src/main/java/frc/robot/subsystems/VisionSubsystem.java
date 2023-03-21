@@ -15,18 +15,25 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 
 public class VisionSubsystem extends SubsystemBase{
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry ta = table.getEntry("ta");
-    NetworkTableEntry tv = table.getEntry("tv");
+    NetworkTable rear = NetworkTableInstance.getDefault().getTable("limelight-rear");
+    NetworkTable front = NetworkTableInstance.getDefault().getTable("limelight-front");
 
-    NetworkTableEntry pipeline = table.getEntry("pipeline");
+    NetworkTableEntry f_tx = front.getEntry("tx");
+    NetworkTableEntry f_ty = front.getEntry("ty");
+    NetworkTableEntry f_ta = front.getEntry("ta");
+    NetworkTableEntry f_tv = front.getEntry("tv");
+    
+    
+    NetworkTableEntry r_tx = rear.getEntry("tx");
+    NetworkTableEntry r_ty = rear.getEntry("ty");
+    NetworkTableEntry r_ta = rear.getEntry("ta");
+    NetworkTableEntry r_tv = rear.getEntry("tv");
+
+    NetworkTableEntry pipeline = rear.getEntry("pipeline");
     
 
      ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
-     ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+     ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
 
@@ -42,9 +49,9 @@ public class VisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        double x = tx.getDouble(0.0);
-        double y = ty.getDouble(0.0);
-        double area = ta.getDouble(0.0);
+        double x = r_tx.getDouble(0.0);
+        double y = r_ty.getDouble(0.0);
+        double area = r_ta.getDouble(0.0);
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
@@ -58,17 +65,28 @@ public class VisionSubsystem extends SubsystemBase{
         
     }
     
-    public double[] visionAdjustX() {
-        double dist = tx.getDouble(0.0);
-       //if (Math.abs(dist) > 6) {
+    public double[] visionAdjustX(boolean front) {
+        
+        if (!front) {
+            double dist = r_tx.getDouble(0.0);
             return new double[]{visionAdjustPID.calculate(dist, 0), turnAdjustPID.calculate(DriveSubsystem.m_gyro.getYaw(), 0)};
+       } else {
+            double dist = f_tx.getDouble(0.0);
+            return new double[]{visionAdjustPID.calculate(dist, 0), turnAdjustPID.calculate(dist, 0)};
+       }
  
         
     }
 
+    public double targetCube() {
+        double rot = f_tx.getDouble(0.0);
+        return turnAdjustPID.calculate(rot, 0);
+    }
+
+
     public boolean areWeCentered(double tolerance) {
-        double dist = tx.getDouble(0.0);
-        double area = ta.getDouble(0.0);
+        double dist = r_tx.getDouble(0.0);
+        double area = r_ta.getDouble(0.0);
         if (Math.abs(dist) < tolerance) {
             return true;
         } else {
@@ -79,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase{
     }
 
     public boolean limelightHasTarget(){
-        long target = tv.getInteger(0);
+        long target = r_tv.getInteger(0);
         if (target == 1){
             return true;
         } else {

@@ -319,6 +319,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Delay Test");
                     DriveSubsystem.m_gyro.zeroYaw();
+                    
                 }
 
                 if (Inputs.autonDelay == 0) {
@@ -391,7 +392,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.rightPincerMotorSpeed = 0.5;
                     Inputs.leftPincerMotorSpeed = -0.5;
 
-                    IntakeSubsystem.spinMotors();
+                    //IntakeSubsystem.spinMotors();
                     if (timStepTimer.get() < 3.0){
                         Inputs.autonRequestTowerGoTo = AutonTowerFlags.IDLEABOVEINTAKE;
                     }
@@ -700,6 +701,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Delay Test");
                     DriveSubsystem.m_gyro.zeroYaw();
+
                 }
 
                 if (Inputs.autonDelay == 0) {
@@ -783,7 +785,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             case 4:
                 
                 /*if (timStepTimer.get() < 1.0){
-                    Inputs.driverStrafe = 0.1;
+                    Inputs.driverStrafe = 0.1; fix.auton = true
                 }*/
 
                 if (timStepTimer.get() < 2.0){

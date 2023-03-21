@@ -31,14 +31,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private XboxController m_driverXbox = Inputs.m_driverXbox;
 
-    public static double rightPincerSpeed = 0.0;
+    public static double intakeSpeed = 0.0;
     public static double leftPincerSpeed = 0.0;
 
     private double startTime = System.currentTimeMillis();
     private double elapsedtime = 0.0;
     private boolean startClock = true;
+    private boolean locked = false;
 
-    public void autoPinch(){
+    public void keepSpinning(){
         if (!PneumaticSubsystem.pinchClosed){
             PneumaticSubsystem.setPinchState(true);
         }
@@ -53,11 +54,11 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     
         if (elapsedtime < 1000) {
-            rightPincerSpeed = 0.5;
-            leftPincerSpeed = -0.5;
+            intakeSpeed = -0.5;
+            //leftPincerSpeed = 0.5;
         } else {
-            rightPincerSpeed = 0.0;
-            leftPincerSpeed = 0.0;
+            intakeSpeed = 0.0;
+            //leftPincerSpeed = 0.0;
         }
     }
 
@@ -65,34 +66,41 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
-            rightPincerSpeed = 0.5;
-            leftPincerSpeed = -0.5;
+            intakeSpeed = 0.5;
+            locked = true;
+            //leftPincerSpeed = 0.5;
 
-            if (m_driverXbox.getRightTriggerAxis() > 0.1){
-                autoPinch();
-            }else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
+            //startClock = true;
+
+            
+            /*else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
                 startClock = true;
-                PneumaticSubsystem.setPinchState(false);
-            }
+                //PneumaticSubsystem.setPinchState(false);
+            }*/
 
-            if (Inputs.m_driverXbox.getLeftBumper()){
-                rightPincerSpeed = -0.5;
+            /*if (Inputs.m_driverXbox.getLeftBumper()){
+                intakeSpeed = -0.5;
                 leftPincerSpeed = 0.5;
             }
             if (m_driverXbox.getRightBumper()){
-                rightPincerSpeed = 0.5;
+                intakeSpeed = 0.5;
                 leftPincerSpeed = -0.5;
-            }
+            } 
 
             if (!m_driverXbox.getLeftBumper() && !m_driverXbox.getRightBumper() && m_driverXbox.getRightTriggerAxis() < 0.1){
-                rightPincerSpeed = 0.0;
+                intakeSpeed = 0.0;
                 leftPincerSpeed = 0.0;
-            }
+            } */
         } else /*if (Constants.MatchSettings.kInTeleop)*/ {
             PneumaticSubsystem.setIntakeState(false);
-            PneumaticSubsystem.setPinchState(false);
-            rightPincerSpeed = 0.0;
-            leftPincerSpeed = 0.0;
+            //PneumaticSubsystem.setPinchState(false);
+            //intakeSpeed = 0.0;
+            //leftPincerSpeed = 0.0;
+        }
+
+        if (m_driverXbox.getRightTriggerAxis() > 0.1){
+            intakeSpeed = -0.5;
+            locked = false;
         }
 
         switch (Inputs.autonRequestIntakeGoTo){
@@ -121,7 +129,7 @@ public class IntakeSubsystem extends SubsystemBase {
                     PneumaticSubsystem.setIntakeState(true);
                 }
 
-                autoPinch();
+                //autoPinch();
 
                 break;
                 
@@ -130,23 +138,37 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         
         
-        if (Inputs.rightPincerMotorSpeed != 0){leftPincerSpeed = 0.5;}
-        if (Inputs.leftPincerMotorSpeed != 0){rightPincerSpeed = -0.5;}
+        /*if (Inputs.rightPincerMotorSpeed != 0){leftPincerSpeed = 0.5;}
+        if (Inputs.leftPincerMotorSpeed != 0){intakeSpeed = -0.5;}*/
 
-        m_rightPincerMotor.set(rightPincerSpeed);
-        m_leftPincerMotor.set(leftPincerSpeed);
+        //keepSpinning();
+
+        if (locked && m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1) {
+            m_leftPincerMotor.set(intakeSpeed*0.25);
+        } else {
+            m_leftPincerMotor.set(intakeSpeed);
+        }
+        //m_leftPincerMotor.set(leftPincerSpeed);
+        
 
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
-        SmartDashboard.putBoolean("Pinch Closed", PneumaticSubsystem.pinchClosed);
-        //SmartDashboard.putNumber("rightPincerSpeed", rightPincerSpeed);
+        //SmartDashboard.putBoolean("Pinch Closed", PneumaticSubsystem.pinchClosed);
+        //SmartDashboard.putNumber("intakeSpeed", intakeSpeed);
         //SmartDashboard.putNumber("leftPincerSpeed", leftPincerSpeed);
 
         //SmartDashboard.putNumber("elapsedTime", elapsedtime);
 
     }
 
-    public static void spinMotors() {
-        m_rightPincerMotor.set(0.5);
-        m_leftPincerMotor.set(-0.5);
+    public static void spinMotors(boolean reversed) {
+        if (!reversed) {
+            m_rightPincerMotor.set(-0.5);
+            //m_leftPincerMotor.set(0.5);
+        } else {
+            m_rightPincerMotor.set(-0.5*-1);
+            //m_leftPincerMotor.set(0.5*-1);
+        }
     }
+
 }
+

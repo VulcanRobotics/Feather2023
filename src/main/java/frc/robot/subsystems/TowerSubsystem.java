@@ -63,7 +63,7 @@ public class TowerSubsystem extends SubsystemBase {
     private static TalonFX mElbow = new TalonFX(12, "roborio");
     
     private static CANSparkMax m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    private static TalonSRX gripMotor = new TalonSRX(16);
+    //private static TalonSRX gripMotor = new TalonSRX(16);
     //private static XboxController m_Controller = new XboxController(0); 
     //private static Joystick m_Joystick = new Joystick(1);
     //private static Joystick m_BoxController = new Joystick(3);
@@ -847,7 +847,7 @@ public class TowerSubsystem extends SubsystemBase {
         //mElbow.set(mElbowSpeed);
         mTower.setNeutralMode(NeutralMode.Brake);
         mElbow.setNeutralMode(NeutralMode.Brake);
-        gripMotor.setNeutralMode(NeutralMode.Brake);
+        //gripMotor.setNeutralMode(NeutralMode.Brake);
         
         //SmartDashboard.putNumber("mTowerSpeed", mTowerSpeed);
         mTower.set(ControlMode.PercentOutput, mTowerSpeed);
@@ -856,7 +856,7 @@ public class TowerSubsystem extends SubsystemBase {
         
         //m_Wrist.set(ControlMode.PercentOutput, mWristSpeed);
         m_Wrist.set(mWristSpeed);
-        gripMotor.set(ControlMode.PercentOutput, mGripSpeed);
+        //gripMotor.set(ControlMode.PercentOutput, mGripSpeed);
 
         SmartDashboard.putNumber("operarot POV", Inputs.m_operatorControl.getPOV());
          

@@ -300,7 +300,7 @@ public class SwerveModule {
   }
   else if (brakeMode == 1) {
     brakeMode = 0;
-    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 25, 30, 1.0));
+    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 25, 30, 1.0));
   }
 }
    private double getOptimizedTurn(SwerveModuleState desiredState) { //Unused; finds an optimized turn value
@@ -341,7 +341,7 @@ public class SwerveModule {
     
 
     m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
-    //m_driveMotor.set(ControlMode.PercentOutput, driveOutput);
+    
     m_turningMotor.set(ControlMode.Position, (getClosestZero(desiredState)));
     //m_turningMotor.set(ControlMode.Position, 0);
 
@@ -370,7 +370,7 @@ public class SwerveModule {
 
     //SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
 
-    if( Constants.DashboardSwitches.SwerveDisplayOn) {
+    if(true) {
       SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
       SmartDashboard.putNumber("Desired Position for Wheel" +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
       SmartDashboard.putNumber("TALON OFFSET ON BOOT" + Integer.toString(turnMotorPortGlobal) , talonOffsetOnBoot);

@@ -158,7 +158,7 @@ public class Inputs {
         driverStrafe = getCubePower(driverStrafe);
 
         driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
-        driverTurn *= Constants.OIConstants.kDriverTurnPCT;
+        driverTurn *= Constants.OIConstants.kDriverTurnPCT  + drivePowerOffset; //Shaun added "+driverpoweroffset 3/22 post SCH"
         //driverTurn = getCubePower(driverTurn);
 
         // Process below is designed to override the different powers and allow us to set upper limiys

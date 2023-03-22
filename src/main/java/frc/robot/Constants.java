@@ -78,9 +78,9 @@ public final class Constants {
     public static final int kFrontRightDriveEncoderPorts = config.getInt("SWRV_DRV_kFrontRightDriveMotorPort", 22);
     public static final int kRearRightDriveEncoderPorts = config.getInt("SWRV_DRV_kRearRightDriveMotorPort", 24);
 
-    public static final boolean kFrontLeftDriveEncoderReversed = false;//false  // no config, nailed //true 1/14
+    public static final boolean kFrontLeftDriveEncoderReversed = !false;//false  // no config, nailed //true 1/14
     public static final boolean kRearLeftDriveEncoderReversed = true;
-    public static final boolean kFrontRightDriveEncoderReversed = !false;
+    public static final boolean kFrontRightDriveEncoderReversed = false;
     public static final boolean kRearRightDriveEncoderReversed = !true; //true //fale 1/14
 
     public static final double kFrontLeftTurnEncoderOffsetDeg = 214.1; //config.getDouble("SWRV_DRV_kFrontLeftTurnEncoderOffsetDeg", 212); //180- Math.toDegrees(-0.278); //More Positive  
@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.15;
     // not used in code 
 
-    public static final double kMaxSpeedMetersPerSecond = 4.0;//config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 4.0); // WAS 3, Changed at match 42, Hatboro Horsham
+    public static final double kMaxSpeedMetersPerSecond = 15.0;//config.getDouble("SWRV_SPEED_kMaxSpeedMetersPerSecond", 4.0); // WAS 3, Changed at match 42, Hatboro Horsham
     public static final double kMaxAngularSpeedRadiansPerSecond = config.getDouble("SWRV_SPEED_kMaxAngularSpeedRadiansPerSecond", 3.0);//1.5;//5; 
 
 

@@ -61,9 +61,18 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          24.455 - 355.484 - 50); //214.1, 158
+          -24.87); //24.455 - 355.484 - 50); 
           //getRobotSpecificOffset(0));
           
+  private static final SwerveModule m_frontRight =
+      new SwerveModule(
+          DriveConstants.kFrontRightDriveMotorPort,
+          DriveConstants.kFrontRightTurningMotorPort,
+          DriveConstants.kFrontRightTurningEncoderPorts,
+          DriveConstants.kFrontRightDriveEncoderReversed,
+          DriveConstants.kFrontRightTurningEncoderReversed,
+          -55.81);//79.013 - 0.615 - 135);
+          //getRobotSpecificOffset(2));
 
   private static final SwerveModule m_rearLeft =
       new SwerveModule(
@@ -72,18 +81,10 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderPorts,
           DriveConstants.kRearLeftDriveEncoderReversed,
           DriveConstants.kRearLeftTurningEncoderReversed,
-          330.117 - 279.316 + 45 + 3); //-113, 16.5
+          -81.56);//330.117 - 279.316 + 45 + 3); 
           //getRobotSpecificOffset(1));
 
-  private static final SwerveModule m_frontRight =
-      new SwerveModule(
-          DriveConstants.kFrontRightDriveMotorPort,
-          DriveConstants.kFrontRightTurningMotorPort,
-          DriveConstants.kFrontRightTurningEncoderPorts,
-          DriveConstants.kFrontRightDriveEncoderReversed,
-          DriveConstants.kFrontRightTurningEncoderReversed,
-          79.013 - 0.615 - 135);//-153); //18.5, 250
-          //getRobotSpecificOffset(2));
+  
 
   private static final SwerveModule m_rearRight =
       new SwerveModule(
@@ -92,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          298.564 - 359.297 - 145);//-17.5, 30
+          -31.72);//298.564 - 359.297 - 145);
           //getRobotSpecificOffset(3));
 
   // The gyro sensor
@@ -283,10 +284,10 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(-xSpeed, -ySpeed, -rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
-                : new ChassisSpeeds(-xSpeed, -ySpeed, -rot)); //xspeed was positive
-    //SwerveDriveKinematics.desaturateWheelSpeeds(
-        //swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
+                : new ChassisSpeeds(xSpeed, ySpeed, rot)); //xspeed was positive
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     //SmartDashboard.putNumber("Rotation?", rot );
     m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
     m_frontRight.setDesiredState(swerveModuleStates[0]); 
@@ -346,10 +347,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(desiredStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
-    m_frontRight.setDesiredState(desiredStates[0]);
-    m_rearLeft.setDesiredState(desiredStates[3]);
-    m_rearRight.setDesiredState(desiredStates[2]);
+    m_frontLeft.setDesiredState(desiredStates[0]); //Adjusted the ports for each motor to change which motor got which position for turning
+    m_frontRight.setDesiredState(desiredStates[1]);
+    m_rearLeft.setDesiredState(desiredStates[2]);
+    m_rearRight.setDesiredState(desiredStates[3]);
   }
 
   /** Resets the drive encoders to currently read a position of 0. */

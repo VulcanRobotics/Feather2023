@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.PneumaticSubsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 //import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +30,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public static CANSparkMax m_rightPincerMotor = new CANSparkMax(17, MotorType.kBrushless);
     public static CANSparkMax m_leftPincerMotor = new CANSparkMax(18, MotorType.kBrushless);
 
+    public static final DigitalInput m_intakePhotogate = new DigitalInput(9);
+
     private XboxController m_driverXbox = Inputs.m_driverXbox;
 
     public static double intakeSpeed = 0.0;
@@ -37,12 +40,18 @@ public class IntakeSubsystem extends SubsystemBase {
     private double startTime = System.currentTimeMillis();
     private double elapsedtime = 0.0;
     private boolean startClock = true;
-    private boolean locked = false;
+    private boolean haveCube = false;
+    private boolean firstPass = true;
+
+    public boolean getIntakePhotogate() {
+        return m_intakePhotogate.get();
+    }
+
 
     public void keepSpinning(){
-        if (!PneumaticSubsystem.pinchClosed){
+        /*if (!PneumaticSubsystem.pinchClosed){
             PneumaticSubsystem.setPinchState(true);
-        }
+        }*/
         
         if (startClock == true){
             startTime = System.currentTimeMillis();
@@ -53,8 +62,8 @@ public class IntakeSubsystem extends SubsystemBase {
             elapsedtime = System.currentTimeMillis() - startTime;
         }
     
-        if (elapsedtime < 1000) {
-            intakeSpeed = -0.5;
+        if (elapsedtime < 500) {
+            intakeSpeed = 0.5;
             //leftPincerSpeed = 0.5;
         } else {
             intakeSpeed = 0.0;
@@ -64,13 +73,31 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void periodic(){
 
+        SmartDashboard.putBoolean("PHOTOGATE", getIntakePhotogate());
+
+        if (getIntakePhotogate()) {
+            haveCube = true;
+        } else {
+            haveCube = false;
+        }
+
+
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
             intakeSpeed = 0.5;
-            locked = true;
+            if (haveCube){
+                if (!startClock && firstPass){
+                    startClock = true;
+                    firstPass = false;
+                }
+                
+            } else  {
+                intakeSpeed = 0.5;
+            }
+            
             //leftPincerSpeed = 0.5;
 
-            //startClock = true;
+            
 
             
             /*else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
@@ -100,7 +127,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (m_driverXbox.getRightTriggerAxis() > 0.1){
             intakeSpeed = -0.5;
-            locked = false;
+            haveCube = false;
         }
 
         switch (Inputs.autonRequestIntakeGoTo){
@@ -143,7 +170,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         //keepSpinning();
 
-        if (locked && m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1) {
+        if (haveCube) {
+            keepSpinning();   
+            m_leftPincerMotor.set(intakeSpeed);
+        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1){
             m_leftPincerMotor.set(intakeSpeed*0.25);
         } else {
             m_leftPincerMotor.set(intakeSpeed);
@@ -152,6 +182,7 @@ public class IntakeSubsystem extends SubsystemBase {
         
 
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
+       
         //SmartDashboard.putBoolean("Pinch Closed", PneumaticSubsystem.pinchClosed);
         //SmartDashboard.putNumber("intakeSpeed", intakeSpeed);
         //SmartDashboard.putNumber("leftPincerSpeed", leftPincerSpeed);

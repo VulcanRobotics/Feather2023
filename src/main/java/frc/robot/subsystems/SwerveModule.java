@@ -329,9 +329,7 @@ public class SwerveModule {
 
   public void setDesiredState(SwerveModuleState desiredState) {
  
-     double driveOutput = -desiredState.speedMetersPerSecond * 1.0; //Uses desired state to return motor speed
-    //double turnOutput = desiredState.angle.getDegrees() * 68.267 + talonOffsetOnBoot; //Finds desired turn for motors
-      
+     double driveOutput = -desiredState.speedMetersPerSecond * 1.0; //Uses desired state to return motor speed      
    
     
     if(Inputs.driveSwerveEncoderReset){ //hardware rest

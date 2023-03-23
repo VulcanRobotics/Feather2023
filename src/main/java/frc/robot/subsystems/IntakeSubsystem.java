@@ -5,26 +5,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.PneumaticSubsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
-//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.swing.plaf.synth.SynthDesktopIconUI;
 
 import com.revrobotics.CANSparkMax;
-//import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-//import edu.wpi.first.wpilibj.DigitalInput;
-//import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.Inputs;
-//import frc.robot.MyTimedPower;
 import frc.robot.Robot;
 
-//import java.time.Clock;
-
-//import com.ctre.phoenix.motorcontrol.NeutralMode;
-//import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 public class IntakeSubsystem extends SubsystemBase {
     public static CANSparkMax m_rightPincerMotor = new CANSparkMax(17, MotorType.kBrushless);
@@ -47,11 +38,8 @@ public class IntakeSubsystem extends SubsystemBase {
         return m_intakePhotogate.get();
     }
 
-
+// This function assists in keeping the wheels spin for a short period of time after letting go of the button. Makes sure that the cube is in place when raising the intake
     public void keepSpinning(){
-        /*if (!PneumaticSubsystem.pinchClosed){
-            PneumaticSubsystem.setPinchState(true);
-        }*/
         
         if (startClock == true){
             startTime = System.currentTimeMillis();
@@ -62,12 +50,10 @@ public class IntakeSubsystem extends SubsystemBase {
             elapsedtime = System.currentTimeMillis() - startTime;
         }
     
-        if (elapsedtime < 500) {
+        if (elapsedtime < 500) { //currently 0.5 seconds
             intakeSpeed = 0.5;
-            //leftPincerSpeed = 0.5;
         } else {
             intakeSpeed = 0.0;
-            //leftPincerSpeed = 0.0;
         }
     }
 
@@ -75,13 +61,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
         SmartDashboard.putBoolean("PHOTOGATE", getIntakePhotogate());
 
+        
+        //Detects whether the photogate senses something or not, changing the variable depending on the value
         if (getIntakePhotogate()) {
             haveCube = true;
         } else {
             haveCube = false;
         }
 
-
+        //if the left trigger is pushed, the intake goes down and the clock (for the function) turns on if the cube is sensed
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
             intakeSpeed = 0.5;
@@ -94,42 +82,15 @@ public class IntakeSubsystem extends SubsystemBase {
             } else  {
                 intakeSpeed = 0.5;
             }
-            
-            //leftPincerSpeed = 0.5;
-
-            
-
-            
-            /*else if (m_driverXbox.getRightTriggerAxis() < 0.1) {
-                startClock = true;
-                //PneumaticSubsystem.setPinchState(false);
-            }*/
-
-            /*if (Inputs.m_driverXbox.getLeftBumper()){
-                intakeSpeed = -0.5;
-                leftPincerSpeed = 0.5;
-            }
-            if (m_driverXbox.getRightBumper()){
-                intakeSpeed = 0.5;
-                leftPincerSpeed = -0.5;
-            } 
-
-            if (!m_driverXbox.getLeftBumper() && !m_driverXbox.getRightBumper() && m_driverXbox.getRightTriggerAxis() < 0.1){
-                intakeSpeed = 0.0;
-                leftPincerSpeed = 0.0;
-            } */
-        } else /*if (Constants.MatchSettings.kInTeleop)*/ {
+        } else {
             PneumaticSubsystem.setIntakeState(false);
-            //PneumaticSubsystem.setPinchState(false);
-            //intakeSpeed = 0.0;
-            //leftPincerSpeed = 0.0;
         }
-
+        //this just reverses the motors, spitting the cube out
         if (m_driverXbox.getRightTriggerAxis() > 0.1){
             intakeSpeed = -0.5;
             haveCube = false;
         }
-
+        //these are cases used for autonomous
         switch (Inputs.autonRequestIntakeGoTo){
             case IGNORE: 
 
@@ -165,39 +126,29 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         
         
-        /*if (Inputs.rightPincerMotorSpeed != 0){leftPincerSpeed = 0.5;}
-        if (Inputs.leftPincerMotorSpeed != 0){intakeSpeed = -0.5;}*/
 
-        //keepSpinning();
-
-        if (haveCube) {
-            keepSpinning();   
-            m_leftPincerMotor.set(intakeSpeed);
-        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1){
-            m_leftPincerMotor.set(intakeSpeed*0.25);
-        } else {
+ 
+        //This finally goes over the conditions and gives the motor power dependent on which is satified
+        if (haveCube) { //If you have the cube, stop the motors
+            m_leftPincerMotor.set(0);
+        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1){ //if nothing is being pressed, have the motors spin in slowly
+            m_leftPincerMotor.set(0.25);
+        } else { //if you are pressing a trigger though, set the speed normally
             m_leftPincerMotor.set(intakeSpeed);
         }
-        //m_leftPincerMotor.set(leftPincerSpeed);
+
         
 
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
-       
-        //SmartDashboard.putBoolean("Pinch Closed", PneumaticSubsystem.pinchClosed);
-        //SmartDashboard.putNumber("intakeSpeed", intakeSpeed);
-        //SmartDashboard.putNumber("leftPincerSpeed", leftPincerSpeed);
-
-        //SmartDashboard.putNumber("elapsedTime", elapsedtime);
 
     }
 
+    //This is a function used in auton to spin the motors in
     public static void spinMotors(boolean reversed) {
         if (!reversed) {
-            m_rightPincerMotor.set(-0.5);
-            //m_leftPincerMotor.set(0.5);
+            m_leftPincerMotor.set(0.5);
         } else {
-            m_rightPincerMotor.set(-0.5*-1);
-            //m_leftPincerMotor.set(0.5*-1);
+            m_leftPincerMotor.set(0.5*-1);
         }
     }
 

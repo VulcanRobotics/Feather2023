@@ -15,23 +15,29 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 
 public class VisionSubsystem extends SubsystemBase{
+
+
+    //stating the tables that the limelights write on
     NetworkTable rear = NetworkTableInstance.getDefault().getTable("limelight-rear");
     NetworkTable front = NetworkTableInstance.getDefault().getTable("limelight-front");
 
+
+    //stating the data given from the tables that the limelightes write on
     NetworkTableEntry f_tx = front.getEntry("tx");
     NetworkTableEntry f_ty = front.getEntry("ty");
     NetworkTableEntry f_ta = front.getEntry("ta");
     NetworkTableEntry f_tv = front.getEntry("tv");
     
-    
+    //Same thing, but for the front camera (signified by the "r_" representing rear)
     NetworkTableEntry r_tx = rear.getEntry("tx");
     NetworkTableEntry r_ty = rear.getEntry("ty");
     NetworkTableEntry r_ta = rear.getEntry("ta");
     NetworkTableEntry r_tv = rear.getEntry("tv");
 
+    //stating the pipeline number on the rear limelight, we switch between two pipeline during matchplay (one for retroreflective tape, the other for april tags)
     NetworkTableEntry pipeline = rear.getEntry("pipeline");
     
-
+    //stating PID controllers for limelights
      ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
      ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
@@ -49,6 +55,8 @@ public class VisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
+        
+        //Just displays the variables of the rear limelight for analysis/viewing
         double x = r_tx.getDouble(0.0);
         double y = r_ty.getDouble(0.0);
         double area = r_ta.getDouble(0.0);
@@ -56,15 +64,9 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
         
-        /* 
-        if (Inputs.m_driverXbox.getXButtonPressed()) {
-            Inputs.driverStrafe = visionAdjustX();
-            SmartDashboard.putNumber("Vision adjust PID OUT", visionAdjustPID.calculate(x, 0));
-        }
-        */
-        
     }
     
+    //This is the main automatic vision adjust function that uitilizes the two limelights to automatically strafe/turn towards the specified target
     public double[] visionAdjustX(boolean front) {
         
         if (!front) {
@@ -78,12 +80,9 @@ public class VisionSubsystem extends SubsystemBase{
         
     }
 
-    public double targetCube() {
-        double rot = f_tx.getDouble(0.0);
-        return turnAdjustPID.calculate(rot, 0);
-    }
 
 
+    //This function helps let the if statement know whether we are on target or not
     public boolean areWeCentered(double tolerance) {
         double dist = r_tx.getDouble(0.0);
         double area = r_ta.getDouble(0.0);
@@ -96,6 +95,7 @@ public class VisionSubsystem extends SubsystemBase{
 
     }
 
+
     public boolean limelightHasTarget(){
         long target = r_tv.getInteger(0);
         if (target == 1){
@@ -105,10 +105,12 @@ public class VisionSubsystem extends SubsystemBase{
         }
     }
 
+    //This switches the pipeline for the rear limelight
     public void switchPipeline(int pipelineNumber) {
         pipeline.setDouble(pipelineNumber);
     }
 
+    //This gives the current pipeline number for SmartDashboard Reasons
     public long getPipelineNumber() {
         return pipeline.getInteger(0);
     }

@@ -34,7 +34,7 @@ public final class Constants {
   }
 
   public static final class Swerve {
-    public static final double driveGearRatio = (6.86 / 1.0); //6.86:1
+    public static final double driveGearRatio = (6.75 / 1.0); //6.86:1
     public static final double angleGearRatio = 32 / 3;//12.8;//10.67;
 
     public static final double trackWidth = 0.457;

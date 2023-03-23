@@ -41,48 +41,37 @@ import frc.robot.Constants.Tower.AutonTowerFlags;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class TowerSubsystem extends SubsystemBase {
-
+    //stating the proximity switches
     static DigitalInput m_towerUpProximity = new DigitalInput(2);
     DigitalInput m_towerDownProximity = new DigitalInput(3);
     DigitalInput m_ElbowDownProximity = new DigitalInput(8);
     static DigitalInput m_ElbowUpProximity = new DigitalInput(7);
-
+    //stating the string potentiometers
     private static AnalogPotentiometer m_stringPotentiometerTower = new AnalogPotentiometer(new AnalogInput(0));
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
-    //8, 0.7, 1.2//acc was 1, p was 10
+    //stating the PID controllers
     private static ProfiledPIDController towerPID = new ProfiledPIDController(9,0, 0, new TrapezoidProfile.Constraints(1, 1));
-    //private static ProfiledPIDController towerPID = new ProfiledPIDController(1,1, 3, new TrapezoidProfile.Constraints(1, 1));
-    //4, 1, 0.1
     private static ProfiledPIDController elbowPID = new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(1, 1));
-    //private static CANSparkMax mTower = new CANSparkMax(13, MotorType.kBrushless);
-    //private static CANSparkMax mElbow = new CANSparkMax(12, MotorType.kBrushless);
-    //private static TalonSRX m_Wrist = new TalonSRX(16);
-
+    //stating the Talon 500 motors for the tower
     private static TalonFX mTower = new TalonFX(13, "roborio");
     private static TalonFX mElbow = new TalonFX(12, "roborio");
-    
+    //stating the wrist motors and their relative encoder
     private static CANSparkMax m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    //private static TalonSRX gripMotor = new TalonSRX(16);
-    //private static XboxController m_Controller = new XboxController(0); 
-    //private static Joystick m_Joystick = new Joystick(1);
-    //private static Joystick m_BoxController = new Joystick(3);
-    //private RelativeEncoder m_towerEncoder;// = mTower.getEncoder();
-    //private RelativeEncoder m_elbowEncoder;// = mElbow.getEncoder();
-    //private RelativeEncoder m_towerEncoder = mTower.getEncoder();
-    //private RelativeEncoder m_elbowEncoder = mElbow.getEncoder();
     private RelativeEncoder m_encoderWrist = m_Wrist.getEncoder();
+
+    //All variables used within the class:
+//*******************************************************//
     private double m_towerEncoderZero = 0;
     private double m_elbowEncoderZero = 0;
     
     private boolean m_useTowerEncoder = false;
     private boolean m_useElbowEncoder = false;
 
-    // These should be constants
     private static double towerEncoder180Ticks = 400.0;
     private static double elbowEncoder180Ticks = 49.65;
-    private static double m_towerEncoderMax = -383.340546 - 135.450546; // -518.791092
-    private static double m_elbowEncoderMax = 73.00 - (-8.50); // 81.5
+    private static double m_towerEncoderMax = -383.340546 - 135.450546; 
+    private static double m_elbowEncoderMax = 73.00 - (-8.50); 
     
     private static double m_stringTower = 0.0;
     private static double m_stringElbow = 0.0;
@@ -111,59 +100,10 @@ public class TowerSubsystem extends SubsystemBase {
 
     private double initialWristEncoder = m_encoderWrist.getPosition();
     public final double wristEncoder180 = 47.642;
+//*******************************************************//
 
-    /*private static boolean elbowMoveTo(double Evalue){
-        boolean done = false;
 
-        if (m_stringElbow >= Evalue + .05) {
-            mElbowSpeed = -1;
-        } else if (m_stringElbow <= Evalue - .05) {
-            mElbowSpeed = 1;
-        } else if (m_stringElbow >= Evalue + .01) {
-            mElbowSpeed = -0.7;
-        } else if (m_stringElbow <= Evalue - .01) {
-            mElbowSpeed = 0.7;
-        } else if (m_stringElbow >= Evalue - 0.01) {
-            mElbowSpeed = 0;
-        } else if (m_stringElbow <= Evalue + 0.01) {
-            mElbowSpeed = 0;
-        }
-
-        if (m_stringElbow <= Evalue + 0.01 && m_stringElbow >= Evalue - 0.01){
-            done = true;
-        }
-
-        return done;
-    } */
-
-    private static double towerPidMove(double desiredPosition){
-        return towerPID.calculate(m_stringPotentiometerTower.get(), desiredPosition);
-    }
-
-    private static boolean towerMoveTo(double Tvalue){
-        boolean done = false;
-
-        if (m_stringTower >= Tvalue + .05) {
-            mTowerSpeed = 0.7;
-        } else if (m_stringTower <= Tvalue - .05) {
-            mTowerSpeed = -0.7;
-        } else if (m_stringTower >= Tvalue + .01) {
-            mTowerSpeed = 0.4;
-        } else if (m_stringTower <= Tvalue - .01) {
-            mTowerSpeed = -0.4;
-        } else if (m_stringTower >= Tvalue - 0.01) {
-            mTowerSpeed = 0;
-        } else if (m_stringTower <= Tvalue + 0.01) { 
-            mTowerSpeed = 0;
-        }
-
-        if (m_stringTower <= Tvalue + 0.01 && m_stringTower >= Tvalue - 0.01){
-            done = true;
-        }
-
-        return done;
-    }
-     
+     //This function is used everytime we need to automatically move the arm/elbow, uitilizes PID for smooth movement
     private static boolean goToPosition(double Tvalue, double Evalue, boolean towerPriority, boolean flipArm) {
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
@@ -172,30 +112,7 @@ public class TowerSubsystem extends SubsystemBase {
         boolean towerDone = false;
         SmartDashboard.putBoolean("TOWER DONE", towerPID.atGoal());
 
-        //Potentially add a case where if we are in a range that is "dangerous", move elbow back (e.g specific tower range)
-
-        /*if (towerPriority){
-            if (towerDone = towerMoveTo(Tvalue)){
-                elbowDone = elbowMoveTo(Evalue);
-            }
-        }else if (flipArm){
-            if (m_stringTower > 0.38 ){
-                elbowDone = elbowMoveTo(Evalue);
-
-                towerDone = towerMoveTo(Tvalue);
-            } else{
-                towerDone = towerMoveTo(Tvalue);
-            }
-        } else{
-            towerDone = towerMoveTo(Tvalue);
-    
-            elbowDone = elbowMoveTo(Evalue);
-        }*/
-
-       
-
-        
-        if (towerPriority){
+        if (towerPriority){ //The elbow only starts moving when the tower reaches its target point
             
 
             if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
@@ -211,15 +128,8 @@ public class TowerSubsystem extends SubsystemBase {
                 mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
             }
             
-            
-
-        }else if (flipArm){
+        }else if (flipArm){ //The elbow only starts moving if the arm is past the halfway point (reaching behind)
             if (m_stringTower > 0.5){
-                /*if (towerDone = towerPID.atSetpoint()){
-                    towerDone = true;
-                } else{
-                    
-                }*/
 
                 if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
                     towerDone = true;
@@ -232,36 +142,17 @@ public class TowerSubsystem extends SubsystemBase {
                 mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
                 mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
 
-                /*if (elbowDone = elbowPID.atSetpoint()){
-                    elbowDone = true;
-                } else{
-                    
-                }*/
             } else{
-                /*if (towerDone = towerPID.atSetpoint()){
-                    towerDone = true;
-                } else{
-                    
-                }*/
-                if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
+                if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ 
                     towerDone = true;
                 }
 
                 mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
             }
-        } else{
-            /*if (towerDone = towerPID.atSetpoint()){
-                towerDone = true;
-            } else{} */
+        } else{ //If neither of the two previous conditions are needed, then move normally
             mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
 
-            /*if (elbowDone = elbowPID.atSetpoint()){
-                elbowDone = true;
-            } else{
-                
-            }*/
-
-            if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
+            if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ 
                 towerDone = true;
             }
 
@@ -281,50 +172,35 @@ public class TowerSubsystem extends SubsystemBase {
 
     }
 
-    
-
+    //these are the multiple position functions used to move the two arms. They are all functions in order to uitilize a name rather than a number to ask for a position
+//*******************************************************//
     public static boolean highPlace(){
-        //goToPosition(0.511, 0.796, true, false);
-        //mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .511);
-        //ElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .796);
         goToPosition(.522, .801, false, true);
-
         if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.03 && m_stringElbow > .801 - 0.03)) {
             return true;
         } 
         return false;
     }
     public boolean midPlace(){
-        /*mTowerSpeed = -towerPID.calculate(m_stringPotentiometerTower.get(), .493);
-        mElbowSpeed = elbowPID.calculate(m_stringPotentiometerElbow.get(), .81);*/
-        return goToPosition(.336 /*0.336 */, .805/*.792 */ , false, false);
+        return goToPosition(.336, .805, false, false);
     }
     public boolean humanPlayerGrab(){
-        return goToPosition(.368, .755, false, false);//Hatboro: 0.390, 0.               718 SCH Day 0: 0.395, .711 
+        return goToPosition(.368, .755, false, false);
     }
-
     public boolean humanPlayerGrabDrop(){
         return goToPosition(.377, .701, false, false);
     }
-
     public boolean grabFromIntake() {
         return goToPosition(0.32, 0.7169, false, false);
     }
-
     public boolean pickUpFromIntake() {
         return goToPosition(0.322, 0.71, false, false);
     }
-
-
     public static boolean tuckArm(){
         return goToPosition(0.27, 0.911, false, false);
-
-
-
     }
 
-    public static boolean Origin(boolean Setup){ //0.39T and 0.662E
-        
+    public static boolean Origin(boolean Setup){ //the setup condition is used initially if we want the arm to be within the frame perimeter
         if (Setup){
             return goToPosition(0.39, 0.662, false, false);
         } else {
@@ -332,6 +208,7 @@ public class TowerSubsystem extends SubsystemBase {
         }
     }
 
+    //This helps to move the wrist automatically both in Auton mainly and telop for the operator
     public void goToWristPosition(double wristValue){
         SmartDashboard.putNumber("wrist target", wristValue);
 
@@ -368,13 +245,11 @@ public class TowerSubsystem extends SubsystemBase {
         
 
         //Built in encoder values 
-        // m_elbowEncoder = mElbow.getEncoder();
-        // m_towerEncoder = mTower.getEncoder();
         m_wristEncoder = m_encoderWrist.getPosition();
-
         double elbowEncoder = mElbow.getSelectedSensorPosition();
         double towerEncoder = mTower.getSelectedSensorPosition();
 
+        //toggles the claw pneumatic on or off
         if (Inputs.m_operatorControl.getTriggerPressed() || Inputs.m_operatorControl.getRawButtonPressed(7)){
             PneumaticSubsystem.toggleClawState();
         }
@@ -387,7 +262,13 @@ public class TowerSubsystem extends SubsystemBase {
             mGripSpeed = 0;
         }
 
-        if (false){
+
+
+//*******************************************************//
+// HEY! ALL OF THIS SHIT DOWN BELOW ARE CALCULATIONS/IMPLEMENTATIONS FOR INVERSE KINEMATICS!!!
+// ITS HIGHLY EXPERIMENTAL AND DONT RECOMMEND USING IT
+//*******************************************************//
+        /*if (false){
             IKMode = !IKMode;
         }
 
@@ -448,12 +329,8 @@ public class TowerSubsystem extends SubsystemBase {
 
             if ( Math.abs(towerEncoder - towerEncoderTarget) < 5.0 ) {
                 mTowerSpeed = 0.0;
-            } */
-   
-            /*****************************************************/
-            /* IK is still not working, but we're very close!    */
-            /* We'll finish it on Saturday (Feb. 11)!  - Dr. Kim */
-            /*****************************************************/
+            } 
+
 
             double z1 = 0.4826; //meters
             double z2 = 0.3683; //meters
@@ -664,7 +541,7 @@ public class TowerSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("z2np", z2np);
                 SmartDashboard.putNumber("z2nn", z2nn); 
             }
-        }
+        } */
 
 
         //For wrist movement, rotate joystick
@@ -675,18 +552,9 @@ public class TowerSubsystem extends SubsystemBase {
             else if( Inputs.towerWristSpeed < 0.0)
                 mWristSpeed = -Constants.Tower.kWristMaxPower;
         }
-
-		// fwl - this code was still in cybersonics code
-        //if (Inputs.zAxisJoystick <= -0.4 || Inputs.zAxisJoystick >= 0.4){
-        //    mWristSpeed = 0.2;
-        //} else {
-        //    mWristSpeed = 0.0;
-        //} 
-
-        /*if (Inputs.m_operatorControl.getRawButtonPressed(2)) {
-            wristFlipped = !wristFlipped;
-        }*/
         
+
+        //This makes software limits to how much the wrist can turn
         if (wristLock == true){
 	        if (m_encoderWrist.getPosition() < initialWristEncoder - wristEncoder180 && mWristSpeed < 0){
 	            mWristSpeed = 0;
@@ -695,17 +563,8 @@ public class TowerSubsystem extends SubsystemBase {
 			}
         }
 
-        /*if (Math.abs(Inputs.zAxisJoystick) < 0.4) {
-            if(wristFlipped){
-                goToWristPosition(initialWristEncoder);
-            }else{
-                goToWristPosition(initialWristEncoder - wristEncoder180);
-            }
-        }*/
-
         //Uitilizing the goToPosition function that moves the robot to a certain position based off of the values inputted
         if (Inputs.m_operatorControl.getRawButton(2)) {
-            //goToPosition(-55, -12);
             Origin(false);
         }
 
@@ -717,13 +576,15 @@ public class TowerSubsystem extends SubsystemBase {
             tuckArm();
         }
 
+
+
+        //Cases used primarly for autonoumous arm movement 
         switch (Inputs.autonRequestTowerGoTo){
             case IGNORE: 
                 break;
 
             case HIGHPLACE:
                 boolean done = highPlace();
-                //goToWristPosition(initialWristEncoder);
                 if (done) {
                     PneumaticSubsystem.setClawState(true);
                     Inputs.armReachedTarget = true;
@@ -749,13 +610,15 @@ public class TowerSubsystem extends SubsystemBase {
                 }
             case IDLEABOVEINTAKE:
                 goToWristPosition(wristEncoder180/2);
-                Inputs.armReachedTarget = goToPosition(0.325, 0.710, false, false);// was .33, was .708
+                Inputs.armReachedTarget = goToPosition(0.325, 0.710, false, false);
 
             default:
                 break;
         }
 
    
+
+        //Button inputs transferring to functions that use the goToPosition function which ultimatly moves the arm/elbow
         if (Inputs.m_operatorControl.getRawButton(3)) {
             humanPlayerGrab();
         }
@@ -835,19 +698,9 @@ public class TowerSubsystem extends SubsystemBase {
 
         
 
-       /*  if (m_stringPotentiometerTower.get() >= 0.48 && m_stringPotentiometerTower.get() <= 0.53){
-            if (m_stringPotentiometerElbow.get() >= 0.53){
-                mElbowSpeed = -0.1;
-            }
-        }*/
 
-        
-
-        //mTower.set(mTowerSpeed);
-        //mElbow.set(mElbowSpeed);
         mTower.setNeutralMode(NeutralMode.Brake);
         mElbow.setNeutralMode(NeutralMode.Brake);
-        //gripMotor.setNeutralMode(NeutralMode.Brake);
         
         //SmartDashboard.putNumber("mTowerSpeed", mTowerSpeed);
         mTower.set(ControlMode.PercentOutput, mTowerSpeed);

@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Constants;
 import frc.robot.Inputs;
 import frc.robot.Robot;
+import frc.robot.Constants.Tower;
 
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -31,15 +32,18 @@ public class IntakeSubsystem extends SubsystemBase {
     private double startTime = System.currentTimeMillis();
     private double elapsedtime = 0.0;
     private boolean startClock = true;
-    private boolean haveCube = false;
+    private static boolean haveCube = false;
+    private boolean haveCubeOnce = false;
+    private boolean becreamptuous = false;
+    public static boolean dontBringIn = false;
+    
     private boolean firstPass = true;
 
     public boolean getIntakePhotogate() {
         return m_intakePhotogate.get();
     }
 
-// This function assists in keeping the wheels spin for a short period of time after letting go of the button. Makes sure that the cube is in place when raising the intake
-    public void keepSpinning(){
+    public void keepSpinning(double time){
         
         if (startClock == true){
             startTime = System.currentTimeMillis();
@@ -50,12 +54,63 @@ public class IntakeSubsystem extends SubsystemBase {
             elapsedtime = System.currentTimeMillis() - startTime;
         }
     
-        if (elapsedtime < 500) { //currently 0.5 seconds
+
+        if (elapsedtime < time) { //currently 0.5 seconds
+            intakeSpeed = 0.25;
+        } else {
+            intakeSpeed = 0.0;
+        }
+   
+    }
+
+    public void hold3(){
+
+
+        if (startClock == true){
+            startTime = System.currentTimeMillis();
+            startClock = false;
+            elapsedtime = 0.0;
+        }
+        else {
+            elapsedtime = System.currentTimeMillis() - startTime;
+        }
+    
+
+        if (elapsedtime < 3000) { //currently 0.5 seconds
             intakeSpeed = 0.5;
         } else {
             intakeSpeed = 0.0;
         }
+   
     }
+
+// This function assists in keeping the wheels spin for a short period of time after letting go of the button. Makes sure that the cube is in place when raising the intake
+    /*public void keepSpinning(double time){
+        
+        if (startClock == true){
+            startTime = System.currentTimeMillis();
+            startClock = false;
+            elapsedtime = 0.0;
+        }
+        else {
+            elapsedtime = System.currentTimeMillis() - startTime;
+        }
+    
+        if (haveCube) {
+            intakeSpeed = 0.0;
+        } else {
+            if (elapsedtime < time) { //currently 0.5 seconds
+                intakeSpeed = 0.25;
+            } else {
+                intakeSpeed = 0.0;
+            }
+        }
+
+
+        
+    }*/
+
+    
 
     public void periodic(){
 
@@ -72,22 +127,21 @@ public class IntakeSubsystem extends SubsystemBase {
         //if the left trigger is pushed, the intake goes down and the clock (for the function) turns on if the cube is sensed
         if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
-            intakeSpeed = 0.5;
-            if (haveCube){
-                if (!startClock && firstPass){
-                    startClock = true;
-                    firstPass = false;
-                }
-                
-            } else  {
-                intakeSpeed = 0.5;
+            intakeSpeed = 0.75;
+            dontBringIn = false;
+            if (!haveCube) {
+                haveCubeOnce = false;
             }
         } else {
             PneumaticSubsystem.setIntakeState(false);
         }
         //this just reverses the motors, spitting the cube out
-        if (m_driverXbox.getRightTriggerAxis() > 0.1){
-            intakeSpeed = -0.5;
+        if (m_driverXbox.getRightTriggerAxis() > 0.1 || Inputs.m_operatorControl.getRawButton(8)){
+            if (TowerSubsystem.noIntake == false) {
+                intakeSpeed = -1;
+            } else {
+                intakeSpeed = -0.25;
+            }
             haveCube = false;
         }
         //these are cases used for autonomous
@@ -97,25 +151,24 @@ public class IntakeSubsystem extends SubsystemBase {
                 break;
 
             case DOWN:
-                if (!PneumaticSubsystem.intakeDeployed){
-                    PneumaticSubsystem.setIntakeState(true);
+                PneumaticSubsystem.setIntakeState(true);
+                intakeSpeed = 0.75;
+                if (!haveCube) {
+                    haveCubeOnce = false;
                 }
-
-                startClock = true;
 
                 break;
             
             case UP:
-                PneumaticSubsystem.setPinchState(false);
                 PneumaticSubsystem.setIntakeState(false);
-                startClock = true;
 
                 break;
 
-            case PINCH:
-                if (PneumaticSubsystem.intakeDeployed==false){
-                    PneumaticSubsystem.setIntakeState(true);
-                }
+            case GRABINTAKE:
+                intakeSpeed = -0.2;
+                haveCube = false;
+                becreamptuous = true;
+                dontBringIn = true;
 
                 //autoPinch();
 
@@ -125,16 +178,28 @@ public class IntakeSubsystem extends SubsystemBase {
                 break;
         }
         
-        
 
+        
  
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         if (haveCube) { //If you have the cube, stop the motors
-            m_leftPincerMotor.set(0);
-        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1){ //if nothing is being pressed, have the motors spin in slowly
-            m_leftPincerMotor.set(0.25);
+            if (haveCubeOnce == false) {
+                startClock = true;
+                haveCubeOnce = true;
+            }
+            firstPass = false;
+            keepSpinning(250);
+            m_leftPincerMotor.set(intakeSpeed);
+        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1 && becreamptuous == false && dontBringIn == false){ //if nothing is being pressed, have the motors spin in slowly
+            if (firstPass == false) {
+                startClock = true;
+                firstPass = true;
+            }
+            keepSpinning(3000);
+            m_leftPincerMotor.set(intakeSpeed);
         } else { //if you are pressing a trigger though, set the speed normally
             m_leftPincerMotor.set(intakeSpeed);
+            becreamptuous = false;
         }
 
         
@@ -142,6 +207,8 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
 
     }
+
+    
 
     //This is a function used in auton to spin the motors in
     public static void spinMotors(boolean reversed) {

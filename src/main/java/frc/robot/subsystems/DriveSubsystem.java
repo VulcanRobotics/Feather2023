@@ -269,7 +269,9 @@ public class DriveSubsystem extends SubsystemBase {
     else {
       xSpeed = (xSpeed); //Smooths driving speed curve
       ySpeed = (ySpeed);
+*/ 
 
+//THIS MAY OR MAY NOT WORK
       if (Math.abs(xSpeed) <= 0.05 && Math.abs(ySpeed) <= 0.05 && Math.abs(rot) <= 0.05) {
         xSpeed = defaultXSpeed*0.001;
         ySpeed = defaultYSpeed*0.001;
@@ -279,7 +281,7 @@ public class DriveSubsystem extends SubsystemBase {
         defaultYSpeed = ySpeed;
         defaultRot = rot;
       }
-    } */
+    
 
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(

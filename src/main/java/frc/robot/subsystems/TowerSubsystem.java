@@ -37,6 +37,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.Tower.AutonIntakeFlags;
 import frc.robot.Constants.Tower.AutonTowerFlags;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -88,6 +89,8 @@ public class TowerSubsystem extends SubsystemBase {
     private boolean wristLock = true;
 
     private boolean firstLoop = true;
+
+    public static boolean noIntake = false;
 
     private double estX = 0.0;
     private double estY = 0.0;
@@ -191,7 +194,14 @@ public class TowerSubsystem extends SubsystemBase {
         return goToPosition(.377, .701, false, false);
     }
     public boolean grabFromIntake() {
-        return goToPosition(0.32, 0.7169, false, false);
+        
+        if (m_stringTower < 0.36 + 0.01 && m_stringTower > 0.36 - 0.01){ //towerDone = towerPID.atSetpoint()
+            if (m_stringElbow < 0.665 + 0.01 && m_stringElbow > 0.665 - 0.01 && PneumaticSubsystem.clawClosed){
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
+            }
+        }
+
+        return goToPosition(0.36, 0.665, false, false);
     }
     public boolean pickUpFromIntake() {
         return goToPosition(0.322, 0.71, false, false);
@@ -268,7 +278,7 @@ public class TowerSubsystem extends SubsystemBase {
 // HEY! ALL OF THIS SHIT DOWN BELOW ARE CALCULATIONS/IMPLEMENTATIONS FOR INVERSE KINEMATICS!!!
 // ITS HIGHLY EXPERIMENTAL AND DONT RECOMMEND USING IT
 //*******************************************************//
-        /*if (false){
+        if (false){
             IKMode = !IKMode;
         }
 
@@ -323,7 +333,7 @@ public class TowerSubsystem extends SubsystemBase {
             // Tower: 0.203
             
             // Check encoders if we've reached destination, if so, stop.
-            /*if ( Math.abs(elbowEncoder - elbowEncoderTarget) < 1.0 ) {
+            if ( Math.abs(elbowEncoder - elbowEncoderTarget) < 1.0 ) {
                 mElbowSpeed = 0.0;
             }
 
@@ -541,7 +551,7 @@ public class TowerSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("z2np", z2np);
                 SmartDashboard.putNumber("z2nn", z2nn); 
             }
-        } */
+        } 
 
 
         //For wrist movement, rotate joystick
@@ -603,7 +613,6 @@ public class TowerSubsystem extends SubsystemBase {
             case GRABFROMINTAKE:
                 
                 if(grabFromIntake()){
-                    PneumaticSubsystem.setClawState(false);
                     Inputs.armReachedTarget = true;
                 } else{
                     Inputs.armReachedTarget = false;
@@ -627,9 +636,9 @@ public class TowerSubsystem extends SubsystemBase {
             midPlace();
         }
 
-        if (Inputs.m_operatorControl.getRawButton(5)) {
+        /*if (Inputs.m_operatorControl.getRawButton(5)) {
             humanPlayerGrabDrop();
-        }
+        }*/
 
         if (Inputs.m_operatorControl.getRawButton(6)) {
             highPlace();
@@ -644,7 +653,7 @@ public class TowerSubsystem extends SubsystemBase {
             wristLock = false;
         }
 
-        if (Inputs.m_operatorControl.getRawButton(9)) {
+        if (Inputs.m_operatorControl.getRawButton(5)) {
             grabFromIntake();
         }
 
@@ -688,7 +697,15 @@ public class TowerSubsystem extends SubsystemBase {
             }
         }
         
-        
+        if (m_stringPotentiometerTower.get() < 0.38) {
+            noIntake = true;
+        } else {
+            noIntake = false;
+        }
+
+        if (Inputs.m_operatorControl.getRawButtonReleased(6) || Inputs.m_operatorControl.getRawButtonReleased(3) || Inputs.m_operatorControl.getRawButtonReleased(4)) {
+            IntakeSubsystem.dontBringIn = false;
+        }
 
         if (m_PotentiometerWrist.get() < -5 && mWristSpeed < 0){
             mWristSpeed = 0;

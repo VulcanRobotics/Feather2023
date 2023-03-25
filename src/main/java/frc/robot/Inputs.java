@@ -35,6 +35,7 @@ public class Inputs {
     public static double driverPower = 0.0;
     public static double driverStrafe = 0.0;
     public static double driverTurn = 0.0;
+    public static double turboPower = 0.95;
 
     public static boolean driverReverseControls = false;
 
@@ -150,15 +151,15 @@ public class Inputs {
         //                    instead of 1 big un readable statement. 
         /////////////////////////////////////////////////////////////////
         driverPower = applyDeadBand(-m_driverXbox.getLeftY(), Constants.DriveConstants.kJoystickDeadband); 
-        driverPower *= (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset); // reduce top power 
+        driverPower *= m_driverXbox.getRightBumper() ? turboPower : (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset); // reduce top power 
         driverPower = getCubePower(driverPower);
 
         driverStrafe = applyDeadBand(m_driverXbox.getLeftX(), Constants.DriveConstants.kJoystickDeadband); 
-        driverStrafe *= (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
+        driverStrafe *= m_driverXbox.getRightBumper() ? turboPower : (Constants.OIConstants.kDriverStrafePCT + drivePowerOffset);
         driverStrafe = getCubePower(driverStrafe);
 
         driverTurn = applyDeadBand( m_driverXbox.getRightX(), Constants.DriveConstants.kJoystickDeadband); 
-        driverTurn *= Constants.OIConstants.kDriverTurnPCT  + drivePowerOffset; //Shaun added "+driverpoweroffset 3/22 post SCH"
+        driverTurn *= m_driverXbox.getRightBumper() ? turboPower :(Constants.OIConstants.kDriverTurnPCT  + drivePowerOffset); //Shaun added "+driverpoweroffset 3/22 post SCH"
         //driverTurn = getCubePower(driverTurn);
 
         // Process below is designed to override the different powers and allow us to set upper limiys
@@ -211,6 +212,8 @@ public class Inputs {
         } else if (drivePowerOffset > 0.2){
             drivePowerOffset = 0.2;
         }
+
+    
         
         //int drivePowerInt = (int) ((0.85 + drivePowerOffset) * 100);
         //String drivePowerDisplay = Integer.toString(drivePowerInt) + "% Power";
@@ -263,7 +266,7 @@ public class Inputs {
             }
         }
         
-        if (m_driverXbox.getRightBumper()) {
+        if (m_driverXbox.getLeftBumper()) {
             seekTarget();   
         }
 

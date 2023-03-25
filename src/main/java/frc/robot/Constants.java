@@ -204,7 +204,7 @@ public final class Constants {
     public static final double kIntakeDeployMills = config.getDouble("INTAKE_Deploy_Mills", 1000);
 
     public static enum AutonTowerFlags {IGNORE, ORIGIN, HIGHPLACE, MIDPLACE, HUMANPLAYERGRAB, GRABFROMINTAKE, IDLEABOVEINTAKE,  TUCKARM}
-    public static enum AutonIntakeFlags {IGNORE, DOWN, UP, PINCH}
+    public static enum AutonIntakeFlags {IGNORE, DOWN, UP, GRABINTAKE}
   }
 
 

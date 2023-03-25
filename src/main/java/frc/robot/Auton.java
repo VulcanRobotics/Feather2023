@@ -416,7 +416,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
             case 5: //now that its out of the community, start driving backward until gyro > 10
                 Inputs.driverPower = -0.5;
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
 
                 maintainTurn(0, false);
 
@@ -444,7 +444,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
     
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 if (targetPosition*2.2 - 500 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = -0.3; //0.3 
 
@@ -459,8 +458,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-
                 initialPosition = currentPosition;
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
@@ -477,8 +474,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = -0.001;
                     break;
@@ -502,8 +497,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = -0.001;
                     break;
@@ -525,9 +518,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             case 10: // turn robot 180 degrees
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
-                }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-                
+                }                
                 Inputs.driverTurn = 0.0;
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;
@@ -542,7 +533,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;
@@ -738,19 +728,19 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
             case 2: //arm keeps to origin, starts driving to balance
 
+                Inputs.autoCenter();
+
                 if (timStepTimer.get() < 6.0){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
                 
                 if (target1Piece*2 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.5; //0.3
-                    maintainTurn(-10, false);
                     break;
                 } 
 
                 if (target1Piece*2+55000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.2; //0.3
-                    maintainTurn(-15, false);
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
                 } else {
                     Inputs.driverPower = 0.0;
@@ -769,14 +759,11 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
 
                 if (timStepTimer.get() < 3.0){
-                    /*Inputs.rightPincerMotorSpeed = 0.5;
-                    Inputs.leftPincerMotorSpeed = -0.5;*/
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
                 }
                 
 
                 if (timStepTimer.get() > 0.5){
-                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                     iStep++;
                     initialPosition = currentPosition;
                 }
@@ -789,7 +776,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 }*/
 
                 if (timStepTimer.get() < 2.0){
-                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 }
 
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
@@ -964,7 +950,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
             case 5: //now that its out of the community, start driving backward until gyro > 10
                 Inputs.driverPower = -0.4;
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
 
                 if( DriveSubsystem.m_gyro.getRoll() > 10 ){
                     displayLightBalance();
@@ -977,7 +962,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
     
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 if (targetPosition*2.2 - 4500 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = -0.3; //0.3 
 
@@ -991,7 +975,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
 
                 initialPosition = currentPosition;
                 Inputs.driverPower = 0.0;
@@ -1015,7 +998,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
 
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = -0.001;
@@ -1035,7 +1017,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 
                 Inputs.driverTurn = 0.0;
                 if(timStepTimer.get() < 0.25) {
@@ -1049,7 +1030,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
                 Inputs.driverPower = 0.0;
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;

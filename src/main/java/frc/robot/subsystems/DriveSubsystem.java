@@ -61,7 +61,8 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderPorts,
           DriveConstants.kFrontLeftDriveEncoderReversed,
           DriveConstants.kFrontLeftTurningEncoderReversed,
-          -24.87); //24.455 - 355.484 - 50); 
+          -30.0);
+//          -24.87); //24.455 - 355.484 - 50); 
           //getRobotSpecificOffset(0));
           
   private static final SwerveModule m_frontRight =
@@ -71,7 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderPorts,
           DriveConstants.kFrontRightDriveEncoderReversed,
           DriveConstants.kFrontRightTurningEncoderReversed,
-          -55.81);//79.013 - 0.615 - 135);
+          -45.0);
+//          -55.81);//79.013 - 0.615 - 135);
           //getRobotSpecificOffset(2));
 
   private static final SwerveModule m_rearLeft =
@@ -81,10 +83,9 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearLeftTurningEncoderPorts,
           DriveConstants.kRearLeftDriveEncoderReversed,
           DriveConstants.kRearLeftTurningEncoderReversed,
-          -81.56);//330.117 - 279.316 + 45 + 3); 
+          -85.0);
+//          -81.56);//330.117 - 279.316 + 45 + 3); 
           //getRobotSpecificOffset(1));
-
-  
 
   private static final SwerveModule m_rearRight =
       new SwerveModule(
@@ -93,7 +94,8 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPorts,
           DriveConstants.kRearRightDriveEncoderReversed,
           DriveConstants.kRearRightTurningEncoderReversed,
-          -31.72);//298.564 - 359.297 - 145);
+          -45.0);
+//          -31.72);//298.564 - 359.297 - 145);
           //getRobotSpecificOffset(3));
 
   // The gyro sensor
@@ -109,11 +111,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
       new SwerveModulePosition[] { //do we need position
-        m_frontRight.getPosition(), //0
         m_frontLeft.getPosition(), //1
-        m_rearRight.getPosition(),
-        m_rearLeft.getPosition()
-        
+        m_frontRight.getPosition(), //0
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
       });
 
   /** Creates a new DriveSubsystem. */
@@ -146,11 +147,10 @@ public class DriveSubsystem extends SubsystemBase {
       m_odometry.update(
         m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
-          m_frontRight.getPosition(),//fl
           m_frontLeft.getPosition(),//fr
-          m_rearRight.getPosition(),//rl
-          m_rearLeft.getPosition() //rr
-           
+          m_frontRight.getPosition(),//fl
+          m_rearLeft.getPosition(), //rr
+          m_rearRight.getPosition()//rl
         });
 
       drive(Inputs.driverPower,
@@ -291,10 +291,10 @@ public class DriveSubsystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     //SmartDashboard.putNumber("Rotation?", rot );
-    m_frontLeft.setDesiredState(swerveModuleStates[1]); //Adjusted the ports for each motor to change which motor got which position for turning
-    m_frontRight.setDesiredState(swerveModuleStates[0]); 
-    m_rearLeft.setDesiredState(swerveModuleStates[3]); //3
-    m_rearRight.setDesiredState(swerveModuleStates[2]);
+    m_frontLeft.setDesiredState(swerveModuleStates[0]); //Adjusted the ports for each motor to change which motor got which position for turning
+    m_frontRight.setDesiredState(swerveModuleStates[1]); 
+    m_rearLeft.setDesiredState(swerveModuleStates[2]); //3
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
 
     
     if(Inputs.driveResetGyro) {

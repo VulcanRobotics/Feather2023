@@ -68,10 +68,10 @@ public final class Constants {
     public static final int kFrontRightTurningEncoderPorts = config.getInt("SWRV_DRV_kFrontRightTurningEncoderPorts", 36);
     public static final int kRearRightTurningEncoderPorts = config.getInt("SWRV_DRV_kRearRightTurningEncoderPorts", 38);
 
-    public static final boolean kFrontLeftTurningEncoderReversed = !false;           // nailed up, no config
-    public static final boolean kRearLeftTurningEncoderReversed = !false;
-    public static final boolean kFrontRightTurningEncoderReversed = !false;
-    public static final boolean kRearRightTurningEncoderReversed = !false;
+    public static final boolean kFrontLeftTurningEncoderReversed = true;           // nailed up, no config
+    public static final boolean kRearLeftTurningEncoderReversed = true;
+    public static final boolean kFrontRightTurningEncoderReversed = true;
+    public static final boolean kRearRightTurningEncoderReversed = true;
 
     public static final int kFrontLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kFrontLeftDriveMotorPort",21);
     public static final int kRearLeftDriveEncoderPorts = config.getInt("SWRV_DRV_kRearLeftDriveMotorPort", 23);

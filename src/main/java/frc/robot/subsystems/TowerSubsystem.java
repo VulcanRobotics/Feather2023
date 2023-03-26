@@ -611,7 +611,6 @@ public class TowerSubsystem extends SubsystemBase {
                 Inputs.armReachedTarget = tuckArm();
             
             case GRABFROMINTAKE:
-                
                 if(grabFromIntake()){
                     Inputs.armReachedTarget = true;
                 } else{

@@ -150,7 +150,7 @@ public class Inputs {
         // Driver controls  - showing all the steps to the new kids.
         //                    instead of 1 big un readable statement. 
         /////////////////////////////////////////////////////////////////
-        driverPower = applyDeadBand(-m_driverXbox.getLeftY(), Constants.DriveConstants.kJoystickDeadband); 
+        driverPower = applyDeadBand(m_driverXbox.getLeftY(), Constants.DriveConstants.kJoystickDeadband); 
         driverPower *= m_driverXbox.getRightBumper() ? turboPower : (Constants.OIConstants.kDriverPowerPCT + drivePowerOffset); // reduce top power 
         driverPower = getCubePower(driverPower);
 

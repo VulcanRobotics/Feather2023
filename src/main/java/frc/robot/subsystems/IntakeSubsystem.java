@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean startClock = true;
     private static boolean haveCube = false;
     private boolean haveCubeOnce = false;
-    private boolean becreamptuous = false;
+    private boolean becreamptuous = false; 
     public static boolean dontBringIn = false;
     
     private boolean firstPass = true;
@@ -152,12 +152,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
             case DOWN:
                 PneumaticSubsystem.setIntakeState(true);
+
+                break;
+            
+            case INTAKE:
+                PneumaticSubsystem.setIntakeState(true);
                 intakeSpeed = 0.75;
+                dontBringIn = false;
                 if (!haveCube) {
                     haveCubeOnce = false;
                 }
-
-                break;
             
             case UP:
                 PneumaticSubsystem.setIntakeState(false);

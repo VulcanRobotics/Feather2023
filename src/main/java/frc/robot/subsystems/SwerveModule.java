@@ -300,7 +300,7 @@ public class SwerveModule {
   }
   else if (brakeMode == 1) {
     brakeMode = 0;
-    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 35, 40, 1.0));
+    m_driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 35, 60, 1.0));
   }
 }
    private double getOptimizedTurn(SwerveModuleState desiredState) { //Unused; finds an optimized turn value
@@ -328,19 +328,22 @@ public class SwerveModule {
 
 
   public void setDesiredState(SwerveModuleState desiredState) {
- 
-     double driveOutput = -desiredState.speedMetersPerSecond * 1.0; //Uses desired state to return motor speed      
-   
     
+    double optimizedTicks = getClosestZero(desiredState);
+ 
+    double driveOutput = desiredState.speedMetersPerSecond * 1.0; //Uses desired state to return motor speed      
+    SmartDashboard.putNumber("DESIRED STATE " + Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
+
+    double optimizedTurnInDegrees = (optimizedTicks / 87.791 + turningEncoderOffsetGlobal) % 360;
+    //( MathUtil.falconToDegrees(optimizedTicks, Constants.Swerve.angleGearRatio) + turningEncoderOffsetGlobal ) % 360;
+    SmartDashboard.putNumber("OPTIMIZED STATE" + Double.toString(turnMotorPortGlobal), optimizedTurnInDegrees);
+   
     if(Inputs.driveSwerveEncoderReset){ //hardware rest
-       talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360;
+      talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360; 
     }
 
-    
-
-    m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);
-    
-    m_turningMotor.set(ControlMode.Position, (getClosestZero(desiredState)));
+    m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);    
+    m_turningMotor.set(ControlMode.Position, optimizedTicks );
     //m_turningMotor.set(ControlMode.Position, 0);
 
     

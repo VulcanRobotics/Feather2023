@@ -107,7 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Odometry class for tracking robot pose
   public static SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
+      new SwerveDriveOdometry(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(-m_gyro.getYaw()),
       new SwerveModulePosition[] { //do we need position
         m_frontRight.getPosition(), //0
         m_frontLeft.getPosition(), //1
@@ -115,6 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearLeft.getPosition()
         
       });
+
+    
 
   /** Creates a new DriveSubsystem. */
   public void enableUltrasonic() {
@@ -144,7 +146,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Update the odometry in the periodic block
     
       m_odometry.update(
-        m_gyro.getRotation2d(),
+        Rotation2d.fromDegrees(-m_gyro.getYaw()),
         new SwerveModulePosition[] {
           m_frontRight.getPosition(),//fl
           m_frontLeft.getPosition(),//fr
@@ -286,8 +288,8 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
-                : new ChassisSpeeds(xSpeed, ySpeed, rot)); //xspeed was positive
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, -ySpeed, -rot, Rotation2d.fromDegrees((m_gyro.getYaw()))) //xspeed was positive
+                : new ChassisSpeeds(xSpeed, -ySpeed, -rot)); //xspeed was positive
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     //SmartDashboard.putNumber("Rotation?", rot );

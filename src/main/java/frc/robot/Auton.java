@@ -16,6 +16,7 @@ import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveModule;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanEntry;
 
 import java.sql.Driver;
@@ -48,6 +49,7 @@ public class Auton extends MyStateMachine {
     private TimedRampPower trpDrivePower;
     
 
+
     double targetPosition = 26000;  //ticks
     double targetPastChargeStation = 52000;
 
@@ -62,6 +64,16 @@ public class Auton extends MyStateMachine {
     public  Auton() {               // constructor
         reset();
         timStepTimer.start();
+    }
+
+    private double flaconToFeet(double ticks) {
+        double temp = Units.metersToFeet(MathUtil.falconToMeters(ticks, 24.76, 6.75));
+        return temp;
+    }
+
+    private double feetToFalcon(double feet) {
+        double temp = MathUtil.metersToFalcon(Units.feetToMeters(feet), 24.76, 6.75);
+        return temp;
     }
 
 public void displayLightBalance() {
@@ -384,7 +396,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 break;
             
             case 4: //Drive a little bit forward, just to get out of the community
-                if (targetPastChargeStation * 2 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if ((targetPastChargeStation * 2)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; 
 
                     
@@ -444,7 +456,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
     
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
-                if (targetPosition*2.2 - 500 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
+                if ((targetPosition*2.2 - 500)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = -0.3; //0.3 
 
                     break;
@@ -618,6 +630,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 } 
+                initialPosition = currentPosition;
                 iStep ++;
                 break;
 
@@ -626,9 +639,12 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (timStepTimer.get() < 7.0){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
-                if(timStepTimer.get() < 2.5){
-                    Inputs.driverPower = 0.5;
-                    break;
+                if (feetToFalcon(4) > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = 0.2; //0.3
+                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
+                } else {
+                    Inputs.driverPower = 0.0;
+                    iStep++;
                 }
                 iStep ++;
                 break;
@@ -728,18 +744,18 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
             case 2: //arm keeps to origin, starts driving to balance
 
-                Inputs.autoCenter();
+                Inputs.seekTarget();
 
                 if (timStepTimer.get() < 6.0){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
                 
-                if (target1Piece*2 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if ((target1Piece*2)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.5; //0.3
                     break;
                 } 
 
-                if (target1Piece*2+55000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if ((target1Piece*2+55000)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.2; //0.3
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
                 } else {
@@ -758,6 +774,8 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             case 3:
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
 
+                Inputs.seekTarget();
+
                 if (timStepTimer.get() < 3.0){
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
                 }
@@ -767,7 +785,6 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     iStep++;
                     initialPosition = currentPosition;
                 }
-                maintainTurn(-15, false);
                 break;
             case 4:
                 
@@ -779,7 +796,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 }
 
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                if (target1Piece*2-10000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if ((target1Piece*2-10000)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = -0.5; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3

@@ -120,14 +120,20 @@ public class Inputs {
 
     public Inputs() {};             // Class constructor
 
-    public static void autoCenter(){
+    public static void autoCenter(int pipeline_number){
         /* 
         if (Math.abs(DriveSubsystem.m_gyro.getYaw()) > 1.0){
             driverTurn = m_visionSubsystem.visionAdjustX()[1];
         } else if (!m_visionSubsystem.areWeCentered()){
             driverStrafe = m_visionSubsystem.visionAdjustX()[0];
         }*/
+
+        if (m_visionSubsystem.pipelineNumber != pipeline_number) {
+            m_visionSubsystem.switchPipeline(pipeline_number);
+        }
+
         driverStrafe = m_visionSubsystem.visionAdjustX(false)[0];
+
     }
 
     public static void seekTarget() {
@@ -258,7 +264,7 @@ public class Inputs {
         endGame = m_extraControl.getRawButton(1);
 
         if(m_driverXbox.getYButtonPressed()){
-            long currentPipeline = m_visionSubsystem.getPipelineNumber();
+            double currentPipeline = m_visionSubsystem.pipelineNumber;
             if (currentPipeline == 0) {
                 m_visionSubsystem.switchPipeline(1);
             } else {
@@ -306,12 +312,12 @@ public class Inputs {
             
             //Still jitters a little when calling this (a bit less though) - how can that be fixed?
             if (m_visionSubsystem.areWeCentered(3)) {
-                driverPower = -0.2;
+                driverPower = 0.2;
             } /*else {
                 autoCenter();
             }*/
             if (!m_visionSubsystem.areWeCentered(2)) {
-                autoCenter();
+                autoCenter(0);
             }
 
         }

@@ -152,16 +152,26 @@ public class IntakeSubsystem extends SubsystemBase {
 
             case DOWN:
                 PneumaticSubsystem.setIntakeState(true);
-
                 break;
-            
             case INTAKE:
-                PneumaticSubsystem.setIntakeState(true);
-                intakeSpeed = 0.75;
-                dontBringIn = false;
+                if (!PneumaticSubsystem.intakeDeployed){
+                    PneumaticSubsystem.setIntakeState(true);
+                }
+                
+                
+                intakeSpeed = 1;
+                //m_leftPincerMotor.set(intakeSpeed);
+                becreamptuous = true;
+                break;
+                
+                /*dontBringIn = false;
                 if (!haveCube) {
                     haveCubeOnce = false;
-                }
+                }*/
+            
+
+
+
             
             case UP:
                 PneumaticSubsystem.setIntakeState(false);

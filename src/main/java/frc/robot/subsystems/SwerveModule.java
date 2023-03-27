@@ -248,7 +248,7 @@ public class SwerveModule {
   } 
 
   private double getClosestZero(SwerveModuleState desiredState) { //Currently unused; finds closest relative zero
-    double turnInDegrees = desiredState.angle.getDegrees();
+    double turnInDegrees = desiredState.angle.getDegrees(); //shaun added negative 3/27/23
     double currentTicks = getCurrentTicks();
     double currentTicksFirstTurn = currentTicks % Talon360; // converts to first turn
     

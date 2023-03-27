@@ -7,6 +7,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.function.LongToDoubleFunction;
+
 //import javax.swing.text.html.AccessibleHTML.TableElementInfo.TableAccessibleContext;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -42,6 +44,7 @@ public class VisionSubsystem extends SubsystemBase{
      ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
+    public static double pipelineNumber = 0.0;
 
     
 
@@ -56,6 +59,8 @@ public class VisionSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         
+        pipelineNumber = pipeline.getInteger(0);
+
         //Just displays the variables of the rear limelight for analysis/viewing
         double x = r_tx.getDouble(0.0);
         double y = r_ty.getDouble(0.0);
@@ -111,9 +116,6 @@ public class VisionSubsystem extends SubsystemBase{
     }
 
     //This gives the current pipeline number for SmartDashboard Reasons
-    public long getPipelineNumber() {
-        return pipeline.getInteger(0);
-    }
 
 }
 

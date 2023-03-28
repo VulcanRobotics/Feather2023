@@ -37,7 +37,7 @@ public class Inputs {
     public static double driverPower = 0.0;
     public static double driverStrafe = 0.0;
     public static double driverTurn = 0.0;
-    public static double turboPower = 0.95;
+    public static double turboPower = 1;
 
     public static boolean driverReverseControls = false;
 
@@ -138,11 +138,13 @@ public class Inputs {
 
     }
 
-    public static void seekTarget() {
+    public static boolean seekTarget() {
         if (IntakeSubsystem.getHaveCube()) {
             driverTurn = 0.0;
+            return true;
         } else {
             driverTurn = -m_visionSubsystem.visionAdjustX(true)[1];
+            return false;
         }
     }
 

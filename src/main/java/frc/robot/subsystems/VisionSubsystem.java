@@ -41,7 +41,7 @@ public class VisionSubsystem extends SubsystemBase{
     
     //stating PID controllers for limelights
      ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
-     ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+     ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
     final double xDeadZone = 0.5;
     public static double pipelineNumber = 0.0;

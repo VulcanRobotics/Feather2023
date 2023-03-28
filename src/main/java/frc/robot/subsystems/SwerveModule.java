@@ -337,6 +337,7 @@ public class SwerveModule {
     double optimizedTurnInDegrees = (optimizedTicks / 87.791 + turningEncoderOffsetGlobal) % 360;
     //( MathUtil.falconToDegrees(optimizedTicks, Constants.Swerve.angleGearRatio) + turningEncoderOffsetGlobal ) % 360;
     SmartDashboard.putNumber("OPTIMIZED STATE" + Double.toString(turnMotorPortGlobal), optimizedTurnInDegrees);
+    SmartDashboard.putNumber("Wheel " + Integer.toString(turnEncoderPortGlobal) + " CANCoder Position", m_turningEncoder.getAbsolutePosition());
    
     if(Inputs.driveSwerveEncoderReset){ //hardware rest
       talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360; 
@@ -363,9 +364,6 @@ public class SwerveModule {
   // we want to go to the degree based on the cancoder
 
     //SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));
-    SmartDashboard.putNumber("Wheel " + Integer.toString(turnEncoderPortGlobal) + " CANCoder Position", m_turningEncoder.getAbsolutePosition());
-    SmartDashboard.putNumber("DESIRED STATE " +  Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());
-    SmartDashboard.putNumber("OPTIMIZED STATE" +  Double.toString(turnMotorPortGlobal), optimizedTurn);
 
     if(false) {
       SmartDashboard.putNumber("LOOK AT ME M_DRIVE OUTPUT", (getClosestZero(desiredState)));

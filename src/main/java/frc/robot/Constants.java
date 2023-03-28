@@ -204,7 +204,7 @@ public final class Constants {
     public static final double kIntakeDeployMills = config.getDouble("INTAKE_Deploy_Mills", 1000);
 
     public static enum AutonTowerFlags {IGNORE, ORIGIN, HIGHPLACE, MIDPLACE, HUMANPLAYERGRAB, GRABFROMINTAKE, IDLEABOVEINTAKE,  TUCKARM}
-    public static enum AutonIntakeFlags {IGNORE, DOWN, UP, GRABINTAKE}
+    public static enum AutonIntakeFlags {IGNORE, DOWN, INTAKE, UP, GRABINTAKE}
   }
 
 
@@ -218,7 +218,7 @@ public final class Constants {
     public static final double kPYController        = config.getDouble("AUTON_kPYController", 1);
     public static final double kPThetaController    = config.getDouble("AUTON_kPThetaController", 1);
 
-    public static int kTotalAutons                   = config.getInt("AUTON_TotalAutons", 5);
+    public static int kTotalAutons                   = config.getInt("AUTON_TotalAutons", 6);
     
     /* public static double kAuton1_DriveForward        = config.getDouble("AUTON1_kDriveForward", 0.2);
     public static double kAuton1_DriveBackward       = config.getDouble("AUTON1_kDriveBackward", -0.5); //-0.2

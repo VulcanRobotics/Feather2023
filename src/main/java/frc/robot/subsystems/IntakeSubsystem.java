@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean startClock = true;
     private static boolean haveCube = false;
     private boolean haveCubeOnce = false;
-    private boolean becreamptuous = false;
+    private boolean becreamptuous = false; 
     public static boolean dontBringIn = false;
     
     private boolean firstPass = true;
@@ -152,12 +152,26 @@ public class IntakeSubsystem extends SubsystemBase {
 
             case DOWN:
                 PneumaticSubsystem.setIntakeState(true);
-                intakeSpeed = 0.75;
+                break;
+            case INTAKE:
+                if (!PneumaticSubsystem.intakeDeployed){
+                    PneumaticSubsystem.setIntakeState(true);
+                }
+                
+                
+                intakeSpeed = 1;
+                //m_leftPincerMotor.set(intakeSpeed);
+                becreamptuous = true;
+                break;
+                
+                /*dontBringIn = false;
                 if (!haveCube) {
                     haveCubeOnce = false;
-                }
+                }*/
+            
 
-                break;
+
+
             
             case UP:
                 PneumaticSubsystem.setIntakeState(false);

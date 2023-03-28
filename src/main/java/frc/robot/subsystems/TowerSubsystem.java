@@ -611,9 +611,10 @@ public class TowerSubsystem extends SubsystemBase {
                 Inputs.armReachedTarget = tuckArm();
             
             case GRABFROMINTAKE:
-                
                 if(grabFromIntake()){
                     Inputs.armReachedTarget = true;
+                    
+                    PneumaticSubsystem.setClawState(false);
                 } else{
                     Inputs.armReachedTarget = false;
                 }

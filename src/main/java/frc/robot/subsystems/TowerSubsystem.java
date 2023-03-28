@@ -195,13 +195,13 @@ public class TowerSubsystem extends SubsystemBase {
     }
     public boolean grabFromIntake() {
         
-        if (m_stringTower < 0.36 + 0.01 && m_stringTower > 0.36 - 0.01){ //towerDone = towerPID.atSetpoint()
-            if (m_stringElbow < 0.665 + 0.01 && m_stringElbow > 0.665 - 0.01 && PneumaticSubsystem.clawClosed){
+        if (m_stringTower < 0.361 + 0.01 && m_stringTower > 0.361 - 0.01){ //towerDone = towerPID.atSetpoint()
+            if (m_stringElbow < 0.663 + 0.01 && m_stringElbow > 0.663 - 0.01 && PneumaticSubsystem.clawClosed){
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
             }
         }
 
-        return goToPosition(0.36, 0.665, false, false);
+        return goToPosition(0.361, 0.663, false, false);
     }
     public boolean pickUpFromIntake() {
         return goToPosition(0.322, 0.71, false, false);

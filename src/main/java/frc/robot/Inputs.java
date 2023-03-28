@@ -6,6 +6,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.Tower.AutonIntakeFlags;
 import frc.robot.Constants.Tower.AutonTowerFlags;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
 //import frc.robot.subsystems.ShootSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -137,7 +139,11 @@ public class Inputs {
     }
 
     public static void seekTarget() {
-        driverTurn = -m_visionSubsystem.visionAdjustX(true)[1];
+        if (IntakeSubsystem.getHaveCube()) {
+            driverTurn = 0.0;
+        } else {
+            driverTurn = -m_visionSubsystem.visionAdjustX(true)[1];
+        }
     }
 
     public static void periodic(){

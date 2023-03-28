@@ -110,7 +110,13 @@ public class IntakeSubsystem extends SubsystemBase {
         
     }*/
 
-    
+    public static boolean getHaveCube() {
+        if (haveCube) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public void periodic(){
 
@@ -137,12 +143,11 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         //this just reverses the motors, spitting the cube out
         if (m_driverXbox.getRightTriggerAxis() > 0.1 || Inputs.m_operatorControl.getRawButton(8)){
-            if (TowerSubsystem.noIntake == false) {
-                intakeSpeed = -1;
-            } else {
-                intakeSpeed = -0.25;
-            }
+            intakeSpeed = -0.15;
             haveCube = false;
+            PneumaticSubsystem.setEjectState(true);
+        } else {
+            PneumaticSubsystem.setEjectState(false);
         }
         //these are cases used for autonomous
         switch (Inputs.autonRequestIntakeGoTo){

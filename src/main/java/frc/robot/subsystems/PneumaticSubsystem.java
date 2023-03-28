@@ -13,6 +13,7 @@ public class PneumaticSubsystem extends SubsystemBase {
   private static Solenoid m_clawSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
   private static Solenoid m_intakePullUpSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 2);
   private static Solenoid m_intakePinchSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 3);
+  private static Solenoid m_ejectSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 5);
 
   //Stating the compressor
   private static Compressor m_compressor = new Compressor(1, PneumaticsModuleType.REVPH); 
@@ -47,6 +48,10 @@ public class PneumaticSubsystem extends SubsystemBase {
   public static void setPinchState(boolean state){    // force it to this state
     pinchClosed = state;
     m_intakePinchSolenoid.set(state);
+  }
+
+  public static void setEjectState(boolean state){    // force it to this state
+    m_ejectSolenoid.set(state);
   }
 
   public static void toggleClawState(){

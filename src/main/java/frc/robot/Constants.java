@@ -99,7 +99,7 @@ public final class Constants {
     public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
     //sensor coefficent = .0015339775
 
-    public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.10);    // 0.09
+    public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.04);    // 0.09
 
     public static final double kTrackWidth = .457;//0.565;  // PGR 30" square perimeter  // no config as this is nailed up
     // Distance between centers of right and left wheels on robot

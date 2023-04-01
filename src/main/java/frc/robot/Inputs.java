@@ -130,7 +130,7 @@ public class Inputs {
             driverStrafe = m_visionSubsystem.visionAdjustX()[0];
         }*/
 
-        if (m_visionSubsystem.pipelineNumber != pipeline_number) {
+        if (((m_visionSubsystem.pipelineNumber != pipeline_number)) && pipeline_number != -1) {
             m_visionSubsystem.switchPipeline(pipeline_number);
         }
 
@@ -325,7 +325,7 @@ public class Inputs {
                 autoCenter();
             }*/
             if (!m_visionSubsystem.areWeCentered(2)) {
-                autoCenter(0);
+                autoCenter(-1);
             }
 
         }

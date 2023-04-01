@@ -190,7 +190,7 @@ class MyStateMachine {
                 break;
 
             case 4:
-                auton4();
+                auton4(1);
                 break;
 
             case 5:
@@ -253,7 +253,7 @@ class MyStateMachine {
 
     }
 
-    public  void auton4(){						// this will be over written in instance.
+    public  void auton4(int reflectionFactor){						// this will be over written in instance.
 
         System.out.println("*** StateMachine.auto0: Was not overridden by your instance if this class.!!!!***");
         System.out.println("*** StateMachine.Setting bIsDone to true.***");

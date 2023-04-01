@@ -314,7 +314,50 @@ public class SwerveModule {
 
   }
   
+  private double getFakeClosestZero(SwerveModuleState desiredState) { //Currently unused; finds closest relative zero
+    double turnInDegrees = -desiredState.angle.getDegrees(); //shaun added negative 3/27/23
+    double currentTicks = getCurrentTicks();
+    double currentTicksFirstTurn = currentTicks % Talon360; // converts to first turn
+    
+    if (turnInDegrees < 0) {
+      turnInDegrees += 360;
+    }
 
+    double turnOutput = turnInDegrees * 87.791 + talonOffsetOnBoot;  // 87.791 was talon 360
+    turnOutput = turnOutput % Talon360;
+    
+    double first180 = turnOutput; //RENAME
+    double second180 = turnOutput + Talon360;
+    double oppositeFirst180 = turnOutput - Talon180;
+    double oppositeSecond180 = turnOutput + Talon180;
+
+    double winnerOne = 0.0;
+    double winnerTwo = 0.0;
+    double VICTORYROYALE = 0.0;
+    
+    if (Math.abs(first180 - currentTicksFirstTurn) <= Math.abs(second180 - currentTicksFirstTurn)) {
+      winnerOne = first180;
+    } else {
+      winnerOne = second180;
+    }
+
+    if (Math.abs(oppositeFirst180 - currentTicksFirstTurn) <= Math.abs(oppositeSecond180 - currentTicksFirstTurn)) {
+      winnerTwo = oppositeFirst180;
+    } else {
+      winnerTwo = oppositeSecond180;
+    }
+
+    if (Math.abs(winnerOne - currentTicksFirstTurn) <= Math.abs(winnerTwo - currentTicksFirstTurn)) {
+      VICTORYROYALE = winnerOne;
+      m_driveDirection = 1;
+    } else {
+      VICTORYROYALE = winnerTwo;
+      m_driveDirection = -1;
+    }
+
+    return VICTORYROYALE + currentTicks - currentTicksFirstTurn;
+
+ }
 
   
 
@@ -330,6 +373,7 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     
     double optimizedTicks = getClosestZero(desiredState);
+    
  
     double driveOutput = desiredState.speedMetersPerSecond * 1.0; //Uses desired state to return motor speed      
     SmartDashboard.putNumber("DESIRED STATE " + Double.toString(turnMotorPortGlobal), desiredState.angle.getDegrees());

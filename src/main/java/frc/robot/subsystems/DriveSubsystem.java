@@ -109,10 +109,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(-m_gyro.getYaw()),
       new SwerveModulePosition[] { //do we need position
-        m_frontRight.getPosition(), //0
         m_frontLeft.getPosition(), //1
-        m_rearRight.getPosition(),
-        m_rearLeft.getPosition()
+        m_frontRight.getPosition(), //0
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
         
       });
 
@@ -148,11 +148,10 @@ public class DriveSubsystem extends SubsystemBase {
       m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getYaw()),
         new SwerveModulePosition[] {
-          m_frontRight.getPosition(),//fl
           m_frontLeft.getPosition(),//fr
-          m_rearRight.getPosition(),//rl
-          m_rearLeft.getPosition() //rr
-           
+          m_frontRight.getPosition(),//fl
+          m_rearLeft.getPosition(), //rr
+          m_rearRight.getPosition()//rl           
         });
 
       drive(Inputs.driverPower,

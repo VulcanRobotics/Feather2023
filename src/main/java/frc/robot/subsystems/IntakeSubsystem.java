@@ -118,6 +118,8 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    
+
     public void periodic(){
 
         SmartDashboard.putBoolean("PHOTOGATE", getIntakePhotogate());
@@ -142,12 +144,19 @@ public class IntakeSubsystem extends SubsystemBase {
             PneumaticSubsystem.setIntakeState(false);
         }
         //this just reverses the motors, spitting the cube out
-        if (m_driverXbox.getRightTriggerAxis() > 0.1 || Inputs.m_operatorControl.getRawButton(8)){
+        if (m_driverXbox.getRightTriggerAxis() > 0.1 || Inputs.m_operatorControl.getRawButton(9) || TowerSubsystem.autoEject == true){
             intakeSpeed = -0.15;
             haveCube = false;
-            PneumaticSubsystem.setEjectState(true);
+            becreamptuous = true;
+            dontBringIn = true;
+
+            if (TowerSubsystem.autoEject == true) {
+                TowerSubsystem.autoEject = false;
+            }
+
+            //PneumaticSubsystem.setEjectState(true);
         } else {
-            PneumaticSubsystem.setEjectState(false);
+            //PneumaticSubsystem.setEjectState(false);
         }
         //these are cases used for autonomous
         switch (Inputs.autonRequestIntakeGoTo){
@@ -188,6 +197,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 haveCube = false;
                 becreamptuous = true;
                 dontBringIn = true;
+                //m_leftPincerMotor.set(intakeSpeed);
 
                 //autoPinch();
 
@@ -228,6 +238,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     
+
 
     //This is a function used in auton to spin the motors in
     public static void spinMotors(boolean reversed) {

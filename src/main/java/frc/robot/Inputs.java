@@ -420,9 +420,9 @@ public class Inputs {
         } else if (autonToRun == 3) {
             autonMessage = "3: Drop cone high, drive out of community (9p)";
         } else if (autonToRun == 4) {
-            autonMessage = "4: No auton currently";
+            autonMessage = "4 BLUE: Drop cone high, drive out and grab cube, come back and drop high (15p)";
         } else if (autonToRun == 5) {
-            autonMessage = "5: No auton currently";
+            autonMessage = "5 RED: Drop cone high, drive out and grab cube, come back and drop high (15p)";
         }
         SmartDashboard.putNumber("INPUT AUTON To Run", autonToRun);
         SmartDashboard.putString("Running What Auton?", autonMessage);  

@@ -103,6 +103,8 @@ public class TowerSubsystem extends SubsystemBase {
 
     private double initialWristEncoder = m_encoderWrist.getPosition();
     public final double wristEncoder180 = 47.642;
+
+    public static boolean autoEject = false;
 //*******************************************************//
 
 
@@ -197,7 +199,8 @@ public class TowerSubsystem extends SubsystemBase {
         
         if (m_stringTower < 0.361 + 0.01 && m_stringTower > 0.361 - 0.01){ //towerDone = towerPID.atSetpoint()
             if (m_stringElbow < 0.663 + 0.01 && m_stringElbow > 0.663 - 0.01 && PneumaticSubsystem.clawClosed){
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
+                //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
+                autoEject = true;
             }
         }
 
@@ -610,7 +613,7 @@ public class TowerSubsystem extends SubsystemBase {
             case TUCKARM:
                 Inputs.armReachedTarget = tuckArm();
             
-            case GRABFROMINTAKE:
+            case GRABFROMINTAKE: //FOR SOME REASON, THIS MAKES THE ARM DIP WWWWAAAAAYYYY PAST THE POSITION IT SHOULD GO TO. WORKS IN TELE, NOT IN AUTON. PLZ FIX!!!!
                 if(grabFromIntake()){
                     Inputs.armReachedTarget = true;
                     PneumaticSubsystem.setClawState(false);

@@ -99,7 +99,7 @@ public final class Constants {
     public static final double kHeatherRearRightTurnEncoderOffsetDeg = -17.5;
     //sensor coefficent = .0015339775
 
-    public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.04);    // 0.09
+    public static final double kJoystickDeadband = config.getDouble("INPUT_JoystickDeadband", 0.075);    // 0.09
 
     public static final double kTrackWidth = .457;//0.565;  // PGR 30" square perimeter  // no config as this is nailed up
     // Distance between centers of right and left wheels on robot
@@ -283,7 +283,7 @@ public final class Constants {
   public static final class DashboardSwitches {
     public static boolean SwerveDisplayOn  = config.getBoolean("TELE_Swerve_On", false);//true
     public static boolean DriveDisplayOn   = config.getBoolean("TELE_Drive_On", false);//true
-    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", true);//true
+    public static boolean TowerDisplayOn   = config.getBoolean("TELE_Tower_On", false);//true
     public static boolean VisionDisplayOn  = config.getBoolean("TELE_Vision_On", false);
     public static boolean InputsDisplayOn  = config.getBoolean("TELE_Inputs_On", true);
   }

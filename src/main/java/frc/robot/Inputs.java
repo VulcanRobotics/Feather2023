@@ -312,6 +312,7 @@ public class Inputs {
         SmartDashboard.putNumber("driverPo", drivePowerOffset * 100);
         SmartDashboard.putNumber("driver strafe", driverStrafe);
         SmartDashboard.putNumber("drivePowerSPEED", (Constants.OIConstants.kDriverStrafePCT+drivePowerOffset)*100);
+        SmartDashboard.putNumber("Driver ROT", driverTurn);
         SmartDashboard.putNumber("currentYAW", currentYAW);
 
 

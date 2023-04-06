@@ -744,6 +744,10 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
             case 2: //arm keeps to origin, starts driving to balance
 
+                if (timStepTimer.get() > 4.0) {
+                    iStep = 8;
+                }
+                
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
                 //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
 

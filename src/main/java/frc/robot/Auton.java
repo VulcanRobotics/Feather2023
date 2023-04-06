@@ -490,9 +490,10 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 } 
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
-                    if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
+                    // This was targetQuickMove (no additional) for Day 1 of Lehigh
+                    if (targetQuickMove+3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
                         Inputs.driverPower = 0.3; //0.3
-                    } else if (targetQuickMove > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -13) {
+                    } else if (targetQuickMove+3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -13) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
@@ -513,9 +514,10 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 } 
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
-                    if (targetQuickMove-3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 10) { //1.2
+                    // This was targetQuickMove-3000 on Day 1 of Lehigh
+                    if (targetQuickMove-1000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 10) { //1.2
                         Inputs.driverPower = 0.3; //0.3
-                    } else if (targetQuickMove-3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -10) {
+                    } else if (targetQuickMove-1000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -10) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
@@ -808,7 +810,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     iStep++;
                 }
 
-                maintainTurn(-3, false);
+                maintainTurn(-3 * reflectionFactor, false);
 
                /*  if (timStepTimer.get() > 3){
                     Inputs.autoCenter(1);
@@ -818,7 +820,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             case 5:
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
                 if (timStepTimer.get() < 0.6) {
-                    Inputs.driverStrafe = -0.27;
+                    Inputs.driverStrafe = -0.27 * reflectionFactor;
                     
                 } else 
                 if (timStepTimer.get() < 2.0){
@@ -849,7 +851,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.seekTarget();
                 } */
                 if (timStepTimer.get() < 0.5) {
-                    Inputs.driverStrafe = 0.5;
+                    Inputs.driverStrafe = 0.5 * reflectionFactor;
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 }

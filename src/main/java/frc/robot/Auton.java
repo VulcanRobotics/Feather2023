@@ -346,22 +346,19 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             
             case 1: //Put the cone down on the high place
                 Inputs.driveSwerveEncoderReset = false;
-            if (bStepFirstPass) {
-                SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
-            }
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
+                }
 
-                if(!Inputs.armReachedTarget/*timStepTimer.get() < 2.45*/) {
+                if(timStepTimer.get() < 3.5) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
 
                     break;
                 }
 
-          
+        
 
-                if (timStepTimer.get() < 2){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-                    break;
-                }
+                
                 iStep ++;
                 break;
 
@@ -454,9 +451,8 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
     
             case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
                 //displayLightBalance();
-                if ((targetPosition*2.2 - 500)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
+                if ((targetPosition*2.2)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = 0.3; //0.3 
-
                     break;
                 }
 
@@ -631,7 +627,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     break;
                 } 
                 initialPosition = currentPosition;
-                iStep ++;
+                iStep++;
                 break;
 
             case 2: //arm keeps to origin, starts driving out of community until 7 seconds in auton
@@ -639,24 +635,24 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if (timStepTimer.get() < 7.0){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
-                if (feetToFalcon(4) > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = 0.2; //0.3
-                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
+                if (target1Piece*2-4000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = -0.4; //0.3
+                    //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.DOWN;
                 } else {
                     Inputs.driverPower = 0.0;
                     iStep++;
                 }
-                iStep ++;
+                //iStep++;
                 break;
             case 3: // stop robot from falling if unbalanced 
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
-                Inputs.driverPower = 0.0;
+                /*Inputs.driverPower = 0.0;
 
                 if (maintainTurn(30, false)) {
                     break; 
-                }
+                }*/
 
                 iStep++;
                 break;
@@ -764,11 +760,11 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     iStep++;
                 }*/
 
-                if (timStepTimer.get() < 1.5){
+                if (timStepTimer.get() < 1.25){
                     Inputs.driverPower = -0.5;
                     maintainTurn(reflectionFactor * 0, false);
                 } else {
-                    if (!Inputs.seekTarget()) {
+                    if (!Inputs.seekTarget() || timStepTimer.get() < 2.5) {
                         Inputs.driverPower = -0.5;
                     } else {
                         iStep++;
@@ -803,7 +799,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
                 
-                if (target1Piece*2 -5000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if (target1Piece*2 -4000 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3

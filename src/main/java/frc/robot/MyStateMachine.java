@@ -194,7 +194,7 @@ class MyStateMachine {
                 break;
 
             case 5:
-                auton5();
+                auton4(-1);
                 break;
 
             case 6:

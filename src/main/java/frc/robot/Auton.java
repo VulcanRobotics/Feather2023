@@ -895,7 +895,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             */
             if (timStepTimer.get() < 1.5) {
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-                Inputs.driverPower  = -0.8;
+                Inputs.driverPower  = -0.4; // Slowed down for bump
                 maintainTurn(0, false);
 
             }

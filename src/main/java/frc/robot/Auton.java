@@ -799,7 +799,8 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
                 
-                if (target1Piece*2 -4000 > Math.abs(currentPosition - initialPosition)) { //1.2
+                // This was target1Piece*2 -4000 through Lehigh Qualifying Match 11
+                if (target1Piece*2 + 1500 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3

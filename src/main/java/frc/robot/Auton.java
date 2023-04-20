@@ -678,17 +678,13 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
         SmartDashboard.putNumber("Auton ID", 1);
         SmartDashboard.putNumber("Auton Step", iStep);
         SmartDashboard.putString("Auton Desc", "Plan to score 1 and ramp.");
-        
-
         SmartDashboard.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
         displayLightBalance();
-
 
         if( bStepFirstPass)                                         // no need to do this in every                                                          
             timStepTimer.reset();                                   // reset the timer on a step change
 
-        Inputs.fieldCentric = true;        // do this in call cases
-
+        Inputs.fieldCentric = true;        // do this (maintain) in all cases
         double currentPosition = DriveSubsystem.m_frontLeft.getCurrentDriveTicks();
         SmartDashboard.putNumber("Distance from Init Possy", currentPosition - initialPosition);
         SmartDashboard.putNumber("Current Position", currentPosition);
@@ -698,107 +694,68 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
             // it will look at iStep and find the case where it should run code.
             // if iStep not found, it will go to default section at bottom.
 
-            
-
-            case 0:              
+            case 0: // Initialization              
                 Inputs.driveSwerveEncoderReset = true;                      // case 0 is where we can set up a bunch of stuff for the state machine.    
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Delay Test");
                     DriveSubsystem.m_gyro.zeroYaw();
-
                 }
-
                 if (Inputs.autonDelay == 0) {
                     iStep += 1;
                 } else if (timStepTimer.get() >= Inputs.autonDelay) {
                     iStep += 1;
                 }
-                //iStep = 2; //if only trying to do charge station
-
                 break;
-
             
-            case 1: //Put the cone down on the high place
+            case 1: // Place the cone on the high place pole (3 seconds)
                 Inputs.driveSwerveEncoderReset = false;
-            if (bStepFirstPass) {
-                SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
-            }
-
+                if (bStepFirstPass) {
+                    SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
+                }
                 if(timStepTimer.get() < 3) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
-
                     break;
                 }
-
-          
-
-                /*if (timStepTimer.get() < 1){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-                    break;
-                }*/
                 initialPosition = currentPosition;
                 iStep++;
                 break;
 
-            case 2: //arm keeps to origin, starts driving to balance
-
-                if (timStepTimer.get() > 4.0) {
-                    iStep = 8;
-                }
-                
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
-                //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
-
+            case 2: // Arm goes to origin, starts driving out to cube (1.25 seconds)
+                    // After 1.0 seconds: intake down and seek target.
+                    // If we spend more than 4 seconds on this step, STOP AUTON.
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-                
-                /*if (target1Piece*2 > Math.abs(currentPosition - initialPosition)) { 
-                    Inputs.driverPower = -0.4; //0.3
-                    maintainTurn(15, false);
-                } else if (!Inputs.seekTarget() || timStepTimer.get() < 3.0) {
-                    Inputs.driverPower = -0.2;
-                } else {
-                    iStep++;
-                }*/
-
-                if (timStepTimer.get() < 1.25){
+                if (timStepTimer.get() < 1.0) {
                     Inputs.driverPower = -0.5;
                     maintainTurn(reflectionFactor * 0, false);
                 } else {
-                    if (!Inputs.seekTarget() || timStepTimer.get() < 2.5) {
+                    if (!Inputs.seekTarget() || timStepTimer.get() < 2.75) {
+                        Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
                         Inputs.driverPower = -0.5;
                     } else {
                         iStep++;
                     }
                 }
-                 //-35
-                
-                
-
-                break;
-
-
-            case 3:
-                Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-
-                Inputs.seekTarget();
-
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
-                
-
-
-                iStep++;
-                initialPosition = currentPosition;
-                break;
-            case 4:
-                
-                
-                if (timStepTimer.get() > 1.0){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                    
+                if (timStepTimer.get() > 4.0) {
+                    iStep = 8;
                 }
-                
+                break;
+
+            case 3: // Keep arm in origin, turn to target, intake down
+                    // Set initial position to be the current position
+                Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
+                Inputs.seekTarget();
+                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
+                initialPosition = currentPosition;
+                iStep++;
+                break;
+
+            case 4: // Raise intake. After 1 sec, grab cube from intake.
+                    // Drive to point (ideally past charging station)
+                    // Maintain a straight path//turn -1 degrees?
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
-                
+                if (timStepTimer.get() > 1.0){
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE; 
+                }               
                 // This was target1Piece*2 -4000 through Lehigh Qualifying Match 11
                 if (target1Piece*2 + 225 > Math.abs(currentPosition - initialPosition)) { //1.2
                     Inputs.driverPower = 0.3; //0.3
@@ -806,150 +763,57 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.driverPower = 0.0; //0.3
                     iStep++;
                 }
-
-                maintainTurn(-3 * reflectionFactor, false);
-
-               /*  if (timStepTimer.get() > 3){
-                    Inputs.autoCenter(1);
-                } */
-                
+                // Was -3 at Lehigh >> Changed to -1 for Houston Practice Match
+                maintainTurn(-1 * reflectionFactor, false);
                 break;
-            case 5:
+
+            case 5: // Should be past charger.
+                    // Deploy arm to high place and score cube.
+                    // Strafe for 0.6 seconds.
+                    // Then center on April Tag (from 0.6 to 2.0 seconds)
+                    // After 1.5 seconds, drive slowly closer towards driver station (for 1 sec).
+                    // After 4 seconds, go to next step.
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
                 if (timStepTimer.get() < 0.6) {
-                    Inputs.driverStrafe = -0.27 * reflectionFactor;
-                    
-                } else 
-                if (timStepTimer.get() < 2.0){
+                    Inputs.driverStrafe = -0.27 * reflectionFactor;                
+                } else if (timStepTimer.get() < 2.0){
                     Inputs.autoCenter(1);
-                } if (timStepTimer.get() >1.5 && timStepTimer.get() <2.5){
+                }
+                if (timStepTimer.get() >1.5 && timStepTimer.get() <2.5){
                     Inputs.driverPower = 0.2;
                 }
-
-                 if (timStepTimer.get() < 4.0){
-                   
+                if (timStepTimer.get() < 4.0){   
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
                 }
                 if (timStepTimer.get() > 4.0){
                     iStep++;
                     initialPosition = currentPosition;
                 }
-
                 maintainTurn(0, false);
                 break;
-            case 6:
-                
-                //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
 
-                /* 
-                if (timStepTimer.get() < 2.0){
-                    maintainTurn(60, false);
-                } else {
-                    Inputs.seekTarget();
-                } */
+            case 6: // Strafe (0.5 seconds) back to get around charging station
+                    // Move arm back to origin.
                 if (timStepTimer.get() < 0.5) {
                     Inputs.driverStrafe = 0.5 * reflectionFactor;
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     break;
                 }
-
-
-                /*if (target1Piece*2 > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = -0.8; //0.3
-                    
-                } else if (target1Piece*2+75000 > Math.abs(currentPosition - initialPosition)){
-                    Inputs.driverPower = -0.2;
-                    iStep++;
-                }*/
-                /* 
-                if (DriveSubsystem.m_gyro.getYaw() < 40) { //1.2
-                    Inputs.driverPower = -0.8; //0.3
-                    
-                } else if (DriveSubsystem.m_gyro.getYaw() < 65){
-                    Inputs.driverPower = -0.2;
-                } else {
-                    iStep++;
-                } */
-
-                /*if (timStepTimer.get() < 0.6){
-                    Inputs.driverStrafe = -0.3;
-                }*
-
-                if (timStepTimer.get() > 2.5){
-                    Inputs.driverStrafe = 0.3;
-                }*/
-        
-               iStep++;
-                
+                iStep++;
                 break;
             
-            case 7:
-               /*  Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
-                if (!Inputs.seekTarget()){
-                    Inputs.driverStrafe = 0.3;
-                } else {
-                    iStep++;
-                    initialPosition = currentPosition;
+            case 7: // Drive away from drivers' station (1.5 seconds)
+                if (timStepTimer.get() < 1.5) {
+                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
+                    Inputs.driverPower  = -0.4; // Slowed down for bump
+                    maintainTurn(0, false);
                 }
-
-                Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-            */
-            if (timStepTimer.get() < 1.5) {
-                Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
-                Inputs.driverPower  = -0.4; // Slowed down for bump
-                maintainTurn(0, false);
-
-            }
                 break;
-            /*case 8:
-
-                if (10000 > Math.abs(currentPosition - initialPosition)){
-                    Inputs.driverStrafe = -0.4;
-                } else {
-                   iStep++; 
-                   initialPosition = currentPosition;
-                }
-
-                
-                if (timStepTimer.get() > 2.0){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
-
-                break;
-                
-            case 9:
-
-                if (timStepTimer.get() > 2.0){
-                    Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                }
-                Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
-
-                Inputs.autoCenter(1);
-
-                if (target1Piece*2-10000 > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = 0.4; //0.3
-                } else {
-                    Inputs.driverPower = 0.0; //0.3
-                    if (timStepTimer.get() < 2.0){
-                        Inputs.driverStrafe = -0.7;
-                    } else {
-                        iStep++;
-                        Inputs.driverStrafe = 0.0;
-                    }
-                    
-                    
-                }
-
-                break;*/
 
             default:
-            bIsDone = true;
-            SmartDashboard.putString("Auton Step Desc", "Done");           
-
-
-        }  // end of switch statement
-        
+                bIsDone = true;
+                SmartDashboard.putString("Auton Step Desc", "Done");           
+        }  // end of switch statement     
     } // end of auton4 method
 
     public void auton5() { // Same thing as auton1, but now we leave the community for a short time for the additional 3 points

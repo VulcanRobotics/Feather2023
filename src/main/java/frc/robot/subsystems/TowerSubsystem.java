@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.InputMismatchException;
 
@@ -180,8 +181,12 @@ public class TowerSubsystem extends SubsystemBase {
     //these are the multiple position functions used to move the two arms. They are all functions in order to uitilize a name rather than a number to ask for a position
 //*******************************************************//
     public static boolean highPlace(){
-        goToPosition(.522, .801, false, true);
-        if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.03 && m_stringElbow > .801 - 0.03)) {
+        double towerHighPlacePreset = 0.517; // Was 0.522
+        double elbowHighPlacePreset = 0.797; // Was 0.801
+        
+        goToPosition(towerHighPlacePreset, .797, false, true);
+        if ((m_stringTower < towerHighPlacePreset + 0.015 && m_stringTower > towerHighPlacePreset - 0.015) &&
+            (m_stringElbow < elbowHighPlacePreset + 0.03 && m_stringElbow > elbowHighPlacePreset - 0.03)) {
             return true;
         } 
         return false;
@@ -200,7 +205,9 @@ public class TowerSubsystem extends SubsystemBase {
         if (m_stringTower < 0.361 + 0.01 && m_stringTower > 0.361 - 0.01){ //towerDone = towerPID.atSetpoint()
             if (m_stringElbow < 0.663 + 0.01 && m_stringElbow > 0.663 - 0.01 && PneumaticSubsystem.clawClosed){
                 //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
-                autoEject = true;
+                if (DriverStation.isAutonomousEnabled() {
+                    autoEject = true;
+                }
             }
         }
 

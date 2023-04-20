@@ -237,9 +237,9 @@ public class Robot extends TimedRobot {   // RobotBase {
     //if (m_autonomousCommand != null) {
     // m_autonomousCommand.cancel();
     //
-  
+    
     //Inputs.driveResetGyro = true;
-
+    
   }
 
   /** This function is called periodically during operator control. */

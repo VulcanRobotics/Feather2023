@@ -387,13 +387,13 @@ public class SwerveModule {
       talonOffsetOnBoot = (m_turningMotor.getSelectedSensorPosition() + (m_turningEncoder.getAbsolutePosition()*TalonDegrees))%Talon360; 
     }
 
+
     m_driveMotor.set(ControlMode.PercentOutput, driveOutput * m_driveDirection);    
     m_turningMotor.set(ControlMode.Position, optimizedTicks );
     //m_turningMotor.set(ControlMode.Position, 0);
 
-    
-
- 
+    double v = m_driveMotor.getSelectedSensorVelocity();
+    SmartDashboard.putNumber("Velocity", v);
 
     /* if (getCurrentTicks()%Talon360 >= Talon360/2) {
       realTurn = getCurrentTicks() + (Talon360 +(getCurrentTicks()%Talon360));
@@ -403,8 +403,7 @@ public class SwerveModule {
     }
 
     m_turningMotor.set(ControlMode.Position, desiredState.angle.getDegrees()*68.267 + talonOffsetOnBoot); */
-    
-     
+
 
     
     

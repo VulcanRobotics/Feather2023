@@ -205,7 +205,7 @@ public class TowerSubsystem extends SubsystemBase {
         if (m_stringTower < 0.361 + 0.01 && m_stringTower > 0.361 - 0.01){ //towerDone = towerPID.atSetpoint()
             if (m_stringElbow < 0.663 + 0.01 && m_stringElbow > 0.663 - 0.01 && PneumaticSubsystem.clawClosed){
                 //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.GRABINTAKE;
-                if (DriverStation.isAutonomousEnabled() {
+                if (DriverStation.isAutonomousEnabled()) {
                     autoEject = true;
                 }
             }

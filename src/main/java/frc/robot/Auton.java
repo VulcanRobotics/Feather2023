@@ -292,94 +292,75 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
 
 
 
-    public void auton2() { // Same thing as auton1, but now we leave the community for a short time for the additional 3 points
+    public void auton2() {  // Place cone, over charging station,
+                            // pick up cube, back to charging station.
         
         Inputs.redLED = true;
-
-        //displayLightBalance();
-        //DriveSubsystem.m_gyro.zeroYaw();
-        //String sAuton = "Auton1 -  ";
-        //SmartDashboard.putString("Auton ", sAuton );
-
-        //SmartDashboard.saveDouble("Auton Step Timer", timStepTimer.get() );  // capture timer on ever step
-
         SmartDashboard.putNumber("Auton ID", 1);
         SmartDashboard.putNumber("Auton Step", iStep);
         SmartDashboard.putString("Auton Desc", "Plan to score 1 and ramp.");
-
         SmartDashboard.putNumber("Auton Gyro Tilt",  DriveSubsystem.m_gyro.getRoll());
 
-        if( bStepFirstPass)                                         // no need to do this in every                                                          
-            timStepTimer.reset();                                   // reset the timer on a step change
+        if( bStepFirstPass)         // No need to do this in every call
+            timStepTimer.reset();   // reset the timer on a step change
 
-        Inputs.fieldCentric = true;        // do this in call cases
+        Inputs.fieldCentric = true; // Do this in all cases, we suspect it might have been switching to
+                                    // robot-centric at times, which causes all kinds of problems. 
 
         double currentPosition = DriveSubsystem.m_frontLeft.getCurrentDriveTicks();
 
         SmartDashboard.putNumber("Current Position", currentPosition);
 
-        //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.IGNORE;
-
-        switch (iStep) {                            // switch statement.
-            // it will look at iStep and find the case where it should run code.
-            // if iStep not found, it will go to default section at bottom.
-
-            
-
-            case 0:              
-                Inputs.driveSwerveEncoderReset = true;                      // case 0 is where we can set up a bunch of stuff for the state machine.    
+        switch (iStep) {
+            case 0: // Initialization              
+                Inputs.driveSwerveEncoderReset = true;  // case 0 is where we can set up a bunch of stuff for the state machine.    
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Delay Test");
                     DriveSubsystem.m_gyro.zeroYaw();
-                    
                 }
-
                 if (Inputs.autonDelay == 0) {
                     iStep += 1;
                 } else if (timStepTimer.get() >= Inputs.autonDelay) {
                     iStep += 1;
                 }
-                //iStep = 2; //if only trying to do charge station
-
                 break;
-
             
-            case 1: //Put the cone down on the high place
+            case 1: // Place the cone on the high place pole.
+                    // After 3.5 seconds, go to next step.
                 Inputs.driveSwerveEncoderReset = false;
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Attack Ramp");
                 }
-
-                if(timStepTimer.get() < 3.5) {
+                if (timStepTimer.get() < 3.0) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.HIGHPLACE;
-
                     break;
                 }
-
-        
-
-                
-                iStep ++;
+                else {
+                    iStep++;
+                }
                 break;
 
-            case 2: //arm keeps to origin, starts driving to balance
+            case 2: // Arm returns to origin, starts driving to charging station (-0.4).
+                    // When gyro (roll) goes beyond -10 (uphill), go to next step
                 Inputs.driverPower = -0.4;
 
                 if (timStepTimer.get() < 6.0){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
-                if( DriveSubsystem.m_gyro.getRoll() < -10 ){
+                if ( DriveSubsystem.m_gyro.getRoll() < -10 ){
                     iStep++;
                     initialPosition = currentPosition;
                  }
                 //maintainTurn(0, false);
                 break;
 
-            case 3: //keeps going on balance until gyro is greater than 10
+            case 3: // Keep going (on charging station) more slowly (-0.25)
+                    // until gyro (roll) is greater than 10 (downhill).
+                    // Arm stays at origin
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "On Ramp - Forward");
                 }
-                
+
                 Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 Inputs.driverPower = -0.25; //was 0.4
                 maintainTurn(0, false);
@@ -388,18 +369,15 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     iStep++;
                     initialPosition = currentPosition;
                 }
-
-
                 break;
             
-            case 4: //Drive a little bit forward, just to get out of the community
-                if (targetPastChargeStation * 2 > Math.abs(currentPosition - initialPosition)) { //1.2
-                    Inputs.driverPower = -0.3; 
+            case 4: // Drive forward (past charging station), to cube location (-0.3)
+                    // Lower intake.
 
-                    
+                if (targetPastChargeStation * 2 > Math.abs(currentPosition - initialPosition)) { //1.2
+                    Inputs.driverPower = -0.3;                     
                     Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.INTAKE;
 
-                    //IntakeSubsystem.spinMotors();
                     if (timStepTimer.get() < 3.0){
                         Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                     }
@@ -411,56 +389,45 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     }*/        
                     
                     break;
+                } else {
+                    /* if (timStepTimer.get() > 1){
+                            Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
+                            break;
+                    } */
+                    iStep++; 
                 }
-
-                /*if (timStepTimer.get() > 1){
-                    Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-                    break;
-                }*/
-
-                iStep++;
                 break;
 
-            case 5: //now that its out of the community, start driving backward until gyro > 10
+            case 5: // Start driving backward to charging station,
+                    // until gyro (roll) > 10 (uphill backwards),
+                    // and then set inititalPosition to the currentPosition (for next step).
+                    // Raise intake. After 1 second, arm goes to origin.
                 Inputs.driverPower = 0.5;
-                //Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.PINCH;
-
                 maintainTurn(0, false);
-
-                /*if (timStepTimer.get() < 1.0){
-                    Inputs.rightPincerMotorSpeed = 0.5;
-                    Inputs.leftPincerMotorSpeed = -0.5;
-                }*/
-
                 Inputs.autonRequestIntakeGoTo = AutonIntakeFlags.UP;
 
                 if (timStepTimer.get() > 1){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.ORIGIN;
                 }
-
-
-
-                if( DriveSubsystem.m_gyro.getRoll() > 10 ){
+                if( DriveSubsystem.m_gyro.getRoll() > 10 ) {
                     displayLightBalance();
                     iStep++;
                     initialPosition = currentPosition;
-                 }
-
-
+                }
                 break;
     
-            case 6: //Do the same process of moving a certain distance based on ticks, but drive backward
-                //displayLightBalance();
+            case 6: // Drive to targetPosition (slightly modified) at 0.3 speed.
                 if ((targetPosition*2.2)*0.9 > Math.abs(currentPosition - initialPosition)) { //1.2 // was -4500
                     Inputs.driverPower = 0.3; //0.3 
                     break;
                 }
-
-
-                iStep++;
+                else {
+                    iStep++;
+                }
                 break;
 
-            case 7:
+            case 7: // Reset initialPosition to currentPosition
+                    // Lock wheels (driverTurn 0.0001), after 1 second go to next step.
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
@@ -475,8 +442,10 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.driverPower = 0.0;
                 }
                 break;
-            case 8: // drive back forward to get a good shot.
-            
+
+            case 8: // Wait 0.25 seconds
+                    // If our pitch (gyro roll is uphill/downhill: more than +/-13),
+                    // take a quick step to balance.
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
                 }
@@ -487,9 +456,9 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
                     // This was targetQuickMove (no additional) for Day 1 of Lehigh
-                    if (targetQuickMove+3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
+                    if (targetQuickMove+2000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
                         Inputs.driverPower = 0.3; //0.3
-                    } else if (targetQuickMove+3000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -13) {
+                    } else if (targetQuickMove+2000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -13) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
@@ -497,9 +466,11 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 
                 initialPosition = currentPosition;
                 iStep++;
-
                 break;
-            case 9: // drive back forward to get a good shot.
+
+            case 9: // Wait another 0.25 seconds
+                    // If robot is uphill/downhill (more than +/-10),
+                    // take another quick step.
         
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Balance On Ramp");
@@ -511,19 +482,17 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 //Inputs.driverPower = 0.0;
                 if (timStepTimer.get() < 1.25){
                     // This was targetQuickMove-3000 on Day 1 of Lehigh
-                    if (targetQuickMove-1000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 10) { //1.2
+                    if (targetQuickMove-800 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 10) { //1.2
                         Inputs.driverPower = 0.3; //0.3
-                    } else if (targetQuickMove-1000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -10) {
+                    } else if (targetQuickMove-800 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() < -10) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
                 }
-                
-
                 iStep++;
-
                 break;
-            case 10: // turn robot 180 degrees
+
+            case 10: // Lock wheels again
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }                
@@ -531,13 +500,12 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;
                 }
-
                 /*if (timStepTimer.get() > 1){
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE;
-                }*/
-                
+                }*/                
                 break;
-            case 11: // stop robot 
+
+            case 11: // Really lock wheels, again?
                 if (bStepFirstPass) {
                     SmartDashboard.putString("Auton Step Desc", "Stop & Set Wheels");
                 }
@@ -545,13 +513,11 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                 if(timStepTimer.get() < 0.25) {
                     Inputs.driverTurn = 0.001;
                 }
-                
                 break;
+
             default:
-            bIsDone = true;
-            SmartDashboard.putString("Auton Step Desc", "Done");           
-
-
+                bIsDone = true;
+                SmartDashboard.putString("Auton Step Desc", "Done");           
         }  // end of switch statement                                                         
     }
 
@@ -757,14 +723,15 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     Inputs.autonRequestTowerGoTo = AutonTowerFlags.GRABFROMINTAKE; 
                 }               
                 // This was target1Piece*2 -4000 through Lehigh Qualifying Match 11
-                if (target1Piece*2 + 225 > Math.abs(currentPosition - initialPosition)) { //1.2
+                if ( (target1Piece*2 + 225 > Math.abs(currentPosition - initialPosition)) 
+                    && (timStepTimer.get() < 5.0) ) { //1.2
                     Inputs.driverPower = 0.3; //0.3
                 } else {
                     Inputs.driverPower = 0.0; //0.3
                     iStep++;
                 }
                 // Was -3 at Lehigh >> Changed to -1 for Houston Practice Match
-                maintainTurn(-1 * reflectionFactor, false);
+                maintainTurn(-3 * reflectionFactor, false);
                 break;
 
             case 5: // Should be past charger.

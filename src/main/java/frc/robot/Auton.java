@@ -454,7 +454,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     break;
                 } 
                 //Inputs.driverPower = 0.0;
-                if (timStepTimer.get() < 1.25){
+                /*if (timStepTimer.get() < 1.25){
                     // This was targetQuickMove (no additional) for Day 1 of Lehigh
                     if (targetQuickMove+2000 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 13) { //1.2
                         Inputs.driverPower = 0.3; //0.3
@@ -462,10 +462,17 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
-                }
+                }*/
                 
-                initialPosition = currentPosition;
-                iStep++;
+                Inputs.driverPower = DriveSubsystem.m_gyro.getRoll()/100;
+                //break;
+
+                /*if (DriveSubsystem.m_gyro.getRoll() > 5 || DriveSubsystem.m_gyro.getRoll() < -5) {
+                    
+                }*/
+                
+                //initialPosition = currentPosition;
+                //iStep++;
                 break;
 
             case 9: // Wait another 0.25 seconds
@@ -480,7 +487,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                     break;
                 } 
                 //Inputs.driverPower = 0.0;
-                if (timStepTimer.get() < 1.25){
+                /*if (timStepTimer.get() < 1.25){
                     // This was targetQuickMove-3000 on Day 1 of Lehigh
                     if (targetQuickMove-800 > Math.abs(currentPosition - initialPosition) && DriveSubsystem.m_gyro.getRoll() > 10) { //1.2
                         Inputs.driverPower = 0.3; //0.3
@@ -488,7 +495,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                         Inputs.driverPower = -0.3; //0.3
                     }
                     break;
-                }
+                }*/
                 iStep++;
                 break;
 
@@ -701,7 +708,7 @@ public boolean maintainTurn(double YAWValue, boolean ignoreDeadBand) {
                         iStep++;
                     }
                 }
-                if (timStepTimer.get() > 4.0) {
+                if (timStepTimer.get() > 3.3) {
                     iStep = 8;
                 }
                 break;
